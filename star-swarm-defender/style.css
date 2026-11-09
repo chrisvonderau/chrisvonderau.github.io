@@ -1,0 +1,80 @@
+:root {
+  color-scheme: dark;
+  --page-bg: #060813;
+  --panel-edge: rgba(91, 244, 255, 0.35);
+  --glow-cyan: rgba(75, 232, 255, 0.6);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(32, 201, 151, 0.18), transparent 26%),
+    radial-gradient(circle at 84% 78%, rgba(255, 77, 141, 0.16), transparent 28%),
+    linear-gradient(145deg, #05060d 0%, var(--page-bg) 42%, #0d1024 100%);
+  color: #effdff;
+  font-family: "Trebuchet MS", "Lucida Console", Monaco, monospace;
+}
+
+.game-shell {
+  display: grid;
+  place-items: center;
+  width: min(100vw - 28px, 920px);
+  min-height: 100vh;
+  padding: 18px 0;
+}
+
+canvas {
+  display: block;
+  width: min(100%, 800px);
+  height: auto;
+  aspect-ratio: 4 / 3;
+  border: 1px solid var(--panel-edge);
+  border-radius: 8px;
+  background: #050710;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+    0 0 34px var(--glow-cyan),
+    0 26px 80px rgba(0, 0, 0, 0.48);
+  outline: none;
+}
+
+canvas:focus {
+  border-color: rgba(149, 255, 234, 0.72);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+    0 0 42px rgba(115, 255, 236, 0.62),
+    0 26px 80px rgba(0, 0, 0, 0.5);
+}
+
+noscript {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(5, 7, 16, 0.88);
+}
+
+@media (max-height: 650px) {
+  .game-shell {
+    padding: 10px 0;
+  }
+
+  canvas {
+    width: min(calc((100vh - 20px) * 1.3333), calc(100vw - 20px));
+  }
+}

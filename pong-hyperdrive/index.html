@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PONG: HYPERDRIVE</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: #050508;
+            color: #fff;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        #menu {
+            position: absolute;
+            background: rgba(5, 5, 8, 0.95);
+            border: 4px solid #00f0ff;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.4);
+            z-index: 10;
+            border-radius: 10px;
+        }
+        h1 {
+            font-size: 3.5rem;
+            margin-top: 0;
+            color: #ff0077;
+            text-shadow: 0 0 20px #ff0077, 0 0 40px #ff0077;
+            letter-spacing: 4px;
+            animation: pulse 1.5s infinite alternate;
+        }
+        @keyframes pulse {
+            from { transform: scale(1); text-shadow: 0 0 20px #ff0077; }
+            to { transform: scale(1.03); text-shadow: 0 0 30px #ff0077, 0 0 50px #ff0077; }
+        }
+        .btn {
+            background: transparent;
+            border: 2px solid #00f0ff;
+            color: #00f0ff;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.2s;
+            text-shadow: 0 0 5px #00f0ff;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        }
+        .btn:hover {
+            background: #00f0ff;
+            color: #050508;
+            box-shadow: 0 0 25px #00f0ff;
+        }
+        #game-container {
+            position: relative;
+        }
+        canvas {
+            background: #0a0a12;
+            border: 4px solid #333;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            display: block;
+        }
+        #instructions {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #888;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="menu">
+        <h1>PONG: HYPERDRIVE</h1>
+        <p style="color: #00f0ff; margin-bottom: 30px;">NEON NESTED ARCADE ACTION</p>
+        <button class="btn" onclick="startGame(1)">1 PLAYER (VS AI)</button>
+        <button class="btn" onclick="startGame(2)">2 PLAYERS (LOCAL)</button>
+        <div id="instructions">
+            <strong>P1 (Left):</strong> W (Up) / S (Down)<br>
+            <strong>P2 (Right):</strong> Up Arrow / Down Arrow<br>
+            <em>Tip: Hit the ball while moving to launch a high-speed Power Smash!</em>
+        </div>
+    </div>
+
+    <div id="game-container">
+        <canvas id="pongCanvas" width="1000" height="600"></canvas>
+    </div>
+
+<script>
+    const canvas = document.getElementById("pongCanvas");
+    const ctx = canvas.getContext("2d");
+    const menu = document.getElementById("menu");
+
+    let gameMode = 1; 
+    let isRunning = false;
+    let screenShake = 0;
+
+    const keys = {};
+    window.addEventListener("keydown", e => keys[e.code] = true);
+    window.addEventListener("keyup", e => keys[e.code] = false);
+
+    const paddleWidth = 15;
+    const initialPaddleHeight = 90;
+
+    const p1 = { x: 30, y: 255, w: paddleWidth, h: initialPaddleHeight, score: 0, speed: 9, color: "#ff0077", trail: [], targetH: initialPaddleHeight };
+    const p2 = { x: 955, y: 255, w: paddleWidth, h: initialPaddleHeight, score: 0, speed: 9, color: "#00f0ff", trail: [], targetH: initialPaddleHeight };
+    
+    let balls = [];
+    let powerUps = [];
+    let particles = [];
+
+    const POWERUP_TYPES = [
+        { name: 'MULTIBALL', color: '#ffff00', icon: '⚡' },
+        { name: 'GROW', color: '#00ff00', icon: '⬆️' },
+        { name: 'SHIELD', color: '#00ffff', icon: '🛡️' }
+    ];
+
+    let p1Shield = false;
+    let p2Shield = false;
+    let powerUpSpawnTimer = 0;
+
+    class Ball {
+        constructor(x, y, speedX, speedY) {
+            this.x = x;
+            this.y = y;
+            this.radius = 8;
+            this.speedX = speedX;
+            this.speedY = speedY;
+            this.maxSpeed = 22;
+            this.baseSpeed = 9;
+            this.color = "#ffffff";
+            this.trail = [];
+        }
+
+        update() {
+            this.trail.push({ x: this.x, y: this.y });
+            if (this.trail.length > 12) this.trail.shift();
+
+            this.x += this.speedX;
+            this.y += this.speedY;
+
+            if (this.y - this.radius <= 0) {
+                this.y = this.radius;
+                this.speedY = -this.speedY;
+                spawnParticles(this.x, this.y, '#ffffff', 8);
+                screenShake = 4;
+            }
+            if (this.y + this.radius >= canvas.height) {
+                this.y = canvas.height - this.radius;
+                this.speedY = -this.speedY;
+                spawnParticles(this.x, this.y, '#ffffff', 8);
+                screenShake = 4;
+            }
+        }
+
+        draw() {
+            this.trail.forEach((t, index) => {
+                ctx.fillStyle = `rgba(255, 255, 255, ${index / 24})`;
+                ctx.beginPath();
+                ctx.arc(t.x, t.y, this.radius * (index / this.trail.length), 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = this.color;
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0; 
+        }
+    }
+
+    function createBall() {
+        const dirX = Math.random() > 0.5 ? 1 : -1;
+        const dirY = (Math.random() * 2 - 1) * 3;
+        return new Ball(canvas.width / 2, canvas.height / 2, dirX * 8, dirY);
+    }
+
+    function startGame(mode) {
+        gameMode = mode;
+        menu.style.display = "none";
+        isRunning = true;
+        
+        p1.score = 0;
+        p2.score = 0;
+        p1.y = 255;
+        p2.y = 255;
+        p1.h = p1.targetH = initialPaddleHeight;
+        p2.h = p2.targetH = initialPaddleHeight;
+        p1Shield = p2Shield = false;
+        balls = [createBall()];
+        powerUps = [];
+        particles = [];
+        powerUpSpawnTimer = 0;
+        
+        requestAnimationFrame(gameLoop);
+    }
+
+    function spawnParticles(x, y, color, count) {
+        for (let i = 0; i < count; i++) {
+            particles.push({
+                x: x,
+                y: y,
+                vx: (Math.random() * 2 - 1) * (Math.random() * 6 + 2),
+                vy: (Math.random() * 2 - 1) * (Math.random() * 6 + 2),
+                alpha: 1,
+                life: Math.random() * 0.03 + 0.02,
+                color: color
+            });
+        }
+    }
+
+    function handlePowerUpTrigger(type, side) {
+        const player = side === 'left' ? p1 : p2;
+        if (type === 'MULTIBALL') {
+            balls.push(new Ball(canvas.width/2, canvas.height/2, 8, 4));
+            balls.push(new Ball(canvas.width/2, canvas.height/2, -8, -4));
+        } else if (type === 'GROW') {
+            player.targetH = 150;
+            setTimeout(() => player.targetH = initialPaddleHeight, 10000);
+        } else if (type === 'SHIELD') {
+            if (side === 'left') p1Shield = true;
+            else p2Shield = true;
+        }
+    }
+
+    function gameLoop() {
+        if (!isRunning) return;
+        update();
+        render();
+        requestAnimationFrame(gameLoop);
+    }
+
+    function update() {
+        let p1Moving = false;
+        if (keys["KeyW"] && p1.y > 10) { p1.y -= p1.speed; p1Moving = true; }
+        if (keys["KeyS"] && p1.y < canvas.height - p1.h - 10) { p1.y += p1.speed; p1Moving = true; }
+
+        let p2Moving = false;
+        if (gameMode === 2) {
+            if (keys["ArrowUp"] && p2.y > 10) { p2.y -= p2.speed; p2Moving = true; }
+            if (keys["ArrowDown"] && p2.y < canvas.height - p2.h - 10) { p2.y += p2.speed; p2Moving = true; }
+        } else {
+            if (balls.length > 0) {
+                let targetBall = balls[0];
+                let closestX = 10000;
+                balls.forEach(b => {
+                    if (b.speedX > 0 && b.x < closestX) {
+                        closestX = b.x;
+                        targetBall = b;
+                    }
+                });
+                let targetY = targetBall.y - p2.h / 2;
+                if (p2.y < targetY - 10) { p2.y += p2.speed * 0.85; p2Moving = true; }
+                else if (p2.y > targetY + 10) { p2.y -= p2.speed * 0.85; p2Moving = true; }
+            }
+        }
+
+        p1.h += (p1.targetH - p1.h) * 0.1;
+        p2.h += (p2.targetH - p2.h) * 0.1;
+
+        powerUpSpawnTimer++;
+        if (powerUpSpawnTimer > 400 && powerUps.length < 2) {
+            if (Math.random() < 0.3) {
+                const type = POWERUP_TYPES[Math.floor(Math.random() * POWERUP_TYPES.length)];
+                powerUps.push({
+                    x: canvas.width / 4 + Math.random() * (canvas.width / 2),
+                    y: 50 + Math.random() * (canvas.height - 100),
+                    radius: 20,
+                    type: type.name,
+                    color: type.color,
+                    icon: type.icon,
+                    pulse: 0
+                });
+            }
+            powerUpSpawnTimer = 0;
+        }
+
+        for (let i = balls.length - 1; i >= 0; i--) {
+            let ball = balls[i];
+            ball.update();
+
+            powerUps.forEach((pup, pIdx) => {
+                let dist = Math.hypot(ball.x - pup.x, ball.y - pup.y);
+                if (dist < ball.radius + pup.radius) {
+                    let side = ball.speedX > 0 ? 'left' : 'right';
+                    handlePowerUpTrigger(pup.type, side);
+                    spawnParticles(pup.x, pup.y, pup.color, 25);
+                    powerUps.splice(pIdx, 1);
+                    screenShake = 8;
+                }
+            });
+
+            if (p1Shield && ball.x < 15 && ball.speedX < 0) {
+                ball.speedX = -ball.speedX;
+                p1Shield = false;
+                screenShake = 10;
+                spawnParticles(ball.x, ball.y, '#00ffff', 20);
+            }
+            if (p2Shield && ball.x > canvas.width - 15 && ball.speedX > 0) {
+                ball.speedX = -ball.speedX;
+                p2Shield = false;
+                screenShake = 10;
+                spawnParticles(ball.x, ball.y, '#00ffff', 20);
+            }
+
+            if (ball.x - ball.radius <= p1.x + p1.w && ball.x + ball.radius >= p1.x) {
+                if (ball.y >= p1.y && ball.y <= p1.y + p1.h) {
+                    let relativeY = (ball.y - (p1.y + p1.h / 2)) / (p1.h / 2);
+                    let launchAngle = relativeY * (Math.PI / 3); 
+                    let speedMod = p1Moving ? 1.4 : 1.05;
+                    let currentSpeed = Math.min(Math.hypot(ball.speedX, ball.speedY) * speedMod, ball.maxSpeed);
+
+                    ball.speedX = Math.cos(launchAngle) * currentSpeed;
+                    ball.speedY = Math.sin(launchAngle) * currentSpeed;
+                    ball.x = p1.x + p1.w + ball.radius;
+                    ball.color = p1Moving ? "#ffff00" : p1.color;
+
+                    spawnParticles(ball.x, ball.y, p1.color, p1Moving ? 20 : 8);
+                    screenShake = p1Moving ? 12 : 5;
+                }
+            }
+
+            if (ball.x + ball.radius >= p2.x && ball.x - ball.radius <= p2.x + p2.w) {
+                if (ball.y >= p2.y && ball.y <= p2.y + p2.h) {
+                    let relativeY = (ball.y - (p2.y + p2.h / 2)) / (p2.h / 2);
+                    let launchAngle = relativeY * (Math.PI / 3);
+                    let speedMod = p2Moving ? 1.4 : 1.05;
+                    let currentSpeed = Math.min(Math.hypot(ball.speedX, ball.speedY) * speedMod, ball.maxSpeed);
+
+                    ball.speedX = -Math.cos(launchAngle) * currentSpeed;
+                    ball.speedY = Math.sin(launchAngle) * currentSpeed;
+                    ball.x = p2.x - ball.radius;
+                    ball.color = p2Moving ? "#ffff00" : p2.color;
+
+                    spawnParticles(ball.x, ball.y, p2.color, p2Moving ? 20 : 8);
+                    screenShake = p2Moving ? 12 : 5;
+                }
+            }
+
+            if (ball.x < 0) {
+                p2.score++;
+                spawnParticles(0, ball.y, p2.color, 30);
+                balls.splice(i, 1);
+                screenShake = 15;
+            } else if (ball.x > canvas.width) {
+                p1.score++;
+                spawnParticles(canvas.width, ball.y, p1.color, 30);
+                balls.splice(i, 1);
+                screenShake = 15;
+            }
+        }
+
+        if (balls.length === 0) {
+            balls.push(createBall());
+            checkWinCondition();
+        }
+
+        for (let i = particles.length - 1; i >= 0; i--) {
+            let p = particles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            p.alpha -= p.life;
+            if (p.alpha <= 0) particles.splice(i, 1);
+        }
+
+        if (screenShake > 0) screenShake *= 0.9;
+    }
+
+    function checkWinCondition() {
+        if (p1.score >= 10 || p2.score >= 10) {
+            isRunning = false;
+            menu.style.display = "block";
+            document.querySelector("h1").innerText = p1.score >= 10 ? "PLAYER 1 WINS!" : "PLAYER 2 WINS!";
+        }
+    }
+
+    function render() {
+        ctx.save();
+        if (screenShake > 0.5) {
+            let dx = (Math.random() * 2 - 1) * screenShake;
+            let dy = (Math.random() * 2 - 1) * screenShake;
+            ctx.translate(dx, dy);
+        }
+
+        ctx.fillStyle = "#050508";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+        ctx.lineWidth = 4;
+        ctx.setLineDash([20, 20]);
+        ctx.beginPath();
+        ctx.moveTo(canvas.width / 2, 0);
+        ctx.lineTo(canvas.width / 2, canvas.height);
+        ctx.stroke();
+        ctx.setLineDash([]); 
+
+        if (p1Shield) {
+            ctx.strokeStyle = "rgba(0, 255, 255, 0.4)";
+            ctx.lineWidth = 6;
+            ctx.beginPath(); ctx.moveTo(10, 0); ctx.lineTo(10, canvas.height); ctx.stroke();
+        }
+        if (p2Shield) {
+            ctx.strokeStyle = "rgba(0, 255, 255, 0.4)";
+            ctx.lineWidth = 6;
+            ctx.beginPath(); ctx.moveTo(canvas.width-10, 0); ctx.lineTo(canvas.width-10, canvas.height); ctx.stroke();
+        }
+
+        ctx.fillStyle = "rgba(255, 255, 255, 0.04)";
+        ctx.font = "bold 140px monospace";
+        ctx.textAlign = "center";
+        ctx.fillText(p1.score, canvas.width / 4, canvas.height / 2 + 50);
+        ctx.fillText(p2.score, (canvas.width / 4) * 3, canvas.height / 2 + 50);
+
+        ctx.shadowBlur = 15;
+        ctx.fillStyle = p1.color;
+        ctx.shadowColor = p1.color;
+        ctx.fillRect(p1.x, p1.y, p1.w, p1.h);
+
+        ctx.fillStyle = p2.color;
+        ctx.shadowColor = p2.color;
+        ctx.fillRect(p2.x, p2.y, p2.w, p2.h);
+        ctx.shadowBlur = 0; 
+
+        powerUps.forEach(pup => {
+            pup.pulse += 0.05;
+            let currentRadius = pup.radius + Math.sin(pup.pulse) * 3;
+            ctx.save();
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = pup.color;
+            ctx.fillStyle = pup.color;
+            ctx.globalAlpha = 0.8;
+            ctx.beginPath();
+            ctx.arc(pup.x, pup.y, currentRadius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "#000";
+            ctx.globalAlpha = 1;
+            ctx.font = "16px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(pup.icon, pup.x, pup.y);
+            ctx.restore();
+        });
+
+        balls.forEach(ball => ball.draw());
+
+        particles.forEach(p => {
+            ctx.save();
+            ctx.globalAlpha = p.alpha;
+            ctx.fillStyle = p.color;
+            ctx.fillRect(p.x, p.y, 4, 4);
+            ctx.restore();
+        });
+
+        ctx.restore();
+    }
+</script>
+</body>
+</html>

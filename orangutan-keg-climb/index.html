@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Orangutan Keg Climb</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="cabinet" aria-label="Orangutan Keg Climb arcade game">
+      <section class="marquee">
+        <div>
+          <p class="eyebrow">1980s-style arcade platformer</p>
+          <h1>Orangutan Keg Climb</h1>
+        </div>
+        <div class="hud" aria-live="polite">
+          <span>Score <strong id="score">000000</strong></span>
+          <span>High <strong id="highScore">000000</strong></span>
+          <span>Lives <strong id="lives">3</strong></span>
+          <span>Stage <strong id="stage">1</strong></span>
+        </div>
+      </section>
+
+      <section class="screen-wrap">
+        <canvas
+          id="game"
+          width="960"
+          height="720"
+          role="img"
+          aria-label="Pixel arcade game screen showing a climber, orange orangutan, ladders, platforms, and rolling beer kegs"
+          tabindex="0"
+        ></canvas>
+      </section>
+
+      <nav class="controls" aria-label="Game controls">
+        <button id="startButton" type="button">Start</button>
+        <button id="pauseButton" type="button">Pause</button>
+        <button id="muteButton" type="button" aria-pressed="false">Sound On</button>
+      </nav>
+    </main>
+
+    <script src="game.js" defer></script>
+  </body>
+</html>

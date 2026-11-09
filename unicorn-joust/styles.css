@@ -1,0 +1,148 @@
+:root {
+  color-scheme: dark;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background: #0c0f18;
+  color: #f7fbff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, #121520 0%, #0d1320 44%, #101112 100%),
+    #0c0f18;
+}
+
+.arcade-shell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100vw;
+  min-height: 100vh;
+  padding: 18px;
+}
+
+#gameCanvas {
+  display: block;
+  width: min(calc(100vw - 36px), 1120px);
+  max-height: calc(100vh - 36px);
+  aspect-ratio: 16 / 9;
+  background: #0f1320;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(84, 220, 205, 0.14) inset;
+}
+
+.screen-actions {
+  position: absolute;
+  left: 50%;
+  bottom: max(28px, 8vh);
+  display: flex;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.screen-actions.is-hidden {
+  display: none;
+}
+
+button {
+  min-height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 8px;
+  color: #071014;
+  background: #7cf7d4;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    transform 140ms ease,
+    background 140ms ease,
+    box-shadow 140ms ease;
+}
+
+button:hover {
+  background: #b7ffe9;
+  box-shadow: 0 12px 26px rgba(60, 239, 204, 0.22);
+  transform: translateY(-1px);
+}
+
+button:focus-visible {
+  outline: 3px solid rgba(255, 211, 105, 0.92);
+  outline-offset: 3px;
+}
+
+#startButton {
+  min-width: 158px;
+  padding: 0 22px;
+  pointer-events: auto;
+}
+
+.sound-button {
+  position: absolute;
+  top: max(28px, 6vh);
+  right: max(28px, calc((100vw - min(calc(100vw - 36px), 1120px)) / 2 + 22px));
+  min-width: 98px;
+  min-height: 38px;
+  padding: 0 14px;
+  color: #f9fbff;
+  background: rgba(14, 18, 28, 0.64);
+  backdrop-filter: blur(10px);
+}
+
+.sound-button:hover {
+  background: rgba(28, 36, 50, 0.82);
+}
+
+.sound-button.is-hidden {
+  display: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 720px) {
+  .arcade-shell {
+    padding: 10px;
+  }
+
+  #gameCanvas {
+    width: calc(100vw - 20px);
+  }
+
+  .sound-button {
+    top: 16px;
+    right: 16px;
+    min-width: 86px;
+    font-size: 0.82rem;
+  }
+
+  .screen-actions {
+    bottom: 24px;
+  }
+}

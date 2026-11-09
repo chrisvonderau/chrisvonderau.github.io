@@ -1,0 +1,957 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Marble Mayhem</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: one column. Player chips, then the board (canvas), then the action bar. Panels slide over it. */
+:root {
+  --bg: #efe6da; --surface: #fbf6ef; --ink: #2b211a; --muted: #6f6157; --line: #d9cbbb;
+  --accent: #b5462d; --sapphire: #2a64d6; --amber: #e0951a; --good: #2f7d4f;
+  --display: "Baloo 2", "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+  --body: "Atkinson Hyperlegible", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #17120e; --surface: #231b15; --ink: #f2e9df; --muted: #b3a597; --line: #3b2f26;
+  --accent: #e8714f; --sapphire: #6c9dff; --amber: #ffb547; --good: #6cc48f; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #17120e; --surface: #231b15; --ink: #f2e9df; --muted: #b3a597; --line: #3b2f26;
+  --accent: #e8714f; --sapphire: #6c9dff; --amber: #ffb547; --good: #6cc48f; color-scheme: dark }
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  -webkit-tap-highlight-color: transparent; }
+.app { max-width: 980px; margin: 0 auto; padding-block: 14px 24px; display: flex; flex-direction: column; gap: 12px; }
+header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+h1 { font-family: var(--display); font-weight: 800; font-size: clamp(26px, 5vw, 38px); line-height: 1; margin: 0;
+  letter-spacing: -0.01em; text-wrap: balance; }
+h1 .dot1 { color: var(--sapphire); } h1 .dot2 { color: var(--amber); }
+.tools { display: flex; gap: 6px; flex-wrap: wrap; }
+button { font: inherit; color: inherit; cursor: pointer; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--surface); padding: 8px 12px; min-height: 40px; font-weight: 700; }
+button:hover { border-color: var(--muted); }
+button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+button:disabled { opacity: .45; cursor: default; }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.chips { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: stretch; }
+.chip { background: var(--surface); border: 2px solid var(--line); border-radius: 14px; padding: 8px 12px; min-width: 0;
+  display: flex; flex-direction: column; gap: 2px; transition: border-color .2s, box-shadow .2s; }
+.chip.p2 { text-align: right; align-items: flex-end; }
+.chip .who { font-family: var(--display); font-weight: 800; font-size: 19px; line-height: 1.1; display: flex; gap: 6px; align-items: center; }
+.chip .stats { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+.chip.active.p1 { border-color: var(--sapphire); box-shadow: 0 0 0 3px color-mix(in srgb, var(--sapphire) 25%, transparent); }
+.chip.active.p2 { border-color: var(--amber); box-shadow: 0 0 0 3px color-mix(in srgb, var(--amber) 25%, transparent); }
+.mark { width: 18px; height: 18px; flex: none; }
+.vs { align-self: center; font-family: var(--display); font-weight: 800; color: var(--muted); font-size: 14px; text-align: center; }
+.vs small { display: block; font-family: var(--body); font-weight: 400; font-size: 12px; }
+.meter { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; width: 100%; max-width: 140px; }
+.meter i { display: block; height: 100%; background: linear-gradient(90deg, var(--good), #d8c43a); width: 0; transition: width .3s; }
+.arcade-row { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); }
+.chip.p2 .arcade-row { flex-direction: row-reverse; }
+.arcade-row button { min-height: 28px; padding: 2px 8px; font-size: 12px; }
+.status { min-height: 1.5em; font-size: 15px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.status b { font-weight: 700; }
+.boardwrap { position: relative; width: 100%; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+canvas { display: block; width: 100%; border-radius: 16px; }
+.bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.bar .spacer { flex: 1; }
+.banner { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%) scale(.9); pointer-events: none;
+  font-family: var(--display); font-weight: 800; font-size: clamp(26px, 6vw, 46px); color: #fff; opacity: 0;
+  text-shadow: 0 3px 0 rgba(0,0,0,.35), 0 0 24px rgba(0,0,0,.4); transition: opacity .25s, transform .25s; white-space: nowrap; }
+.banner.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+.overlay { position: fixed; inset: 0; background: rgba(20, 14, 10, .55); display: flex; align-items: center; justify-content: center;
+  padding: 16px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); z-index: 20; }
+.panel { background: var(--surface); color: var(--ink); border-radius: 18px; max-width: 560px; width: 100%; max-height: 88vh; overflow: auto;
+  padding: 20px 22px; box-shadow: 0 20px 60px rgba(0,0,0,.35); display: flex; flex-direction: column; gap: 12px; }
+.panel h2 { font-family: var(--display); font-weight: 800; font-size: 28px; line-height: 1.1; margin: 0; text-wrap: balance; }
+.panel h3 { font-family: var(--display); font-weight: 800; font-size: 18px; margin: 6px 0 0; }
+.panel p, .panel li { margin: 0; max-width: 62ch; }
+.panel ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
+.panel .row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.field { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.field label { font-weight: 700; } .field small { display: block; color: var(--muted); font-weight: 400; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; flex-wrap: wrap; }
+.seg button { border: 0; border-radius: 0; min-height: 34px; padding: 4px 10px; background: transparent; font-size: 13px; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+.result-title { font-size: 36px !important; }
+.stats-grid { display: grid; grid-template-columns: auto 1fr 1fr; gap: 4px 16px; font-variant-numeric: tabular-nums; }
+.stats-grid .h { font-weight: 700; }
+kbd { font-family: var(--body); font-size: 12px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 0 5px; }
+@media (max-width: 560px) {
+  .chips { grid-template-columns: 1fr 1fr; } .vs { display: none; }
+  .chip .who { font-size: 17px; }
+  .bar button { flex: 1 1 auto; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+<div class="app">
+  <header>
+    <h1>Marble <span class="dot1">May</span><span class="dot2">hem</span></h1>
+    <div class="tools">
+      <button id="btnHow" type="button">How to play</button>
+      <button id="btnSettings" type="button">Settings</button>
+      <button id="btnSound" type="button" aria-pressed="true" title="Sound on or off">Sound on</button>
+    </div>
+  </header>
+
+  <div class="chips">
+    <div class="chip p1" id="chip0">
+      <div class="who"><svg class="mark" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="var(--sapphire)"/><path d="M10 3.6l1.9 4 4.3.4-3.3 2.9 1 4.2L10 12.9 6.1 15.1l1-4.2L3.8 8l4.3-.4z" fill="#fff"/></svg><span id="name0">Sapphire</span></div>
+      <div class="stats" id="stats0"></div>
+      <div class="arcade-row" id="arc0" hidden><span id="pts0"></span><span class="meter"><i id="met0"></i></span><button type="button" id="frz0">Frenzy</button></div>
+    </div>
+    <div class="vs" id="vs">vs<small id="modeLabel">Two players</small></div>
+    <div class="chip p2" id="chip1">
+      <div class="who"><span id="name1">Amber</span><svg class="mark" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="var(--amber)"/><circle cx="10" cy="10" r="5" fill="none" stroke="#fff" stroke-width="2.4"/></svg></div>
+      <div class="stats" id="stats1"></div>
+      <div class="arcade-row" id="arc1" hidden><span id="pts1"></span><span class="meter"><i id="met1"></i></span><button type="button" id="frz1">Frenzy</button></div>
+    </div>
+  </div>
+
+  <div class="status" id="status" aria-live="polite"></div>
+
+  <div class="boardwrap" id="boardwrap">
+    <canvas id="board" aria-label="Game board. Click a marble, then a glowing hole." role="img"></canvas>
+    <div class="banner" id="banner"></div>
+  </div>
+
+  <div class="bar">
+    <button type="button" id="btnEnd" class="primary" hidden>End turn</button>
+    <button type="button" id="btnCancel" hidden>Cancel move</button>
+    <span class="spacer"></span>
+    <button type="button" id="btnUndo">Undo</button>
+    <button type="button" id="btnRestart">Restart</button>
+  </div>
+</div>
+
+<div class="overlay" id="ovHow" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="howTitle">
+    <h2 id="howTitle">How to play</h2>
+    <p>Two players, 8 marbles each. <b>Sapphire</b> (blue, star) starts on the left and moves first. <b>Amber</b> (orange, ring) starts on the right.</p>
+    <h3>Your turn</h3>
+    <ul>
+      <li>Click one of your marbles, then a glowing hole.</li>
+      <li><b>Slide</b> one space up, down, left or right. No diagonals.</li>
+      <li><b>Jump</b> straight over one neighbouring marble into the empty hole behind it. Jumping an opponent captures it. Jumping your own is allowed and captures nothing.</li>
+      <li>After a jump you can keep jumping with the same marble. Stop whenever you like with <b>End turn</b> (or click the marble again).</li>
+      <li id="howForced">If any capture is available, you must take one. A red ring marks a capturing jump.</li>
+    </ul>
+    <h3>Winning</h3>
+    <ul>
+      <li>Capture every opposing marble, or</li>
+      <li id="howGoal">End your turn with 4 marbles in your goal: your opponent's starting area (the shaded zone across the board). With fewer than 4 left, you need all of them, but at least 3.</li>
+      <li>If your opponent has no legal move on their turn, you win.</li>
+    </ul>
+    <h3>Draws</h3>
+    <p>The same position three times, or 100 turns in a row with no capture and no new best in either goal.</p>
+    <h3 id="howArcadeH">Arcade bonuses (points only)</h3>
+    <p id="howArcade">Turn on in Settings. Captures score 100, extra jumps in a chain 50, and a chain of 3+ jumps is a Triple Jump worth 500. Captures fill your meter. When it's full, press Frenzy to double your points for 3 turns; capturing 2 at once starts Frenzy for free. Points never decide the winner.</p>
+    <h3>Keys</h3>
+    <p><kbd>Esc</kbd> cancel · <kbd>Enter</kbd> end turn · <kbd>⌘Z</kbd> or <kbd>Ctrl Z</kbd> undo</p>
+    <div class="row"><button type="button" class="primary" data-close>Got it</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="ovSettings" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="setTitle">
+    <h2 id="setTitle">Settings</h2>
+    <div class="field"><label>Opponent<small>Computer plays Amber</small></label>
+      <div class="seg" data-set="ai"><button type="button" data-v="off">Two players</button><button type="button" data-v="easy">Easy</button><button type="button" data-v="medium">Medium</button><button type="button" data-v="hard">Hard</button></div></div>
+    <div class="field"><label>Rules<small id="rulesHelp">Standard: 4 in the goal, captures required</small></label>
+      <div class="seg" data-set="rules"><button type="button" data-v="standard">Standard</button><button type="button" data-v="original">Original</button></div></div>
+    <div class="field"><label>Arcade bonuses<small>Points, meter, Frenzy, Triple Jump</small></label>
+      <div class="seg" data-set="arcade"><button type="button" data-v="off">Off</button><button type="button" data-v="on">On</button></div></div>
+    <div class="field"><label>Board</label>
+      <div class="seg" data-set="theme"><button type="button" data-v="wood">Classic Wood</button><button type="button" data-v="neon">Neon Arcade</button></div></div>
+    <div class="field"><label>Hints<small>Glow on marbles that can move</small></label>
+      <div class="seg" data-set="hints"><button type="button" data-v="on">On</button><button type="button" data-v="off">Off</button></div></div>
+    <p id="setNote" style="color:var(--muted);font-size:13px">Opponent, rules and arcade changes start a new game.</p>
+    <div class="row"><button type="button" id="btnApply">Start new game</button><button type="button" class="primary" data-close>Done</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="ovResult" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="resTitle">
+    <h2 id="resTitle" class="result-title"></h2>
+    <p id="resWhy"></p>
+    <div class="stats-grid" id="resStats"></div>
+    <div class="row"><button type="button" id="resLook">See the board</button><button type="button" id="resUndo">Undo last move</button><button type="button" class="primary" id="resAgain">Play again</button></div>
+  </div>
+</div>
+<script>
+// Marble Mayhem rules engine, JavaScript port of python/marble_core/engine.py
+// (the tested reference). Same move order, same end-of-turn checks.
+const MM = (() => {
+  const COLS = 9, ROWS = 5, SIZE = 45, EMPTY = -1, P1 = 0, P2 = 1;
+  const DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+  const idx = (c, r) => r * COLS + c, colOf = i => i % COLS, rowOf = i => Math.floor(i / COLS);
+  const nameOf = i => "ABCDEFGHI"[colOf(i)] + (rowOf(i) + 1);
+  const BASE = [0, 1, 2, 3, 4].map(r => idx(0, r)).concat([1, 2, 3].map(r => idx(1, r)));
+  const startZone = p => (p === P1 ? BASE.slice() : BASE.map(i => idx(COLS - 1 - colOf(i), rowOf(i)))).sort((a, b) => a - b);
+  const ZONES = [startZone(P1), startZone(P2)];
+  const ZONESETS = [new Set(ZONES[0]), new Set(ZONES[1])];
+  const targetZone = p => ZONES[1 - p];
+
+  const BASELINE = { zoneWin: 6, noProgressLimit: 100, repetitionLimit: 3, zoneScaled: false, zoneFloor: 1,
+                     forcedCapture: false, firstTurnNoJump: false };
+  const STANDARD = Object.assign({}, BASELINE, { zoneWin: 4, zoneScaled: true, zoneFloor: 3, forcedCapture: true });
+  const zoneNeeded = (rules, left) => rules.zoneScaled ? Math.max(rules.zoneFloor, Math.min(rules.zoneWin, left)) : rules.zoneWin;
+
+  function step(i, dc, dr, n = 1) {
+    const c = colOf(i) + dc * n, r = rowOf(i) + dr * n;
+    return (c >= 0 && c < COLS && r >= 0 && r < ROWS) ? idx(c, r) : -1;
+  }
+
+  function initialState() {
+    const board = new Array(SIZE).fill(EMPTY);
+    ZONES[0].forEach(i => board[i] = P1);
+    ZONES[1].forEach(i => board[i] = P2);
+    return { board, toMove: P1, turn: 0, noProgress: 0, bestZone: [0, 0], shields: [-1, -1],
+             winner: null, draw: false, reason: "" };
+  }
+
+  const isOver = s => s.winner !== null || s.draw;
+  const count = (b, p) => { let n = 0; for (const v of b) if (v === p) n++; return n; };
+  const key = s => s.board.map(v => v + 1).join("") + s.toMove + "," + s.shields.join(",");
+  const zoneCount = (b, p) => { let n = 0; for (const i of targetZone(p)) if (b[i] === p) n++; return n; };
+  const notation = m => nameOf(m.start) + m.path.map(p => (m.isJump ? "x" : "-") + nameOf(p)).join("");
+  const end = m => m.path[m.path.length - 1];
+
+  function legalMoves(state, rules) {
+    if (isOver(state)) return [];
+    const me = state.toMove, board = state.board;
+    let moves = [];
+    const allowJump = !(rules.firstTurnNoJump && state.turn === 0);
+    for (let s = 0; s < SIZE; s++) {
+      if (board[s] !== me) continue;
+      for (const [dc, dr] of DIRS) {
+        const t = step(s, dc, dr);
+        if (t >= 0 && board[t] === EMPTY) moves.push({ start: s, path: [t], isJump: false, jumped: [], captures: [], shieldUsed: false });
+      }
+      if (allowJump) {
+        const work = board.slice();
+        work[s] = EMPTY;
+        jumps(s, s, work, me, state.shields[1 - me], [], [], [], new Set([s]), moves);
+      }
+    }
+    if (rules.forcedCapture && moves.some(m => m.captures.length)) moves = moves.filter(m => m.captures.length);
+    return moves;
+  }
+
+  function jumps(start, pos, work, me, shield, path, jumped, caps, visited, out) {
+    for (const [dc, dr] of DIRS) {
+      const mid = step(pos, dc, dr), land = step(pos, dc, dr, 2);
+      if (mid < 0 || land < 0) continue;
+      if (work[mid] === EMPTY || work[land] !== EMPTY || visited.has(land)) continue;
+      const isCap = work[mid] !== me && mid !== shield;
+      const npath = path.concat([land]), njumped = jumped.concat([mid]);
+      const ncaps = isCap ? caps.concat([mid]) : caps;
+      out.push({ start, path: npath, isJump: true, jumped: njumped, captures: ncaps,
+                 shieldUsed: shield >= 0 && njumped.includes(shield) });
+      const saved = work[mid];
+      if (isCap) work[mid] = EMPTY;
+      const nv = new Set(visited); nv.add(land);
+      jumps(start, land, work, me, shield, npath, njumped, ncaps, nv, out);
+      work[mid] = saved;
+    }
+  }
+
+  function applyMove(state, move, rules, seen) {
+    const me = state.toMove, opp = 1 - me;
+    const board = state.board.slice();
+    board[move.start] = EMPTY;
+    for (const c of move.captures) board[c] = EMPTY;
+    board[end(move)] = me;
+    const shields = state.shields.slice();
+    if (shields[me] === move.start) shields[me] = end(move);
+    if (move.shieldUsed) shields[opp] = -1;
+    const zc = zoneCount(board, me);
+    const best = state.bestZone.slice();
+    let progress = move.captures.length > 0;
+    if (zc > best[me]) { best[me] = zc; progress = true; }
+    const noProgress = progress ? 0 : state.noProgress + 1;
+    const nxt = { board, toMove: opp, turn: state.turn + 1, noProgress, bestZone: best, shields,
+                  winner: null, draw: false, reason: "" };
+    if (count(board, opp) === 0) return Object.assign(nxt, { winner: me, reason: "capture_all" });
+    if (zc >= zoneNeeded(rules, count(board, me))) return Object.assign(nxt, { winner: me, reason: "zone" });
+    if (legalMoves(nxt, rules).length === 0) return Object.assign(nxt, { winner: me, reason: "no_moves" });
+    if (seen && (seen.get(key(nxt)) || 0) + 1 >= rules.repetitionLimit) return Object.assign(nxt, { draw: true, reason: "repetition" });
+    if (noProgress >= rules.noProgressLimit) return Object.assign(nxt, { draw: true, reason: "no_progress" });
+    return nxt;
+  }
+
+  class Game {
+    constructor(rules, state) {
+      this.rules = rules; this.state = state || initialState();
+      this.history = []; this.moves = []; this.seen = new Map([[key(this.state), 1]]);
+    }
+    legal() { return legalMoves(this.state, this.rules); }
+    play(move) {
+      const nxt = applyMove(this.state, move, this.rules, this.seen);
+      this.history.push(this.state); this.moves.push(move); this.state = nxt;
+      this.seen.set(key(nxt), (this.seen.get(key(nxt)) || 0) + 1);
+      return nxt;
+    }
+    undo() {
+      if (!this.history.length) return false;
+      const k = key(this.state), n = this.seen.get(k) - 1;
+      if (n <= 0) this.seen.delete(k); else this.seen.set(k, n);
+      this.state = this.history.pop(); this.moves.pop();
+      return true;
+    }
+  }
+
+  // ---- computer players (python/marble_core/ai.py) ----
+  const WIN = 1e6, CONTEMPT = 60;
+  function advancement(b, p) { let t = 0; b.forEach((v, i) => { if (v === p) t += p === P1 ? colOf(i) : COLS - 1 - colOf(i); }); return t; }
+  function evaluate(s, p, rules) {
+    if (s.winner !== null) return s.winner === p ? WIN : -WIN;
+    if (s.draw) return 0;
+    const o = 1 - p, b = s.board;
+    return (count(b, p) - count(b, o)) * 100 + (zoneCount(b, p) - zoneCount(b, o)) * 35 + (advancement(b, p) - advancement(b, o)) * 3;
+  }
+  const pick = (arr, rnd) => arr[Math.floor(rnd() * arr.length)];
+  function greedy(s, rules, seen, rnd) {
+    const me = s.toMove; let best = null, bestMoves = [];
+    for (const m of legalMoves(s, rules)) {
+      const nxt = applyMove(s, m, rules, seen);
+      if (nxt.winner === me) return m;
+      let score = nxt.draw ? -CONTEMPT : evaluate(nxt, me, rules);
+      if (!isOver(nxt)) {
+        let worst = 0;
+        for (const r of legalMoves(nxt, rules)) worst = Math.max(worst, r.captures.length);
+        score -= worst * 100;
+      }
+      if (best === null || score > best + 1e-9) { best = score; bestMoves = [m]; }
+      else if (Math.abs(score - best) <= 1e-9) bestMoves.push(m);
+    }
+    return pick(bestMoves, rnd);
+  }
+  const order = ms => ms.map((m, i) => [m, i]).sort((a, b) => (b[0].captures.length - a[0].captures.length) || (a[1] - b[1])).map(x => x[0]);
+  function negamax(s, depth, alpha, beta, rules) {
+    if (isOver(s) || depth === 0) return evaluate(s, s.toMove, rules);
+    let best = -Infinity;
+    for (const m of order(legalMoves(s, rules))) {
+      const v = -negamax(applyMove(s, m, rules), depth - 1, -beta, -alpha, rules);
+      if (v > best) best = v;
+      if (v > alpha) alpha = v;
+      if (alpha >= beta) break;
+    }
+    return best;
+  }
+  function search(s, rules, depth, seen, rnd) {
+    let moves = legalMoves(s, rules);
+    for (let i = moves.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [moves[i], moves[j]] = [moves[j], moves[i]]; }
+    moves = order(moves);
+    let best = -Infinity, choice = moves[0], alpha = -Infinity;
+    for (const m of moves) {
+      const nxt = applyMove(s, m, rules, seen);
+      const v = nxt.draw ? -CONTEMPT : -negamax(nxt, depth - 1, -Infinity, -alpha, rules);
+      if (v > best) { best = v; choice = m; }
+      if (v > alpha) alpha = v;
+    }
+    return choice;
+  }
+  function chooseMove(s, rules, level, seen, rnd) {
+    if (level === "easy") return rnd() < 0.4 ? pick(legalMoves(s, rules), rnd) : greedy(s, rules, seen, rnd);
+    if (level === "medium") return greedy(s, rules, seen, rnd);
+    return search(s, rules, 3, seen, rnd);
+  }
+
+  // ---- text boards (shared test format) ----
+  const boardToString = b => [0, 1, 2, 3, 4].map(r => [...Array(COLS).keys()].map(c => ({ "-1": ".", 0: "S", 1: "A" })[b[idx(c, r)]]).join("")).join("/");
+  const boardFromString = s => { const m = { ".": EMPTY, S: P1, A: P2 }; const rows = s.split("/"); const out = [];
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) out.push(m[rows[r][c]]); return out; };
+
+  return { COLS, ROWS, SIZE, EMPTY, P1, P2, idx, colOf, rowOf, nameOf, ZONES, ZONESETS, targetZone, BASELINE, STANDARD,
+           zoneNeeded, initialState, isOver, count, key, zoneCount, notation, end, legalMoves, applyMove, Game,
+           evaluate, chooseMove, boardToString, boardFromString };
+})();
+if (typeof module !== "undefined") module.exports = MM;
+</script>
+<script>
+(() => {
+const { P1, P2, EMPTY, COLS, ROWS, idx, colOf, rowOf } = MM;
+const $ = id => document.getElementById(id);
+const NAMES = ["Sapphire", "Amber"];
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// ---------- settings and storage ----------
+const defaults = { ai: "off", rules: "standard", arcade: "off", theme: "wood", hints: "on", sound: true };
+let settings = Object.assign({}, defaults);
+try { Object.assign(settings, JSON.parse(localStorage.getItem("mm.settings") || "{}")); } catch (e) {}
+const saveSettings = () => { try { localStorage.setItem("mm.settings", JSON.stringify(settings)); } catch (e) {} };
+let pending = Object.assign({}, settings);   // edits in the Settings panel that need a new game
+
+const rulesFor = name => name === "original" ? MM.BASELINE : MM.STANDARD;
+
+// ---------- game state ----------
+let game, rules, arcade, arcadeHist, cfg, view, sel = null, chain = [], busy = false, aiTimer = null;
+const ACFG = { capture: 100, extraJump: 50, triple: 500, meterCap: 25, meterJump: 10, meterMax: 100, frenzyTurns: 3, mult: 2, combo: 2 };
+const freshArcade = () => ({ points: [0, 0], meter: [0, 0], frenzy: [0, 0] });
+
+function newGame(restore) {
+  clearTimeout(aiTimer); busy = false;
+  cfg = { ai: settings.ai, rules: settings.rules, arcade: settings.arcade === "on" };
+  rules = rulesFor(cfg.rules);
+  game = new MM.Game(rules);
+  arcade = freshArcade(); arcadeHist = [];
+  sel = null; chain = [];
+  if (restore) {
+    for (const n of restore.moves) {
+      const m = game.legal().find(x => MM.notation(x) === n);
+      if (!m) break;
+      arcadeHist.push(clone(arcade));
+      if (cfg.arcade) scoreTurn(game.state, m);
+      game.play(m);
+    }
+  }
+  view = game.state.board.slice();
+  hideOverlay("ovResult");
+  refresh();
+  persist();
+  if (MM.isOver(game.state)) showResult(); else maybeAI();
+}
+const clone = o => JSON.parse(JSON.stringify(o));
+function persist() {
+  try { localStorage.setItem("mm.game", JSON.stringify({ cfg, moves: game.moves.map(MM.notation) })); } catch (e) {}
+}
+function loadSaved() {
+  try {
+    const g = JSON.parse(localStorage.getItem("mm.game") || "null");
+    if (g && g.cfg && Array.isArray(g.moves)) {
+      settings.ai = g.cfg.ai; settings.rules = g.cfg.rules; settings.arcade = g.cfg.arcade ? "on" : "off";
+      return g;
+    }
+  } catch (e) {}
+  return null;
+}
+
+const aiSide = () => cfg.ai === "off" ? null : P2;
+const humanTurn = () => !MM.isOver(game.state) && game.state.toMove !== aiSide();
+
+// ---------- turn input (click to select, click to move, chains) ----------
+const moves = () => game.legal();
+const movable = () => new Set(moves().map(m => m.start));
+const startsWith = (path, pre) => pre.every((v, i) => path[i] === v);
+const candidates = () => sel === null ? [] : moves().filter(m => m.start === sel && startsWith(m.path, chain));
+function destinations() {
+  const out = new Map();
+  for (const m of candidates()) if (m.path.length > chain.length) {
+    const k = chain.length, d = m.path[k];
+    const cap = m.isJump && m.captures.includes(m.jumped[k]);
+    out.set(d, (out.get(d) || false) || cap);
+  }
+  return out;
+}
+const stopMove = () => chain.length ? candidates().find(m => m.path.length === chain.length) || null : null;
+const cursor = () => chain.length ? chain[chain.length - 1] : sel;
+const mustCapture = () => { const ms = moves(); return rules.forcedCapture && ms.length > 0 && ms.every(m => m.captures.length); };
+
+function clickSquare(i) {
+  if (busy || !humanTurn()) return;
+  audio.unlock();
+  statusSticky = 0;
+  const me = game.state.toMove;
+  if (sel === null) {
+    if (movable().has(i)) { sel = i; audio.play("select"); }
+    else if (view[i] === me) { flash(i); say(mustCapture() ? "You must capture this turn. Pick a marble that can jump an opponent." : "That marble has no move right now."); return; }
+    else if (view[i] !== EMPTY) { flash(i); say(`That's ${NAMES[1 - me]}'s marble. Pick one of yours.`); return; }
+    refresh(); return;
+  }
+  if (i === cursor()) {
+    if (chain.length) {
+      const stop = stopMove();
+      if (stop) commit(stop); else { flash(i); say("This chain has to keep going until it captures."); }
+    } else { sel = null; audio.play("click"); refresh(); }
+    return;
+  }
+  const dests = destinations();
+  if (dests.has(i)) {
+    const from = cursor(), m0 = candidates().find(m => m.path[chain.length] === i);
+    chain.push(i);
+    const cands = candidates();
+    const exact = cands.find(m => m.path.length === chain.length);
+    const more = cands.some(m => m.path.length > chain.length);
+    if (!m0.isJump) { chain = []; commit(exact); return; }
+    const k = chain.length - 1, mid = m0.jumped[k];
+    busy = true;
+    animateStep(from, i, me, m0.captures.includes(mid) ? mid : null, () => {
+      busy = false;
+      if (!more && exact) commit(exact, chain.length);
+      else refresh();
+    });
+    return;
+  }
+  if (!chain.length && movable().has(i)) { sel = i; audio.play("select"); refresh(); return; }
+  flash(i);
+  if (!chain.length) { sel = null; refresh(); }
+}
+
+function cancelMove() {
+  if (busy) return;
+  if (sel === null && !chain.length) return;
+  sel = null; chain = [];
+  view = game.state.board.slice();
+  refresh();
+}
+
+function commit(move, alreadyAnimated = 0) {
+  busy = true;
+  const before = game.state, me = before.toMove;
+  const steps = [];
+  for (let k = alreadyAnimated; k < move.path.length; k++) {
+    const from = k === 0 ? move.start : move.path[k - 1];
+    const cap = move.isJump && move.captures.includes(move.jumped[k]) ? move.jumped[k] : null;
+    steps.push([from, move.path[k], cap]);
+  }
+  const run = () => {
+    if (!steps.length) return finish();
+    const [f, t, c] = steps.shift();
+    animateStep(f, t, me, c, run, move.isJump);
+  };
+  const finish = () => {
+    arcadeHist.push(clone(arcade));
+    const events = cfg.arcade ? scoreTurn(before, move) : [];
+    game.play(move);
+    sel = null; chain = []; busy = false;
+    view = game.state.board.slice();
+    const caps = move.captures.length;
+    if (caps >= 2) banner(caps >= 3 ? "Triple capture!" : "Double capture!");
+    if (events.includes("triple")) banner("Triple Jump! +500");
+    if (events.includes("frenzy_start")) banner("Frenzy! Points ×2");
+    if (caps) shake(2 + caps * 2);
+    persist();
+    refresh();
+    if (MM.isOver(game.state)) { audio.play(game.state.winner !== null ? "win" : "draw"); setTimeout(showResult, reduceMotion ? 50 : 650); }
+    else maybeAI();
+  };
+  run();
+}
+
+function undo() {
+  if (busy) return;
+  if (sel !== null || chain.length) { cancelMove(); return; }
+  clearTimeout(aiTimer);
+  const ai = aiSide();
+  let n = 1;
+  if (ai !== null) {
+    // Step back to the human's last turn.
+    n = game.state.toMove === ai ? 1 : 2;
+    if (game.moves.length < n) n = game.moves.length;
+  }
+  if (!game.moves.length) return;
+  for (let k = 0; k < n; k++) { game.undo(); arcade = arcadeHist.pop() || freshArcade(); }
+  view = game.state.board.slice();
+  hideOverlay("ovResult");
+  audio.play("click");
+  persist(); refresh();
+  maybeAI();
+}
+
+// ---------- computer opponent ----------
+let rngState = (Date.now() ^ 0x9e3779b9) >>> 0;
+const rnd = () => { rngState = (rngState + 0x6D2B79F5) >>> 0; let t = rngState;
+  t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+function maybeAI() {
+  if (MM.isOver(game.state) || game.state.toMove !== aiSide()) return;
+  busy = true; refresh();
+  aiTimer = setTimeout(() => {
+    const m = MM.chooseMove(game.state, rules, cfg.ai, game.seen, rnd);
+    busy = false;
+    if (m) { if (cfg.arcade && canFrenzy(game.state.toMove) && m.captures.length) activateFrenzy(); commit(m); }
+  }, 520);
+}
+
+// ---------- arcade (points only, mirrors python/marble_core/arcade.py) ----------
+const canFrenzy = p => cfg.arcade && !MM.isOver(game.state) && game.state.toMove === p && arcade.meter[p] >= ACFG.meterMax && arcade.frenzy[p] === 0;
+function activateFrenzy() {
+  const p = game.state.toMove;
+  if (!canFrenzy(p)) return;
+  arcade.meter[p] = 0; arcade.frenzy[p] = ACFG.frenzyTurns;
+  audio.play("frenzy"); banner("Frenzy! Points ×2"); refresh();
+}
+function scoreTurn(before, move) {
+  const p = before.toMove, ev = [];
+  const jumps = move.isJump ? move.path.length : 0, caps = move.captures.length, extra = Math.max(0, jumps - 1);
+  const on = arcade.frenzy[p] > 0;
+  let base = caps * ACFG.capture + extra * ACFG.extraJump;
+  if (on && base) base *= ACFG.mult;
+  let pts = base;
+  if (jumps >= 3) { pts += ACFG.triple; ev.push("triple"); }
+  const wasFull = arcade.meter[p] >= ACFG.meterMax;
+  arcade.meter[p] = Math.min(ACFG.meterMax, arcade.meter[p] + caps * ACFG.meterCap + extra * ACFG.meterJump);
+  if (arcade.meter[p] >= ACFG.meterMax && !wasFull) ev.push("meter_full");
+  if (on) arcade.frenzy[p] -= 1;
+  else if (caps >= ACFG.combo) { arcade.frenzy[p] = ACFG.frenzyTurns; ev.push("frenzy_start"); }
+  arcade.points[p] += pts;
+  return ev;
+}
+
+// ---------- HUD ----------
+function say(text) { $("status").innerHTML = text; statusSticky = Date.now(); }
+let statusSticky = 0;
+function refresh() {
+  const s = game.state, me = s.toMove, start = 8;
+  for (const p of [P1, P2]) {
+    const captured = start - MM.count(s.board, 1 - p);
+    const left = MM.count(s.board, p);
+    const need = MM.zoneNeeded(rules, left);
+    $("stats" + p).textContent = `Captured ${captured} · Goal ${MM.zoneCount(s.board, p)}/${need}`;
+    $("chip" + p).classList.toggle("active", !MM.isOver(s) && me === p);
+    $("name" + p).textContent = NAMES[p] + (aiSide() === p ? " (computer)" : "");
+    $("arc" + p).hidden = !cfg.arcade;
+    $("pts" + p).textContent = `${arcade.points[p]} pts` + (arcade.frenzy[p] ? ` · Frenzy ${arcade.frenzy[p]}` : "");
+    $("met" + p).style.width = (arcade.meter[p] / ACFG.meterMax * 100) + "%";
+    $("frz" + p).disabled = !(canFrenzy(p) && humanTurn() && !busy && sel === null);
+    $("frz" + p).hidden = aiSide() === p;
+  }
+  $("modeLabel").textContent = (cfg.ai === "off" ? "Two players" : "vs computer, " + cfg.ai) + (cfg.rules === "original" ? " · original rules" : "");
+  const stop = stopMove();
+  $("btnEnd").hidden = !(chain.length && stop && !busy);
+  $("btnCancel").hidden = !(sel !== null && !busy);
+  $("btnUndo").disabled = busy || (!game.moves.length && sel === null);
+  if (Date.now() - statusSticky > 1600 || busy) $("status").innerHTML = statusText();
+}
+function statusText() {
+  const s = game.state;
+  if (MM.isOver(s)) return s.winner !== null ? `<b>${NAMES[s.winner]} wins.</b>` : "<b>Draw.</b>";
+  const me = s.toMove, who = `<b style="color:var(--${me ? "amber" : "sapphire"})">${NAMES[me]}</b>`;
+  if (aiSide() === me) return `${who} (computer) is thinking…`;
+  if (busy) return `${who} is moving…`;
+  if (chain.length) return stopMove() ? `${who}: keep jumping, or press <b>End turn</b>.` : `${who}: keep jumping. This chain must capture.`;
+  if (sel !== null) return `${who}: click a glowing hole. Click the marble again to put it down.`;
+  if (mustCapture()) return `${who} to move. A capture is available, so you must take one.`;
+  return `${who} to move. Click one of your marbles.`;
+}
+let bannerTimer;
+function banner(t) {
+  const b = $("banner"); b.textContent = t; b.classList.add("show");
+  clearTimeout(bannerTimer); bannerTimer = setTimeout(() => b.classList.remove("show"), 1300);
+}
+
+// ---------- results ----------
+const WHY = { capture_all: "captured every opposing marble", zone: "filled the goal", no_moves: "left the opponent with no legal move",
+              repetition: "The same position came up three times.", no_progress: "100 turns passed with no capture and no goal progress." };
+function showResult() {
+  const s = game.state;
+  if (!MM.isOver(s)) return;
+  const w = s.winner;
+  $("resTitle").textContent = w !== null ? `${NAMES[w]} wins!` : "Draw";
+  $("resTitle").style.color = w === null ? "" : `var(--${w ? "amber" : "sapphire"})`;
+  $("resWhy").textContent = w !== null ? `${NAMES[w]} ${WHY[s.reason]} in ${s.turn} turns.` : WHY[s.reason];
+  let html = `<span></span><span class="h" style="color:var(--sapphire)">Sapphire</span><span class="h" style="color:var(--amber)">Amber</span>`;
+  const row = (label, f) => html += `<span>${label}</span><span>${f(P1)}</span><span>${f(P2)}</span>`;
+  row("Marbles left", p => MM.count(s.board, p));
+  row("Captured", p => 8 - MM.count(s.board, 1 - p));
+  row("In goal", p => MM.zoneCount(s.board, p));
+  if (cfg.arcade) row("Arcade points", p => arcade.points[p]);
+  $("resStats").innerHTML = html;
+  $("resUndo").hidden = !game.moves.length;
+  showOverlay("ovResult");
+  if (w !== null) celebrate();
+}
+
+// ---------- overlays ----------
+let lastFocus = null;
+function showOverlay(id) { lastFocus = document.activeElement; $(id).hidden = false; const b = $(id).querySelector("button.primary, button"); b && b.focus(); }
+function hideOverlay(id) { if ($(id).hidden) return; $(id).hidden = true; lastFocus && lastFocus.focus && lastFocus.focus(); }
+document.querySelectorAll(".overlay").forEach(ov => {
+  ov.addEventListener("click", e => { if (e.target === ov || e.target.hasAttribute("data-close")) hideOverlay(ov.id); });
+});
+$("btnHow").onclick = () => { updateHow(); showOverlay("ovHow"); };
+$("btnSettings").onclick = () => { pending = Object.assign({}, settings); syncSegs(); showOverlay("ovSettings"); };
+function updateHow() {
+  const orig = cfg.rules === "original";
+  $("howForced").textContent = orig ? "Captures are optional in the original rules. A red ring marks a capturing jump."
+    : "If any capture is available, you must take one. A red ring marks a capturing jump.";
+  $("howGoal").textContent = orig ? "End your turn with 6 marbles in your goal: your opponent's starting area (the shaded zone across the board)."
+    : "End your turn with 4 marbles in your goal: your opponent's starting area (the shaded zone across the board). With fewer than 4 left, you need all of them, but at least 3.";
+}
+function syncSegs() {
+  document.querySelectorAll(".seg").forEach(seg => {
+    const k = seg.dataset.set;
+    seg.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(pending[k] === b.dataset.v)));
+  });
+  $("rulesHelp").textContent = pending.rules === "original" ? "Original brief: 6 in the goal, captures optional" : "Standard: 4 in the goal, captures required";
+  const needsNew = pending.ai !== cfg.ai || pending.rules !== cfg.rules || (pending.arcade === "on") !== cfg.arcade;
+  $("btnApply").classList.toggle("primary", needsNew);
+}
+document.querySelectorAll(".seg").forEach(seg => seg.addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  const k = seg.dataset.set; pending[k] = b.dataset.v;
+  if (k === "theme" || k === "hints") { settings[k] = pending[k]; saveSettings(); buildBoard(); refresh(); }
+  syncSegs();
+}));
+$("btnApply").onclick = () => { Object.assign(settings, pending); saveSettings(); hideOverlay("ovSettings"); newGame(); };
+$("ovSettings").querySelector("[data-close]").addEventListener("click", () => {
+  // Done keeps a game in progress; opponent and rule changes wait for a new game.
+  const needsNew = pending.ai !== cfg.ai || pending.rules !== cfg.rules || (pending.arcade === "on") !== cfg.arcade;
+  if (needsNew && game.moves.length === 0) { Object.assign(settings, pending); saveSettings(); newGame(); }
+  else if (needsNew) { say("Opponent, rules and arcade changes take effect when you press <b>Start new game</b> in Settings."); }
+});
+$("resAgain").onclick = () => { hideOverlay("ovResult"); newGame(); };
+$("resLook").onclick = () => hideOverlay("ovResult");
+$("resUndo").onclick = () => undo();
+$("btnEnd").onclick = () => { const s = stopMove(); if (s && !busy) commit(s, chain.length); };
+$("btnCancel").onclick = cancelMove;
+$("btnUndo").onclick = undo;
+let restartArmed = 0;
+$("btnRestart").onclick = () => {
+  if (!game.moves.length || Date.now() - restartArmed < 3000) { restartArmed = 0; $("btnRestart").textContent = "Restart"; newGame(); return; }
+  restartArmed = Date.now(); $("btnRestart").textContent = "Tap again to restart";
+  setTimeout(() => { $("btnRestart").textContent = "Restart"; }, 3000);
+};
+$("frz0").onclick = activateFrenzy; $("frz1").onclick = activateFrenzy;
+$("btnSound").onclick = () => {
+  settings.sound = !settings.sound; saveSettings(); syncSound(); if (settings.sound) { audio.unlock(); audio.play("select"); }
+};
+function syncSound() { $("btnSound").textContent = settings.sound ? "Sound on" : "Sound off"; $("btnSound").setAttribute("aria-pressed", String(settings.sound)); }
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    const open = [...document.querySelectorAll(".overlay")].find(o => !o.hidden);
+    if (open) { hideOverlay(open.id); return; }
+    cancelMove();
+  } else if (e.key === "Enter" && chain.length) { const s = stopMove(); if (s && !busy) { e.preventDefault(); commit(s, chain.length); } }
+  else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "z") { e.preventDefault(); undo(); }
+});
+
+// ---------- audio (tiny WebAudio blips, made in code) ----------
+const audio = (() => {
+  let ctx = null;
+  const unlock = () => { if (!ctx) { try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} } if (ctx && ctx.state === "suspended") ctx.resume(); };
+  function tone(f, dur, type = "sine", vol = 0.12, delay = 0, f2 = null) {
+    if (!ctx || !settings.sound) return;
+    const t = ctx.currentTime + delay, o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + dur);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + dur + 0.02);
+  }
+  const play = name => {
+    switch (name) {
+      case "select": tone(1320, 0.08, "sine", 0.09); tone(1980, 0.06, "sine", 0.04); break;
+      case "click": tone(900, 0.04, "triangle", 0.06); break;
+      case "slide": tone(140, 0.16, "sine", 0.16, 0, 90); tone(2400, 0.02, "square", 0.015); break;
+      case "jump": tone(420, 0.14, "triangle", 0.08, 0, 900); break;
+      case "capture": [880, 1320, 1760].forEach((f, i) => tone(f, 0.5, "sine", 0.07, i * 0.03)); break;
+      case "invalid": tone(220, 0.12, "sawtooth", 0.03, 0, 160); break;
+      case "frenzy": [440, 554, 659, 880].forEach((f, i) => tone(f, 0.2, "triangle", 0.07, i * 0.07)); break;
+      case "win": [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.45, "triangle", 0.09, i * 0.12)); break;
+      case "draw": tone(392, 0.35, "sine", 0.08); tone(392, 0.35, "sine", 0.06, 0.25); break;
+    }
+  };
+  return { unlock, play };
+})();
+
+// ---------- board rendering ----------
+const cvs = $("board"), g2 = cvs.getContext("2d");
+let W = 0, H = 0, cell = 0, ox = 0, oy = 0, dpr = 1, boardImg = null;
+const anims = [], particles = [];
+let shakeAmt = 0, flashSq = null, flashT = 0;
+const THEMES = {
+  wood: { frameA: "#8a5530", frameB: "#5b3519", top: "#c98f55", bot: "#a96f3a", grain: "rgba(70,35,12,.16)",
+          hole: ["#3a2412", "#6b4424"], label: "rgba(255,240,220,.75)", zone: ["rgba(42,100,214,.18)", "rgba(224,149,26,.22)"],
+          zoneEdge: ["rgba(42,100,214,.55)", "rgba(224,149,26,.6)"], dest: "#fff3b0", cap: "#ff4d3a", sel: "#ffffff", glow: "rgba(255,240,180,.55)" },
+  neon: { frameA: "#1a1240", frameB: "#07051a", top: "#120d2e", bot: "#0a0820", grain: "rgba(120,90,255,.07)",
+          hole: ["#000", "#241a55"], label: "rgba(190,180,255,.7)", zone: ["rgba(80,140,255,.16)", "rgba(255,170,40,.16)"],
+          zoneEdge: ["rgba(90,160,255,.9)", "rgba(255,180,60,.9)"], dest: "#5ff7ff", cap: "#ff3df0", sel: "#ffffff", glow: "rgba(95,247,255,.45)" },
+};
+const MARBLE = [{ hi: "#cfe0ff", mid: "#3b76ea", lo: "#0d2a7a", rim: "#081a52" }, { hi: "#ffeec2", mid: "#f2a224", lo: "#a3510a", rim: "#6b3304" }];
+
+function layout() {
+  const w = $("boardwrap").clientWidth;
+  dpr = Math.min(3, window.devicePixelRatio || 1);
+  cell = w / (COLS + 0.9);
+  W = w; H = cell * (ROWS + 0.9);
+  cvs.width = Math.round(W * dpr); cvs.height = Math.round(H * dpr);
+  cvs.style.height = H + "px";
+  ox = cell * 0.45; oy = cell * 0.45;
+  buildBoard();
+}
+const cx = i => ox + (colOf(i) + 0.5) * cell, cy = i => oy + (rowOf(i) + 0.5) * cell;
+
+function buildBoard() {
+  const th = THEMES[settings.theme] || THEMES.wood;
+  const c = document.createElement("canvas"); c.width = cvs.width; c.height = cvs.height;
+  const x = c.getContext("2d"); x.scale(dpr, dpr);
+  const r = cell * 0.35;
+  rr(x, 0, 0, W, H, r); x.fillStyle = th.frameB; x.fill();
+  const fg = x.createLinearGradient(0, 0, 0, H); fg.addColorStop(0, th.frameA); fg.addColorStop(1, th.frameB);
+  rr(x, 2, 2, W - 4, H - 4, r - 2); x.fillStyle = fg; x.fill();
+  const bg = x.createLinearGradient(0, oy, 0, oy + ROWS * cell); bg.addColorStop(0, th.top); bg.addColorStop(1, th.bot);
+  rr(x, ox - cell * 0.08, oy - cell * 0.08, COLS * cell + cell * 0.16, ROWS * cell + cell * 0.16, cell * 0.2); x.fillStyle = bg; x.fill();
+  // grain
+  let seed = 7; const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  x.save(); rr(x, ox - cell * 0.08, oy - cell * 0.08, COLS * cell + cell * 0.16, ROWS * cell + cell * 0.16, cell * 0.2); x.clip();
+  x.strokeStyle = th.grain;
+  for (let k = 0; k < 70; k++) {
+    const y0 = oy - cell * 0.1 + rand() * (ROWS * cell + cell * 0.2), amp = 2 + rand() * 5, ph = rand() * 6;
+    x.lineWidth = 0.6 + rand() * 1.6; x.beginPath();
+    for (let xx = ox - cell * 0.1; xx <= ox + COLS * cell + cell * 0.1; xx += 8) x.lineTo(xx, y0 + Math.sin(xx / (40 + amp * 9) + ph) * amp);
+    x.stroke();
+  }
+  x.restore();
+  // goal zones: each side's start area, tinted in its colour
+  for (const p of [P1, P2]) {
+    x.fillStyle = th.zone[p]; x.strokeStyle = th.zoneEdge[p]; x.lineWidth = Math.max(1.5, cell * 0.035); x.setLineDash([cell * 0.12, cell * 0.08]);
+    zonePath(x, p); x.fill(); x.stroke(); x.setLineDash([]);
+  }
+  // holes
+  for (let i = 0; i < MM.SIZE; i++) {
+    const hg = x.createRadialGradient(cx(i) - cell * 0.05, cy(i) - cell * 0.06, cell * 0.02, cx(i), cy(i), cell * 0.27);
+    hg.addColorStop(0, th.hole[0]); hg.addColorStop(1, th.hole[1]);
+    x.beginPath(); x.arc(cx(i), cy(i), cell * 0.25, 0, Math.PI * 2); x.fillStyle = hg; x.fill();
+    x.beginPath(); x.arc(cx(i), cy(i) + cell * 0.01, cell * 0.25, 0.1 * Math.PI, 0.9 * Math.PI); x.strokeStyle = "rgba(255,255,255,.18)"; x.lineWidth = 1.5; x.stroke();
+  }
+  // labels
+  x.fillStyle = th.label; x.font = `700 ${Math.max(9, cell * 0.2)}px "Atkinson Hyperlegible", sans-serif`; x.textAlign = "center"; x.textBaseline = "middle";
+  for (let col = 0; col < COLS; col++) { x.fillText("ABCDEFGHI"[col], ox + (col + 0.5) * cell, oy * 0.5); x.fillText("ABCDEFGHI"[col], ox + (col + 0.5) * cell, H - oy * 0.5); }
+  for (let row = 0; row < ROWS; row++) { x.fillText(String(row + 1), ox * 0.5, oy + (row + 0.5) * cell); x.fillText(String(row + 1), W - ox * 0.5, oy + (row + 0.5) * cell); }
+  boardImg = c;
+}
+function zonePath(x, p) {
+  // Column at the side plus the three middle squares beside it: a notched rectangle.
+  const edge = p === P1 ? 0 : COLS - 1, inner = p === P1 ? 1 : COLS - 2, pad = cell * 0.06;
+  const L = c => ox + c * cell, T = r => oy + r * cell;
+  x.beginPath();
+  if (p === P1) {
+    x.moveTo(L(0) + pad, T(0) + pad); x.lineTo(L(1) - pad, T(0) + pad); x.lineTo(L(1) - pad, T(1) + pad); x.lineTo(L(2) - pad, T(1) + pad);
+    x.lineTo(L(2) - pad, T(4) - pad); x.lineTo(L(1) - pad, T(4) - pad); x.lineTo(L(1) - pad, T(5) - pad); x.lineTo(L(0) + pad, T(5) - pad);
+  } else {
+    x.moveTo(L(9) - pad, T(0) + pad); x.lineTo(L(8) + pad, T(0) + pad); x.lineTo(L(8) + pad, T(1) + pad); x.lineTo(L(7) + pad, T(1) + pad);
+    x.lineTo(L(7) + pad, T(4) - pad); x.lineTo(L(8) + pad, T(4) - pad); x.lineTo(L(8) + pad, T(5) - pad); x.lineTo(L(9) - pad, T(5) - pad);
+  }
+  x.closePath(); void edge; void inner;
+}
+function rr(x, a, b, w, h, r) { x.beginPath(); x.roundRect ? x.roundRect(a, b, w, h, r) : x.rect(a, b, w, h); }
+
+function drawMarble(x, px, py, p, scale = 1, alpha = 1) {
+  const m = MARBLE[p], r = cell * 0.36 * scale;
+  x.save(); x.globalAlpha = alpha;
+  x.beginPath(); x.ellipse(px + r * 0.12, py + r * 0.22, r * 0.95, r * 0.75, 0, 0, Math.PI * 2); x.fillStyle = "rgba(0,0,0,.28)"; x.fill();
+  const gr = x.createRadialGradient(px - r * 0.35, py - r * 0.4, r * 0.1, px, py, r);
+  gr.addColorStop(0, m.hi); gr.addColorStop(0.45, m.mid); gr.addColorStop(1, m.lo);
+  x.beginPath(); x.arc(px, py, r, 0, Math.PI * 2); x.fillStyle = gr; x.fill();
+  x.lineWidth = Math.max(1, r * 0.06); x.strokeStyle = m.rim; x.stroke();
+  // inner swirl
+  x.save(); x.beginPath(); x.arc(px, py, r * 0.92, 0, Math.PI * 2); x.clip();
+  x.strokeStyle = "rgba(255,255,255,.22)"; x.lineWidth = r * 0.16; x.beginPath();
+  x.arc(px + r * 0.2, py + r * 0.15, r * 0.7, Math.PI * 0.95, Math.PI * 1.55); x.stroke(); x.restore();
+  // marking for colour-blind players: star or ring
+  x.fillStyle = "rgba(255,255,255,.92)"; x.strokeStyle = "rgba(255,255,255,.92)";
+  if (p === P1) star(x, px, py + r * 0.04, r * 0.42, r * 0.18); else { x.lineWidth = r * 0.14; x.beginPath(); x.arc(px, py, r * 0.36, 0, Math.PI * 2); x.stroke(); }
+  // glass highlight
+  const hl = x.createRadialGradient(px - r * 0.38, py - r * 0.45, 0, px - r * 0.38, py - r * 0.45, r * 0.45);
+  hl.addColorStop(0, "rgba(255,255,255,.95)"); hl.addColorStop(1, "rgba(255,255,255,0)");
+  x.beginPath(); x.arc(px - r * 0.38, py - r * 0.45, r * 0.45, 0, Math.PI * 2); x.fillStyle = hl; x.fill();
+  x.restore();
+}
+function star(x, px, py, R, r) {
+  x.beginPath();
+  for (let k = 0; k < 10; k++) { const a = -Math.PI / 2 + k * Math.PI / 5, rad = k % 2 ? r : R; x.lineTo(px + Math.cos(a) * rad, py + Math.sin(a) * rad); }
+  x.closePath(); x.fill();
+}
+
+function animateStep(from, to, who, captured, done, isJump = true) {
+  const dur = reduceMotion ? 1 : (isJump ? 260 : 190);
+  view[from] = EMPTY;
+  audio.play(isJump ? "jump" : "slide");
+  anims.push({ from, to, who, t0: performance.now(), dur, isJump, done: () => {
+    view[to] = who;
+    if (captured !== null) { view[captured] = EMPTY; burst(cx(captured), cy(captured), MARBLE[1 - who].mid, 22); audio.play("capture"); }
+    done && done();
+  }, captured });
+}
+function burst(x0, y0, color, n) {
+  if (reduceMotion) return;
+  for (let k = 0; k < n; k++) { const a = Math.random() * Math.PI * 2, s = (0.6 + Math.random() * 1.6) * cell * 0.05;
+    particles.push({ x: x0, y: y0, vx: Math.cos(a) * s, vy: Math.sin(a) * s - cell * 0.02, life: 1, color }); }
+}
+function celebrate() {
+  if (reduceMotion) return;
+  const w = game.state.winner, sq = game.moves.length ? MM.end(game.moves[game.moves.length - 1]) : 22;
+  for (let k = 0; k < 3; k++) setTimeout(() => burst(cx(sq), cy(sq), k % 2 ? "#ffe066" : MARBLE[w].hi, 40), k * 180);
+}
+function shake(a) { if (!reduceMotion) shakeAmt = Math.max(shakeAmt, a); }
+function flash(i) { flashSq = i; flashT = performance.now(); audio.play("invalid"); }
+
+function frame(now) {
+  const th = THEMES[settings.theme] || THEMES.wood;
+  g2.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g2.clearRect(0, 0, W, H);
+  let sx = 0, sy = 0;
+  if (shakeAmt > 0.2) { sx = (Math.random() - 0.5) * shakeAmt; sy = (Math.random() - 0.5) * shakeAmt; shakeAmt *= 0.86; } else shakeAmt = 0;
+  g2.save(); g2.translate(sx, sy);
+  if (boardImg) g2.drawImage(boardImg, 0, 0, W, H);
+  const pulse = 0.5 + 0.5 * Math.sin(now / 260);
+  const showHints = settings.hints === "on" && humanTurn() && !busy;
+  if (showHints && sel === null) {
+    for (const i of movable()) { g2.beginPath(); g2.arc(cx(i), cy(i), cell * 0.44, 0, Math.PI * 2); g2.fillStyle = th.glow.replace(/[\d.]+\)$/, (0.18 + 0.2 * pulse).toFixed(2) + ")"); g2.fill(); }
+  }
+  // capture targets during a selection: ring the marbles that would be taken
+  if (sel !== null && !busy) {
+    for (const m of candidates()) if (m.path.length > chain.length && m.isJump && m.captures.includes(m.jumped[chain.length])) {
+      const t = m.jumped[chain.length]; g2.beginPath(); g2.arc(cx(t), cy(t), cell * 0.43, 0, Math.PI * 2);
+      g2.strokeStyle = th.cap; g2.lineWidth = cell * 0.05; g2.stroke();
+    }
+  }
+  for (let i = 0; i < MM.SIZE; i++) if (view[i] !== EMPTY) drawMarble(g2, cx(i), cy(i), view[i]);
+  // selection
+  const cur = cursor();
+  if (cur !== null && !busy) {
+    g2.beginPath(); g2.arc(cx(cur), cy(cur), cell * 0.43, 0, Math.PI * 2); g2.strokeStyle = th.sel; g2.lineWidth = cell * 0.06; g2.stroke();
+    for (const [d, cap] of destinations()) {
+      g2.beginPath(); g2.arc(cx(d), cy(d), cell * (0.15 + 0.04 * pulse), 0, Math.PI * 2);
+      g2.fillStyle = cap ? th.cap : th.dest; g2.shadowColor = cap ? th.cap : th.dest; g2.shadowBlur = cell * 0.35; g2.fill(); g2.shadowBlur = 0;
+    }
+    for (let k = 0; k < chain.length; k++) { const a = k === 0 ? sel : chain[k - 1], b = chain[k];
+      g2.beginPath(); g2.moveTo(cx(a), cy(a)); g2.lineTo(cx(b), cy(b)); g2.strokeStyle = "rgba(255,255,255,.35)"; g2.lineWidth = cell * 0.05; g2.setLineDash([cell * 0.08, cell * 0.08]); g2.stroke(); g2.setLineDash([]); }
+  }
+  // moving marbles
+  for (let k = anims.length - 1; k >= 0; k--) {
+    const a = anims[k], t = Math.min(1, (now - a.t0) / a.dur), e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    const px = cx(a.from) + (cx(a.to) - cx(a.from)) * e, py = cy(a.from) + (cy(a.to) - cy(a.from)) * e;
+    const lift = a.isJump ? Math.sin(Math.PI * e) : 0;
+    if (a.captured !== null && view[a.captured] !== EMPTY && e > 0.5) { /* shrinks out as it is jumped */ }
+    drawMarble(g2, px, py - lift * cell * 0.25, a.who, 1 + lift * 0.18);
+    if (t >= 1) { anims.splice(k, 1); a.done(); }
+  }
+  // invalid flash
+  if (flashSq !== null) {
+    const t = (now - flashT) / 400;
+    if (t < 1) { g2.beginPath(); g2.arc(cx(flashSq), cy(flashSq), cell * 0.44, 0, Math.PI * 2); g2.strokeStyle = `rgba(255,70,60,${1 - t})`; g2.lineWidth = cell * 0.07; g2.stroke(); }
+    else flashSq = null;
+  }
+  for (let k = particles.length - 1; k >= 0; k--) {
+    const p = particles[k]; p.x += p.vx; p.y += p.vy; p.vy += cell * 0.003; p.life -= 0.022;
+    if (p.life <= 0) { particles.splice(k, 1); continue; }
+    g2.globalAlpha = p.life; g2.beginPath(); g2.arc(p.x, p.y, cell * 0.045 * p.life + 1, 0, Math.PI * 2); g2.fillStyle = p.color; g2.fill(); g2.globalAlpha = 1;
+  }
+  g2.restore();
+  requestAnimationFrame(frame);
+}
+
+function squareAt(ev) {
+  const r = cvs.getBoundingClientRect(), x = ev.clientX - r.left - ox, y = ev.clientY - r.top - oy;
+  const c = Math.floor(x / cell), row = Math.floor(y / cell);
+  if (c < 0 || c >= COLS || row < 0 || row >= ROWS) return null;
+  return idx(c, row);
+}
+cvs.addEventListener("pointerdown", ev => { const i = squareAt(ev); if (i !== null) { ev.preventDefault(); clickSquare(i); refresh(); } });
+cvs.addEventListener("pointermove", ev => { const i = squareAt(ev); const hot = i !== null && (destinations().has(i) || (sel === null && movable().has(i)) || i === cursor());
+  cvs.style.cursor = hot && humanTurn() && !busy ? "pointer" : "default"; });
+new ResizeObserver(() => layout()).observe($("boardwrap"));
+
+// ---------- start ----------
+syncSound();
+const saved = loadSaved();
+layout();
+newGame(saved && saved.moves.length ? saved : null);
+requestAnimationFrame(frame);
+let firstVisit = false;
+try { firstVisit = !localStorage.getItem("mm.seenHow"); localStorage.setItem("mm.seenHow", "1"); } catch (e) {}
+if (firstVisit) { updateHow(); showOverlay("ovHow"); }
+})();
+</script>
+
+</body></html>

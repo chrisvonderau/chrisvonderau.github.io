@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' blob:; worker-src blob:; style-src 'unsafe-inline'; img-src data: blob:; media-src data: blob:">
+<title>Tide Table</title>
+<style>*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:#2a1f3d;font-family:"Avenir Next","Avenir","Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;color:#3b2a22;-webkit-user-select:none;user-select:none;touch-action:none}
+#cv{position:fixed;left:0;top:0;width:100vw;height:100vh;display:block;cursor:default}
+button{font:inherit;cursor:pointer;border:0}
+#top{position:fixed;left:0;right:0;top:0;height:52px;display:flex;align-items:center;padding:0 18px;gap:18px;color:#fff6e6;pointer-events:none}
+#top>*{pointer-events:auto}.logo{font-weight:800;letter-spacing:.22em;font-size:20px;text-shadow:0 2px 0 rgba(0,0,0,.25)}.logo span{color:#ffcf7a;margin:0 4px}
+#roundInfo{flex:1;font-size:14px;opacity:.92}
+.tbtn button{width:38px;height:38px;border-radius:12px;background:rgba(255,246,230,.16);color:#fff6e6;font-size:18px;margin-left:8px;transition:background .15s}.tbtn button:hover{background:rgba(255,246,230,.32)}
+#panel{position:fixed;top:60px;right:14px;bottom:14px;display:flex;flex-direction:column;gap:10px;overflow:hidden}
+#panel>div{background:rgba(255,248,236,.93);border-radius:16px;padding:10px 12px;box-shadow:0 6px 22px rgba(30,10,30,.25)}
+#players{display:flex;gap:8px;padding:8px!important}
+.pl{flex:1;border-radius:12px;padding:6px 8px;border:2px solid transparent;transition:all .2s}.pl.on{border-color:currentColor;background:rgba(255,255,255,.7)}
+.pl .nm{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pl .sc{font-size:28px;font-weight:800;line-height:1.05;color:#3b2a22}.pl .sub{font-size:11px;opacity:.75;color:#3b2a22}
+#turnLbl{font-size:13px;font-weight:700;margin-bottom:6px}
+#hand{display:flex;gap:7px}
+.card{flex:1;min-width:0;background:#fff;border-radius:12px;padding:6px 4px 7px;text-align:center;border:2px solid #ead9c2;transition:transform .12s,border-color .12s,box-shadow .12s;color:#3b2a22}
+.card:hover{transform:translateY(-3px);box-shadow:0 6px 12px rgba(80,40,20,.18)}.card.sel{border-color:#e0703f;box-shadow:0 0 0 3px rgba(224,112,63,.25)}
+.card canvas{width:54px;height:44px;display:block;margin:0 auto}.card .cn{font-size:12px;font-weight:700}.card .cd{font-size:10px;opacity:.7;line-height:1.2;height:24px;overflow:hidden}
+.card.dis{opacity:.45}
+#acts{display:flex;gap:8px;margin-top:9px}#acts button{flex:1;height:40px;border-radius:12px;font-weight:700;font-size:14px;transition:all .15s}
+.pri{background:#e0703f;color:#fff}.pri:hover{background:#c95c2e}.pri:disabled{background:#d8c8b6;color:#fff;cursor:default}
+.sec{background:#efe2cf;color:#5a3e2b}.sec:hover{background:#e4d2b8}.sec:disabled{opacity:.45;cursor:default}
+#tideBox .h{font-weight:800;font-size:13px}#tideBox small{font-weight:400;opacity:.6}
+#tideTbl{display:flex;align-items:flex-end;gap:3px;height:64px;margin:6px 0 4px}
+.tcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;font-size:9px;color:#6b5040}
+.tbar{width:100%;border-radius:4px 4px 2px 2px;background:linear-gradient(#7cc4c9,#3c8ea0);position:relative}.tcol.st .tbar{background:linear-gradient(#8d7fb8,#4a3f78)}
+.tcol.now .tbar{box-shadow:0 0 0 2px #e0703f}.tcol.past{opacity:.35}
+#nextTide{font-size:12px;line-height:1.35}
+#ordin{font-size:11.5px;font-style:italic;line-height:1.35;color:#6b5040;flex-shrink:1;overflow:hidden}
+#tip{position:fixed;pointer-events:none;background:rgba(40,25,45,.88);color:#fff6e6;font-size:12px;padding:5px 8px;border-radius:8px;display:none;white-space:nowrap;z-index:5}
+#banner{position:fixed;left:0;right:0;top:38%;text-align:center;pointer-events:none;opacity:0;transition:opacity .4s;z-index:6}
+#banner div{display:inline-block;background:rgba(35,22,48,.86);color:#fff6e6;padding:14px 26px;border-radius:18px;font-size:22px;font-weight:800;max-width:80vw}#banner small{display:block;font-size:13px;font-weight:400;opacity:.85;margin-top:4px;font-style:italic}
+#coach{position:fixed;z-index:8;pointer-events:none;display:none;max-width:280px;background:#fff6e6;color:#3b2a22;border-radius:14px;padding:11px 13px;font-size:13.5px;line-height:1.4;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+#coach b{color:#c95c2e}#coach .cx{margin-top:7px;display:flex;justify-content:space-between;align-items:center;font-size:11px;opacity:.85}#coach button{pointer-events:auto;background:#efe2cf;border-radius:8px;padding:4px 9px;font-size:11.5px}
+#ov{position:fixed;inset:0;z-index:10;display:none;align-items:center;justify-content:center;background:rgba(30,16,40,.45);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+.box{background:#fff8ec;border-radius:22px;padding:26px 30px;max-width:min(620px,92vw);max-height:92vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.4);text-align:center}
+.box h1{font-size:46px;letter-spacing:.2em;margin:4px 0 2px;color:#3b2a22}.box h1 span{color:#e0703f}.box h2{margin:0 0 10px}.box .tag{font-style:italic;opacity:.75;margin-bottom:18px;font-size:14px}
+.mbtn{display:block;width:100%;margin:9px 0;padding:13px;border-radius:14px;background:#efe2cf;color:#3b2a22;font-weight:700;font-size:16px;transition:all .15s}.mbtn:hover{background:#e0703f;color:#fff;transform:translateY(-1px)}
+.mbtn small{display:block;font-weight:400;font-size:12px;opacity:.75}.row3{display:flex;gap:8px}.row3 .mbtn{margin:4px 0}
+.rules{text-align:left;font-size:13.5px;line-height:1.5}.rules li{margin:3px 0}
+table.sc{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}table.sc td,table.sc th{padding:5px 8px;border-bottom:1px solid #ead9c2}table.sc td:first-child{text-align:left}table.sc tr.tot td{font-weight:800;font-size:18px;border:0}
+.foot{font-size:11px;opacity:.55;margin-top:12px}
+</style></head>
+<body>
+<canvas id="cv"></canvas>
+<div id="top"><div class="logo">TIDE<span>~</span>TABLE</div><div id="roundInfo"></div><div class="tbtn"><button id="bMute" title="Sound">♪</button><button id="bMenu" title="Menu (Esc)">☰</button></div></div>
+<div id="panel">
+ <div id="players"></div>
+ <div id="turnBox"><div id="turnLbl"></div><div id="hand"></div>
+  <div id="acts"><button id="bUndo" class="sec">Undo</button><button id="bEnd" class="pri">End turn</button></div>
+ </div>
+ <div id="tideBox"><div class="h">Tide Table <small>tiles of sea per tide</small></div><div id="tideTbl"></div><div id="nextTide"></div></div>
+ <div id="ordin"></div>
+</div>
+<div id="tip"></div>
+<div id="banner"></div>
+<div id="coach"></div>
+<div id="ov"></div>
+<script>
+var EngineFactorySrc = "function () {\n  'use strict';\n  var W = 10, H = 10, N = W * H, ROUNDS = 10, TURNS = 4;\n  var NAMES = { H: 'House', B: 'Boardwalk', D: 'Dune', P: 'Pier', L: 'Lighthouse', U: 'Beach Umbrella' };\n  var MIX = ['H','H','H','H','H','H','H','B','B','B','B','B','D','D','D','D','P','L','U','U'];\n  var EVENTS = [\n    { name: 'The Ministry of Tides has misplaced a decimal point', d: 3 },\n    { name: 'A gale of moderate impertinence', d: 0 },\n    { name: 'The moon, unprompted, leans closer', d: 2 },\n    { name: 'Seagull Inspector on holiday (no dignity deductions)', d: 1, noInspector: true },\n    { name: 'A strongly worded swell', d: 2 },\n    { name: 'Weather issued by the wrong department', d: 1 },\n    { name: 'The sea remembers an old grievance', d: 4 }\n  ];\n  function mulberry(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }\n  function newGame(opt) {\n    opt = opt || {};\n    var seed = (opt.seed == null ? 12345 : opt.seed) >>> 0;\n    var rounds = opt.rounds || ROUNDS;\n    var R = mulberry(seed * 2654435761 + 7);\n    var elev = new Array(N), r, c;\n    var inlet = 1 + Math.floor(R() * 3);\n    for (r = 0; r < H; r++) for (c = 0; c < W / 2; c++) {\n      var base = (H - 1 - r) * 0.6, e = Math.round(base + (R() - 0.5) * 1.7);\n      if (c === inlet && r >= 3) e -= 2;\n      if (r === H - 1) e = 0; if (r === H - 2) e = Math.min(e, 1);\n      e = Math.max(0, Math.min(5, e));\n      elev[r * W + c] = e; elev[r * W + (W - 1 - c)] = e;\n    }\n    var tie = []; for (var i = 0; i < N; i++) tie.push(R());\n    var cand = []; for (r = 2; r < rounds; r++) cand.push(r);\n    var storms = {}; for (i = 0; i < 3 && cand.length; i++) { var k = Math.floor(R() * cand.length); storms[cand[k]] = 1; cand.splice(k, 1); }\n    var tides = [];\n    for (r = 0; r < rounds; r++) {\n      var t = { vol: 9 + Math.round(r * 2.1), storm: !!storms[r], ev: null };\n      if (t.storm) { var ev = EVENTS[Math.floor(R() * EVENTS.length)]; t.ev = { name: ev.name, d: ev.d, noInspector: !!ev.noInspector }; t.vol += 5 + ev.d; }\n      tides.push(t);\n    }\n    var deck = []; for (i = 0; i < 3; i++) deck = deck.concat(MIX);\n    for (i = deck.length - 1; i > 0; i--) { var j = Math.floor(R() * (i + 1)); var tmp = deck[i]; deck[i] = deck[j]; deck[j] = tmp; }\n    var s = { W: W, H: H, seed: seed, rounds: rounds, elev: elev, tie: tie, pt: new Array(N).fill(''), po: new Array(N).fill(-1),\n      round: 0, turn: 0, cur: 0, tides: tides, deck: deck, hands: [deck.slice(0, 3), deck.slice(0, 3)], di: [3, 3],\n      score: [0, 0], bd: [bd0(), bd0()], over: false, lastTide: null, moves: 0, p2bonus: opt.p2bonus == null ? 0 : opt.p2bonus };\n    return s;\n  }\n  function bd0() { return { houses: 0, links: 0, views: 0, lights: 0, umbrellas: 0, dignity: 0, districts: 0, bonus: 0 }; }\n  function clone(s) {\n    return { W: s.W, H: s.H, seed: s.seed, rounds: s.rounds, elev: s.elev.slice(), tie: s.tie, pt: s.pt.slice(), po: s.po.slice(),\n      round: s.round, turn: s.turn, cur: s.cur, tides: s.tides, deck: s.deck, hands: [s.hands[0].slice(), s.hands[1].slice()], di: s.di.slice(),\n      score: s.score.slice(), bd: [Object.assign({}, s.bd[0]), Object.assign({}, s.bd[1])], over: s.over, lastTide: s.lastTide, moves: s.moves, p2bonus: s.p2bonus };\n  }\n  function legal(s, type, cell) {\n    if (cell < 0 || cell >= N || s.pt[cell] !== '') return false;\n    if (type === 'P') return s.elev[cell] <= 1;\n    if (type === 'L') return s.elev[cell] >= 3;\n    return true;\n  }\n  function legalMoves(s) {\n    var out = [], seen = {}, h = s.hands[s.cur];\n    if (s.over) return out;\n    for (var k = 0; k < h.length; k++) { if (seen[h[k]]) continue; seen[h[k]] = 1;\n      for (var c = 0; c < N; c++) if (legal(s, h[k], c)) out.push({ card: k, cell: c }); }\n    if (!out.length && h.length) out.push({ card: 0, cell: -1 });\n    return out;\n  }\n  function place(s, m) {\n    var n = clone(s), p = n.cur, h = n.hands[p], type = h[m.card];\n    if (type === undefined) throw new Error('bad card');\n    if (m.cell >= 0) { if (!legal(n, type, m.cell)) throw new Error('illegal move'); n.pt[m.cell] = type; n.po[m.cell] = p; }\n    h.splice(m.card, 1);\n    if (n.di[p] < n.deck.length) h.push(n.deck[n.di[p]++]);\n    return n;\n  }\n  function commit(s, m) {\n    var n = place(s, m); n.moves++; n.lastTide = null; n.turn++;\n    if (n.turn >= TURNS) {\n      n.lastTide = applyTide(n, n.tides[n.round], true);\n      n.round++; n.turn = 0;\n      if (n.round >= n.rounds) finalize(n);\n    }\n    n.cur = (n.round + n.turn) % 2;\n    return n;\n  }\n  function effH(s, c) { return s.elev[c] + (s.pt[c] === 'D' ? 3 : 0); }\n  function flood(s, vol) {\n    var fl = new Uint8Array(N), inF = new Uint8Array(N), front = [], order = [], c;\n    for (c = 0; c < W; c++) { front.push((H - 1) * W + c); inF[(H - 1) * W + c] = 1; }\n    while (order.length < vol && front.length) {\n      var bi = 0, bh = 1e9;\n      for (var i = 0; i < front.length; i++) { var x = front[i], hh = effH(s, x) + s.tie[x] * 0.5 - (x / W | 0) * 0.01; if (hh < bh) { bh = hh; bi = i; } }\n      var cell = front[bi]; front.splice(bi, 1); fl[cell] = 1; order.push(cell);\n      var r = cell / W | 0, cc = cell % W, nb = [];\n      if (r > 0) nb.push(cell - W); if (r < H - 1) nb.push(cell + W); if (cc > 0) nb.push(cell - 1); if (cc < W - 1) nb.push(cell + 1);\n      for (i = 0; i < nb.length; i++) if (!inF[nb[i]]) { inF[nb[i]] = 1; front.push(nb[i]); }\n    }\n    return { fl: fl, order: order };\n  }\n  function doomed(type, storm) { return type === 'H' || type === 'L' || type === 'U' || type === 'D' || (type === 'B' && storm); }\n  function network(s, p) {\n    var net = new Uint8Array(N), q = [], c;\n    for (c = 0; c < N; c++) if (s.po[c] === p && (s.pt[c] === 'P' || s.pt[c] === 'L')) { net[c] = 1; q.push(c); }\n    while (q.length) { c = q.pop(); var r = c / W | 0, cc = c % W, nb = [];\n      if (r > 0) nb.push(c - W); if (r < H - 1) nb.push(c + W); if (cc > 0) nb.push(c - 1); if (cc < W - 1) nb.push(c + 1);\n      for (var i = 0; i < nb.length; i++) { var x = nb[i]; if (!net[x] && s.po[x] === p && (s.pt[x] === 'B' || s.pt[x] === 'P' || s.pt[x] === 'L')) { net[x] = 1; q.push(x); } } }\n    return net;\n  }\n  function linked(s, net, c) {\n    var r = c / W | 0, cc = c % W;\n    return (r > 0 && net[c - W]) || (r < H - 1 && net[c + W]) || (cc > 0 && net[c - 1]) || (cc < W - 1 && net[c + 1]);\n  }\n  function hasView(s, c) {\n    var r = c / W | 0, cc = c % W;\n    for (var r2 = r + 1; r2 < H; r2++) { var t = s.pt[r2 * W + cc]; if (t === 'H' || t === 'L' || t === 'D') return false; }\n    return true;\n  }\n  function tidePoints(s, noInspector) {\n    var g = [bd0(), bd0()], p, c;\n    for (p = 0; p < 2; p++) {\n      var net = network(s, p);\n      for (c = 0; c < N; c++) if (s.po[c] === p) {\n        var t = s.pt[c];\n        if (t === 'H') { g[p].houses++; if (linked(s, net, c)) g[p].links++; if (hasView(s, c)) g[p].views++; }\n        else if (t === 'L') g[p].lights++;\n        else if (t === 'U') g[p].umbrellas++;\n      }\n    }\n    if (!noInspector) for (p = 0; p < 2; p++) if (g[p].umbrellas > g[1 - p].umbrellas) g[p].dignity = -1;\n    return g;\n  }\n  function sum(b) { return b.houses + b.links + b.views + b.lights + b.umbrellas + b.dignity + b.districts + b.bonus; }\n  function applyTide(s, tide, scoreIt) {\n    var f = flood(s, tide.vol), destroyed = [], eroded = [];\n    for (var i = 0; i < f.order.length; i++) { var c = f.order[i], t = s.pt[c];\n      if (t && doomed(t, tide.storm)) { destroyed.push({ cell: c, type: t, owner: s.po[c] }); s.pt[c] = ''; s.po[c] = -1; }\n      if (tide.storm && s.elev[c] > 0) { s.elev[c]--; eroded.push(c); } }\n    var g = tidePoints(s, tide.ev && tide.ev.noInspector), gain = [sum(g[0]), sum(g[1])];\n    if (scoreIt) for (var p = 0; p < 2; p++) { for (var k in g[p]) s.bd[p][k] += g[p][k]; s.score[p] += gain[p]; }\n    return { order: f.order, destroyed: destroyed, eroded: eroded, gain: gain, parts: g, storm: tide.storm, ev: tide.ev, vol: tide.vol };\n  }\n  var DISTRICTS = [[0, 2], [3, 6], [7, 9]];\n  function districtCounts(s) {\n    return DISTRICTS.map(function (d) { var n = [0, 0];\n      for (var c = 0; c < N; c++) { var cc = c % W; if (cc >= d[0] && cc <= d[1] && s.pt[c] === 'H') n[s.po[c]]++; } return n; });\n  }\n  function finalize(s) {\n    var dc = districtCounts(s);\n    dc.forEach(function (n) { if (n[0] > n[1]) { s.bd[0].districts += 3; s.score[0] += 3; } else if (n[1] > n[0]) { s.bd[1].districts += 3; s.score[1] += 3; } });\n    if (s.p2bonus) { s.bd[1].bonus += s.p2bonus; s.score[1] += s.p2bonus; }\n    s.over = true;\n    s.winner = s.score[0] > s.score[1] ? 0 : s.score[1] > s.score[0] ? 1 : -1;\n  }\n  function previewTide(s) { if (s.over) return null; var n = clone(s); return applyTide(n, s.tides[s.round], false); }\n  // ---------- AI ----------\n  var WTS = [1, 0.75, 0.5];\n  function evaluate(s, p) {\n    var v = s.score[p] - s.score[1 - p];\n    if (s.over) return v * 1 + (s.winner === p ? 0.5 : 0);\n    var n = clone(s), left = s.rounds - s.round;\n    for (var k = 0; k < 3 && k < left; k++) {\n      var o = applyTide(n, s.tides[s.round + k], false); v += WTS[k] * (o.gain[p] - o.gain[1 - p]);\n    }\n    if (left > 3) { var g = tidePoints(n, false); v += 0.35 * (left - 3) * (sum(g[p]) - sum(g[1 - p])); }\n    var dc = districtCounts(n); dc.forEach(function (d) { v += 1.2 * Math.sign(d[p] - d[1 - p]); });\n    return v;\n  }\n  function greedy(s) { var p = s.cur, ms = legalMoves(s), bm = ms[0], bv = -1e9;\n    for (var i = 0; i < ms.length; i++) { var v = evaluate(commit(s, ms[i]), p); if (v > bv) { bv = v; bm = ms[i]; } } return bm; }\n  function chooseMove(s, level, timeBudget) {\n    var p = s.cur, moves = legalMoves(s), R = mulberry((s.seed ^ (s.moves * 7919 + 13)) >>> 0);\n    if (moves.length === 1) return moves[0];\n    if (level === 0 && R() < 0.4) return moves[Math.floor(R() * moves.length)];\n    var scored = moves.map(function (m) { var n = commit(s, m); return { m: m, n: n, v: evaluate(n, p) + (level === 0 ? (R() - 0.5) * 8 : level === 1 ? (R() - 0.5) * 1.5 : R() * 0.01) }; });\n    scored.sort(function (a, b) { return b.v - a.v; });\n    if (level < 2) return scored[0].m;\n    var t0 = Date.now(), best = null, bv = -1e9, K = Math.min(6, scored.length);\n    for (var i = 0; i < K; i++) {\n      var n = scored[i].n, guard = 0;\n      while (!n.over && n.round === s.round && guard++ < 4) n = commit(n, greedy(n));\n      var v = 0.3 * scored[i].v + 0.7 * evaluate(n, p);\n      if (v > bv) { bv = v; best = scored[i].m; }\n      if (Date.now() - t0 > (timeBudget || 700)) break;\n    }\n    return best;\n  }\n  return { W: W, H: H, N: N, NAMES: NAMES, newGame: newGame, clone: clone, legal: legal, legalMoves: legalMoves, place: place, commit: commit,\n    flood: flood, previewTide: previewTide, tidePoints: tidePoints, network: network, hasView: hasView, linked: linked, sum: sum, chooseMove: chooseMove,\n    evaluate: evaluate, districtCounts: districtCounts, doomed: doomed, mulberry: mulberry };\n}";
+var TideEngine = (function () {
+  'use strict';
+  var W = 10, H = 10, N = W * H, ROUNDS = 10, TURNS = 4;
+  var NAMES = { H: 'House', B: 'Boardwalk', D: 'Dune', P: 'Pier', L: 'Lighthouse', U: 'Beach Umbrella' };
+  var MIX = ['H','H','H','H','H','H','H','B','B','B','B','B','D','D','D','D','P','L','U','U'];
+  var EVENTS = [
+    { name: 'The Ministry of Tides has misplaced a decimal point', d: 3 },
+    { name: 'A gale of moderate impertinence', d: 0 },
+    { name: 'The moon, unprompted, leans closer', d: 2 },
+    { name: 'Seagull Inspector on holiday (no dignity deductions)', d: 1, noInspector: true },
+    { name: 'A strongly worded swell', d: 2 },
+    { name: 'Weather issued by the wrong department', d: 1 },
+    { name: 'The sea remembers an old grievance', d: 4 }
+  ];
+  function mulberry(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function newGame(opt) {
+    opt = opt || {};
+    var seed = (opt.seed == null ? 12345 : opt.seed) >>> 0;
+    var rounds = opt.rounds || ROUNDS;
+    var R = mulberry(seed * 2654435761 + 7);
+    var elev = new Array(N), r, c;
+    var inlet = 1 + Math.floor(R() * 3);
+    for (r = 0; r < H; r++) for (c = 0; c < W / 2; c++) {
+      var base = (H - 1 - r) * 0.6, e = Math.round(base + (R() - 0.5) * 1.7);
+      if (c === inlet && r >= 3) e -= 2;
+      if (r === H - 1) e = 0; if (r === H - 2) e = Math.min(e, 1);
+      e = Math.max(0, Math.min(5, e));
+      elev[r * W + c] = e; elev[r * W + (W - 1 - c)] = e;
+    }
+    var tie = []; for (var i = 0; i < N; i++) tie.push(R());
+    var cand = []; for (r = 2; r < rounds; r++) cand.push(r);
+    var storms = {}; for (i = 0; i < 3 && cand.length; i++) { var k = Math.floor(R() * cand.length); storms[cand[k]] = 1; cand.splice(k, 1); }
+    var tides = [];
+    for (r = 0; r < rounds; r++) {
+      var t = { vol: 9 + Math.round(r * 2.1), storm: !!storms[r], ev: null };
+      if (t.storm) { var ev = EVENTS[Math.floor(R() * EVENTS.length)]; t.ev = { name: ev.name, d: ev.d, noInspector: !!ev.noInspector }; t.vol += 5 + ev.d; }
+      tides.push(t);
+    }
+    var deck = []; for (i = 0; i < 3; i++) deck = deck.concat(MIX);
+    for (i = deck.length - 1; i > 0; i--) { var j = Math.floor(R() * (i + 1)); var tmp = deck[i]; deck[i] = deck[j]; deck[j] = tmp; }
+    var s = { W: W, H: H, seed: seed, rounds: rounds, elev: elev, tie: tie, pt: new Array(N).fill(''), po: new Array(N).fill(-1),
+      round: 0, turn: 0, cur: 0, tides: tides, deck: deck, hands: [deck.slice(0, 3), deck.slice(0, 3)], di: [3, 3],
+      score: [0, 0], bd: [bd0(), bd0()], over: false, lastTide: null, moves: 0, p2bonus: opt.p2bonus == null ? 0 : opt.p2bonus };
+    return s;
+  }
+  function bd0() { return { houses: 0, links: 0, views: 0, lights: 0, umbrellas: 0, dignity: 0, districts: 0, bonus: 0 }; }
+  function clone(s) {
+    return { W: s.W, H: s.H, seed: s.seed, rounds: s.rounds, elev: s.elev.slice(), tie: s.tie, pt: s.pt.slice(), po: s.po.slice(),
+      round: s.round, turn: s.turn, cur: s.cur, tides: s.tides, deck: s.deck, hands: [s.hands[0].slice(), s.hands[1].slice()], di: s.di.slice(),
+      score: s.score.slice(), bd: [Object.assign({}, s.bd[0]), Object.assign({}, s.bd[1])], over: s.over, lastTide: s.lastTide, moves: s.moves, p2bonus: s.p2bonus };
+  }
+  function legal(s, type, cell) {
+    if (cell < 0 || cell >= N || s.pt[cell] !== '') return false;
+    if (type === 'P') return s.elev[cell] <= 1;
+    if (type === 'L') return s.elev[cell] >= 3;
+    return true;
+  }
+  function legalMoves(s) {
+    var out = [], seen = {}, h = s.hands[s.cur];
+    if (s.over) return out;
+    for (var k = 0; k < h.length; k++) { if (seen[h[k]]) continue; seen[h[k]] = 1;
+      for (var c = 0; c < N; c++) if (legal(s, h[k], c)) out.push({ card: k, cell: c }); }
+    if (!out.length && h.length) out.push({ card: 0, cell: -1 });
+    return out;
+  }
+  function place(s, m) {
+    var n = clone(s), p = n.cur, h = n.hands[p], type = h[m.card];
+    if (type === undefined) throw new Error('bad card');
+    if (m.cell >= 0) { if (!legal(n, type, m.cell)) throw new Error('illegal move'); n.pt[m.cell] = type; n.po[m.cell] = p; }
+    h.splice(m.card, 1);
+    if (n.di[p] < n.deck.length) h.push(n.deck[n.di[p]++]);
+    return n;
+  }
+  function commit(s, m) {
+    var n = place(s, m); n.moves++; n.lastTide = null; n.turn++;
+    if (n.turn >= TURNS) {
+      n.lastTide = applyTide(n, n.tides[n.round], true);
+      n.round++; n.turn = 0;
+      if (n.round >= n.rounds) finalize(n);
+    }
+    n.cur = (n.round + n.turn) % 2;
+    return n;
+  }
+  function effH(s, c) { return s.elev[c] + (s.pt[c] === 'D' ? 3 : 0); }
+  function flood(s, vol) {
+    var fl = new Uint8Array(N), inF = new Uint8Array(N), front = [], order = [], c;
+    for (c = 0; c < W; c++) { front.push((H - 1) * W + c); inF[(H - 1) * W + c] = 1; }
+    while (order.length < vol && front.length) {
+      var bi = 0, bh = 1e9;
+      for (var i = 0; i < front.length; i++) { var x = front[i], hh = effH(s, x) + s.tie[x] * 0.5 - (x / W | 0) * 0.01; if (hh < bh) { bh = hh; bi = i; } }
+      var cell = front[bi]; front.splice(bi, 1); fl[cell] = 1; order.push(cell);
+      var r = cell / W | 0, cc = cell % W, nb = [];
+      if (r > 0) nb.push(cell - W); if (r < H - 1) nb.push(cell + W); if (cc > 0) nb.push(cell - 1); if (cc < W - 1) nb.push(cell + 1);
+      for (i = 0; i < nb.length; i++) if (!inF[nb[i]]) { inF[nb[i]] = 1; front.push(nb[i]); }
+    }
+    return { fl: fl, order: order };
+  }
+  function doomed(type, storm) { return type === 'H' || type === 'L' || type === 'U' || type === 'D' || (type === 'B' && storm); }
+  function network(s, p) {
+    var net = new Uint8Array(N), q = [], c;
+    for (c = 0; c < N; c++) if (s.po[c] === p && (s.pt[c] === 'P' || s.pt[c] === 'L')) { net[c] = 1; q.push(c); }
+    while (q.length) { c = q.pop(); var r = c / W | 0, cc = c % W, nb = [];
+      if (r > 0) nb.push(c - W); if (r < H - 1) nb.push(c + W); if (cc > 0) nb.push(c - 1); if (cc < W - 1) nb.push(c + 1);
+      for (var i = 0; i < nb.length; i++) { var x = nb[i]; if (!net[x] && s.po[x] === p && (s.pt[x] === 'B' || s.pt[x] === 'P' || s.pt[x] === 'L')) { net[x] = 1; q.push(x); } } }
+    return net;
+  }
+  function linked(s, net, c) {
+    var r = c / W | 0, cc = c % W;
+    return (r > 0 && net[c - W]) || (r < H - 1 && net[c + W]) || (cc > 0 && net[c - 1]) || (cc < W - 1 && net[c + 1]);
+  }
+  function hasView(s, c) {
+    var r = c / W | 0, cc = c % W;
+    for (var r2 = r + 1; r2 < H; r2++) { var t = s.pt[r2 * W + cc]; if (t === 'H' || t === 'L' || t === 'D') return false; }
+    return true;
+  }
+  function tidePoints(s, noInspector) {
+    var g = [bd0(), bd0()], p, c;
+    for (p = 0; p < 2; p++) {
+      var net = network(s, p);
+      for (c = 0; c < N; c++) if (s.po[c] === p) {
+        var t = s.pt[c];
+        if (t === 'H') { g[p].houses++; if (linked(s, net, c)) g[p].links++; if (hasView(s, c)) g[p].views++; }
+        else if (t === 'L') g[p].lights++;
+        else if (t === 'U') g[p].umbrellas++;
+      }
+    }
+    if (!noInspector) for (p = 0; p < 2; p++) if (g[p].umbrellas > g[1 - p].umbrellas) g[p].dignity = -1;
+    return g;
+  }
+  function sum(b) { return b.houses + b.links + b.views + b.lights + b.umbrellas + b.dignity + b.districts + b.bonus; }
+  function applyTide(s, tide, scoreIt) {
+    var f = flood(s, tide.vol), destroyed = [], eroded = [];
+    for (var i = 0; i < f.order.length; i++) { var c = f.order[i], t = s.pt[c];
+      if (t && doomed(t, tide.storm)) { destroyed.push({ cell: c, type: t, owner: s.po[c] }); s.pt[c] = ''; s.po[c] = -1; }
+      if (tide.storm && s.elev[c] > 0) { s.elev[c]--; eroded.push(c); } }
+    var g = tidePoints(s, tide.ev && tide.ev.noInspector), gain = [sum(g[0]), sum(g[1])];
+    if (scoreIt) for (var p = 0; p < 2; p++) { for (var k in g[p]) s.bd[p][k] += g[p][k]; s.score[p] += gain[p]; }
+    return { order: f.order, destroyed: destroyed, eroded: eroded, gain: gain, parts: g, storm: tide.storm, ev: tide.ev, vol: tide.vol };
+  }
+  var DISTRICTS = [[0, 2], [3, 6], [7, 9]];
+  function districtCounts(s) {
+    return DISTRICTS.map(function (d) { var n = [0, 0];
+      for (var c = 0; c < N; c++) { var cc = c % W; if (cc >= d[0] && cc <= d[1] && s.pt[c] === 'H') n[s.po[c]]++; } return n; });
+  }
+  function finalize(s) {
+    var dc = districtCounts(s);
+    dc.forEach(function (n) { if (n[0] > n[1]) { s.bd[0].districts += 3; s.score[0] += 3; } else if (n[1] > n[0]) { s.bd[1].districts += 3; s.score[1] += 3; } });
+    if (s.p2bonus) { s.bd[1].bonus += s.p2bonus; s.score[1] += s.p2bonus; }
+    s.over = true;
+    s.winner = s.score[0] > s.score[1] ? 0 : s.score[1] > s.score[0] ? 1 : -1;
+  }
+  function previewTide(s) { if (s.over) return null; var n = clone(s); return applyTide(n, s.tides[s.round], false); }
+  // ---------- AI ----------
+  var WTS = [1, 0.75, 0.5];
+  function evaluate(s, p) {
+    var v = s.score[p] - s.score[1 - p];
+    if (s.over) return v * 1 + (s.winner === p ? 0.5 : 0);
+    var n = clone(s), left = s.rounds - s.round;
+    for (var k = 0; k < 3 && k < left; k++) {
+      var o = applyTide(n, s.tides[s.round + k], false); v += WTS[k] * (o.gain[p] - o.gain[1 - p]);
+    }
+    if (left > 3) { var g = tidePoints(n, false); v += 0.35 * (left - 3) * (sum(g[p]) - sum(g[1 - p])); }
+    var dc = districtCounts(n); dc.forEach(function (d) { v += 1.2 * Math.sign(d[p] - d[1 - p]); });
+    return v;
+  }
+  function greedy(s) { var p = s.cur, ms = legalMoves(s), bm = ms[0], bv = -1e9;
+    for (var i = 0; i < ms.length; i++) { var v = evaluate(commit(s, ms[i]), p); if (v > bv) { bv = v; bm = ms[i]; } } return bm; }
+  function chooseMove(s, level, timeBudget) {
+    var p = s.cur, moves = legalMoves(s), R = mulberry((s.seed ^ (s.moves * 7919 + 13)) >>> 0);
+    if (moves.length === 1) return moves[0];
+    if (level === 0 && R() < 0.4) return moves[Math.floor(R() * moves.length)];
+    var scored = moves.map(function (m) { var n = commit(s, m); return { m: m, n: n, v: evaluate(n, p) + (level === 0 ? (R() - 0.5) * 8 : level === 1 ? (R() - 0.5) * 1.5 : R() * 0.01) }; });
+    scored.sort(function (a, b) { return b.v - a.v; });
+    if (level < 2) return scored[0].m;
+    var t0 = Date.now(), best = null, bv = -1e9, K = Math.min(6, scored.length);
+    for (var i = 0; i < K; i++) {
+      var n = scored[i].n, guard = 0;
+      while (!n.over && n.round === s.round && guard++ < 4) n = commit(n, greedy(n));
+      var v = 0.3 * scored[i].v + 0.7 * evaluate(n, p);
+      if (v > bv) { bv = v; best = scored[i].m; }
+      if (Date.now() - t0 > (timeBudget || 700)) break;
+    }
+    return best;
+  }
+  return { W: W, H: H, N: N, NAMES: NAMES, newGame: newGame, clone: clone, legal: legal, legalMoves: legalMoves, place: place, commit: commit,
+    flood: flood, previewTide: previewTide, tidePoints: tidePoints, network: network, hasView: hasView, linked: linked, sum: sum, chooseMove: chooseMove,
+    evaluate: evaluate, districtCounts: districtCounts, doomed: doomed, mulberry: mulberry };
+})();
+(function () {
+'use strict';
+var E = TideEngine, W = E.W, H = E.H, N = E.N;
+var Q = new URLSearchParams(location.search), TEST = Q.get('test') === '1', SPEED = TEST && Q.get('fast') ? 6 : 1;
+var $ = function (id) { return document.getElementById(id); };
+var cv = $('cv'), ctx = cv.getContext('2d');
+var COL = ['#e2674a', '#2a9d97'], COLD = ['#a8432c', '#1b6c68'], PNAME = ['Coral', 'Teal'];
+var DESC = { H: '1/tide +link +view. Dies if flooded', B: 'Links houses to anchors. Storms break it', D: 'Blocks 3 levels of water. Hides views', P: 'Anchor. Low ground (0-1). Unsinkable', L: 'Anchor, +1/tide. High ground (3+)', U: '+1/tide. Mind the Inspector' };
+var LEVELS = ['Beachcomber', 'Harbor Master', 'Admiral'];
+var ORD = ['Ordinance 4(b): sandcastles above two storeys require planning permission.', 'Ordinance 11: the sea is not to be addressed informally.', 'Notice: the Seagull Inspector deducts points for insufficient dignity. Umbrellas are inherently undignified.', 'Ordinance 23: residents must not attempt to negotiate with the moon.', 'The Ministry of Tides regrets nothing, but does so in triplicate.', 'Ordinance 7: boardwalks shall be walked upon, never confided in.', 'Reminder: dunes are load-bearing scenery. Please do not lean on the scenery.', 'Ordinance 31: a lighthouse may not be used to signal displeasure.', 'The Ministry wishes to clarify that the tide is not personal. Largely.', 'Ordinance 2: all houses must face the sea, or at least appear interested.'];
+// ---------- storage ----------
+var store = { get: function (k, d) { try { var v = localStorage.getItem('tidetable.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set: function (k, v) { try { localStorage.setItem('tidetable.' + k, JSON.stringify(v)); } catch (e) {} } };
+// ---------- audio ----------
+var A = { ctx: null, muted: !!store.get('muted', false), master: null, waveG: null, musicT: null, step: 0,
+  init: function () { if (this.ctx) return; try { var C = window.AudioContext || window.webkitAudioContext; if (!C) return; this.ctx = new C(); } catch (e) { return; }
+    var c = this.ctx; this.master = c.createGain(); this.master.gain.value = this.muted ? 0 : 0.7; this.master.connect(c.destination); try { var r0 = c.resume(); if (r0 && r0.catch) r0.catch(function () {}); } catch (e) {}
+    var len = c.sampleRate * 2, b = c.createBuffer(1, len, c.sampleRate), d = b.getChannelData(0), last = 0;
+    for (var i = 0; i < len; i++) { last = (last + 0.02 * (Math.random() * 2 - 1)) / 1.02; d[i] = last * 3.5; }
+    this.noise = b; var src = c.createBufferSource(); src.buffer = b; src.loop = true; var f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 500;
+    var g = c.createGain(); g.gain.value = 0.12; var lfo = c.createOscillator(), lg = c.createGain(); lfo.frequency.value = 0.11; lg.gain.value = 0.09; lfo.connect(lg); lg.connect(g.gain);
+    src.connect(f); f.connect(g); g.connect(this.master); src.start(); lfo.start(); this.waveG = g;
+    var self = this; this.musicT = setInterval(function () { self.music(); }, 450); },
+  setMuted: function (m) { this.muted = m; store.set('muted', m); if (this.master) this.master.gain.setTargetAtTime(m ? 0 : 0.7, this.ctx.currentTime, 0.05); },
+  suspend: function (s) { if (!this.ctx) return; try { var pr = s ? this.ctx.suspend() : this.ctx.resume(); if (pr && pr.catch) pr.catch(function () {}); } catch (e) {} },
+  tone: function (f, t0, dur, type, vol, dest) { var c = this.ctx; if (!c) return; var o = c.createOscillator(), g = c.createGain(); o.type = type || 'sine'; o.frequency.value = f;
+    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol || 0.2, t0 + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur); o.connect(g); g.connect(dest || this.master); o.start(t0); o.stop(t0 + dur + 0.05); },
+  burst: function (dur, freq, q, vol, t0) { var c = this.ctx; if (!c || !this.noise) return; t0 = t0 || c.currentTime; var s = c.createBufferSource(); s.buffer = this.noise; var f = c.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = q;
+    var g = c.createGain(); g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur); s.connect(f); f.connect(g); g.connect(this.master); s.start(t0, Math.random()); s.stop(t0 + dur + 0.05); },
+  click: function () { if (!this.ctx) return; var t = this.ctx.currentTime; this.burst(0.06, 1800, 3, 0.5, t); this.tone(220, t, 0.09, 'triangle', 0.15); this.tone(330, t + 0.03, 0.08, 'triangle', 0.08); },
+  tick: function () { if (!this.ctx) return; this.tone(880, this.ctx.currentTime, 0.04, 'sine', 0.03); },
+  chime: function () { if (!this.ctx) return; var t = this.ctx.currentTime;[659, 784, 988, 1319].forEach(function (f, i) { A.tone(f, t + i * 0.12, 1.2, 'sine', 0.09); }); },
+  wave: function () { if (!this.ctx) return; this.burst(2.2, 400, 0.6, 0.6); },
+  poof: function () { if (!this.ctx) return; this.burst(0.25, 900, 1, 0.35); },
+  rumble: function () { if (!this.ctx) return; var t = this.ctx.currentTime; this.burst(2.5, 70, 0.8, 1.6, t); this.tone(45, t, 2.0, 'sawtooth', 0.06); },
+  score: function () { if (!this.ctx) return; var t = this.ctx.currentTime; this.tone(1046, t, 0.3, 'sine', 0.06); this.tone(1568, t + 0.07, 0.4, 'sine', 0.05); },
+  music: function () { if (!this.ctx || this.muted || paused) return; var c = this.ctx, t = c.currentTime + 0.05, s = this.step++;
+    var sc = [261.6, 293.7, 329.6, 392, 440, 523.3], prog = [[0, 2, 4], [1, 3, 5], [0, 2, 3], [4, 2, 1]], ch = prog[(s >> 3) % 4];
+    if (s % 2 === 0) this.tone(sc[ch[(s >> 1) % 3]] * (s % 8 === 0 ? 0.5 : 1), t, 1.3, 'triangle', 0.035);
+    if (s % 8 === 4) this.tone(sc[ch[0]] / 2, t, 2.2, 'sine', 0.05); }
+};
+// ---------- state ----------
+var G = null, mode = 'menu', ai = [null, null], sel = 0, pending = null, hoverCell = -1, paused = false, busy = false, undoStack = null;
+var anim = null, parts = [], popups = [], shake = 0, tutorial = null, lastT = 0, time = 0, previewCache = { key: '', p: null }, aiTimer = null, gulls = [];
+for (var gi = 0; gi < 4; gi++) gulls.push({ x: Math.random(), y: 0.1 + Math.random() * 0.6, s: 0.02 + Math.random() * 0.02, ph: Math.random() * 6 });
+var L = { dpr: 1, w: 0, h: 0, tile: 40, bx: 0, by: 0, pw: 320 };
+function layout() {
+  L.dpr = Math.min(2, window.devicePixelRatio || 1); L.w = innerWidth; L.h = innerHeight;
+  cv.width = Math.round(L.w * L.dpr); cv.height = Math.round(L.h * L.dpr);
+  L.pw = Math.max(270, Math.min(360, L.w * 0.25));
+  var aw = L.w - L.pw - 52, ah = L.h - 60 - 18;
+  L.tile = Math.max(24, Math.floor(Math.min(aw / W, ah / (H + 0.9))));
+  L.bx = Math.round(20 + (aw - L.tile * W) / 2); L.by = Math.round(58 + (ah - L.tile * (H + 0.9)) / 2);
+  $('panel').style.width = L.pw + 'px'; dirty = true;
+}
+var dirty = true;
+function cellAt(x, y) { var c = Math.floor((x - L.bx) / L.tile), r = Math.floor((y - L.by) / L.tile); if (c < 0 || r < 0 || c >= W || r >= H) return -1; return r * W + c; }
+function cellXY(i) { return { x: L.bx + (i % W + 0.5) * L.tile, y: L.by + ((i / W | 0) + 0.5) * L.tile }; }
+// ---------- art ----------
+function hash(i, k) { var x = Math.sin(i * 127.1 + k * 311.7) * 43758.5453; return x - Math.floor(x); }
+var SAND = ['#bf9a6a', '#d4b07e', '#e6c793', '#f1dcb0', '#d5d49c', '#b3c584'];
+function dusk() { var r = G ? Math.min(1, (G.round + G.turn / 4) / G.rounds) : 0.35; return r; }
+function drawBg(w, h) {
+  var d = dusk(), g = ctx.createLinearGradient(0, 0, 0, h);
+  g.addColorStop(0, mix('#f6b27a', '#2c2350', d)); g.addColorStop(0.55, mix('#f59a73', '#6a3d6e', d)); g.addColorStop(1, mix('#5fa7b3', '#2b3f63', d));
+  ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+  var sx = w * 0.08, sy = h * 0.95, rg = ctx.createRadialGradient(sx, sy, 10, sx, sy, h * 0.7);
+  rg.addColorStop(0, 'rgba(255,220,150,' + (0.55 - d * 0.3) + ')'); rg.addColorStop(1, 'rgba(255,200,140,0)'); ctx.fillStyle = rg; ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = 'rgba(255,255,255,0.07)'; ctx.lineWidth = 1.2;
+  for (var i = 0; i < 9; i++) { var yy = h * (0.6 + i * 0.05); ctx.beginPath(); for (var x = 0; x <= w; x += 20) { var y = yy + Math.sin(x * 0.012 + time * 0.6 + i) * 4; x ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke(); }
+}
+function mix(a, b, t) { var pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16); var r = (pa >> 16) * (1 - t) + (pb >> 16) * t, g = (pa >> 8 & 255) * (1 - t) + (pb >> 8 & 255) * t, bl = (pa & 255) * (1 - t) + (pb & 255) * t; return 'rgb(' + (r | 0) + ',' + (g | 0) + ',' + (bl | 0) + ')'; }
+function rr(x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+function drawTiles(s) {
+  var T = L.tile;
+  ctx.save(); ctx.shadowColor = 'rgba(20,10,30,.35)'; ctx.shadowBlur = 24; ctx.fillStyle = '#c9a676'; rr(L.bx - 6, L.by - 6, T * W + 12, T * H + 10, 14); ctx.fill(); ctx.restore();
+  for (var i = 0; i < N; i++) {
+    var x = L.bx + (i % W) * T, y = L.by + (i / W | 0) * T, e = s.elev[i];
+    ctx.fillStyle = SAND[e]; ctx.fillRect(x, y, T + 0.5, T + 0.5);
+    for (var k = 0; k < 5; k++) { ctx.fillStyle = 'rgba(120,80,40,' + (0.06 + hash(i, k) * 0.06) + ')'; ctx.fillRect(x + hash(i, k + 9) * T, y + hash(i, k + 17) * T, 1.5, 1.5); }
+    if (e >= 4) { ctx.strokeStyle = 'rgba(90,120,50,.55)'; ctx.lineWidth = 1.3; for (k = 0; k < 3; k++) { var gx = x + (0.2 + hash(i, k + 3) * 0.6) * T, gy = y + (0.3 + hash(i, k + 5) * 0.55) * T; ctx.beginPath(); ctx.moveTo(gx, gy); ctx.lineTo(gx - 3, gy - 7); ctx.moveTo(gx, gy); ctx.lineTo(gx + 2, gy - 8); ctx.stroke(); } }
+    if (e <= 0) { ctx.fillStyle = 'rgba(80,110,120,.12)'; ctx.fillRect(x, y, T, T); }
+    var r = i / W | 0, c = i % W; ctx.strokeStyle = 'rgba(110,70,35,.45)'; ctx.lineWidth = 1.5;
+    if (r > 0 && s.elev[i - W] !== e) { ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + T, y); ctx.stroke(); }
+    if (c > 0 && s.elev[i - 1] !== e) { ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y + T); ctx.stroke(); }
+    ctx.fillStyle = 'rgba(90,55,25,.5)'; var ds = Math.max(2, T / 22); for (k = 0; k < e; k++) { ctx.beginPath(); ctx.arc(x + 5 + k * ds * 2.2, y + T - 5, ds * 0.7, 0, 7); ctx.fill(); }
+  }
+  ctx.strokeStyle = 'rgba(90,55,25,.08)'; ctx.lineWidth = 1; ctx.beginPath();
+  for (i = 1; i < W; i++) { ctx.moveTo(L.bx + i * T, L.by); ctx.lineTo(L.bx + i * T, L.by + H * T); }
+  for (i = 1; i < H; i++) { ctx.moveTo(L.bx, L.by + i * T); ctx.lineTo(L.bx + W * T, L.by + i * T); } ctx.stroke();
+  ctx.fillStyle = 'rgba(90,55,25,.22)'; ctx.fillRect(L.bx + 3 * T - 1, L.by, 2, H * T); ctx.fillRect(L.bx + 7 * T - 1, L.by, 2, H * T);
+}
+function drawSea() {
+  var T = L.tile, y0 = L.by + H * T, w = W * T, d = dusk();
+  var g = ctx.createLinearGradient(0, y0, 0, y0 + T * 0.9); g.addColorStop(0, mix('#5fb8bd', '#3d7f95', d)); g.addColorStop(1, mix('#2f7f96', '#22456b', d));
+  ctx.fillStyle = g; rr(L.bx - 6, y0, w + 12, T * 0.9, 10); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.lineWidth = 2.2; ctx.beginPath();
+  for (var x = 0; x <= w; x += 4) { var yy = y0 + 3 + Math.sin(x * 0.05 + time * 2) * 2 + Math.sin(x * 0.013 - time) * 2; x ? ctx.lineTo(L.bx + x, yy) : ctx.moveTo(L.bx + x, yy); } ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,255,255,.25)'; ctx.lineWidth = 1.2;
+  for (var k = 1; k < 3; k++) { ctx.beginPath(); for (x = 0; x <= w; x += 6) { yy = y0 + T * 0.28 * k + Math.sin(x * 0.04 + time * 1.4 + k * 2) * 2.5; x ? ctx.lineTo(L.bx + x, yy) : ctx.moveTo(L.bx + x, yy); } ctx.stroke(); }
+}
+function drawWater(cells, alpha, foam) {
+  var T = L.tile; if (!cells) return;
+  for (var i = 0; i < N; i++) { var a = cells[i]; if (!a) continue; var x = L.bx + (i % W) * T, y = L.by + (i / W | 0) * T;
+    ctx.fillStyle = 'rgba(58,150,170,' + (0.72 * a * alpha) + ')'; ctx.fillRect(x, y, T + 0.5, T + 0.5);
+    ctx.strokeStyle = 'rgba(255,255,255,' + (0.35 * a * alpha) + ')'; ctx.lineWidth = 1.3; ctx.beginPath();
+    var yy = y + T * (0.35 + 0.1 * Math.sin(time * 2 + i)); ctx.moveTo(x + 3, yy); ctx.quadraticCurveTo(x + T / 2, yy - 4, x + T - 3, yy); ctx.stroke();
+    if (foam) { var r = i / W | 0, c = i % W; ctx.fillStyle = 'rgba(255,255,255,' + (0.8 * a * alpha) + ')';
+      if (r > 0 && !cells[i - W]) for (var k = 0; k < 6; k++) { ctx.beginPath(); ctx.arc(x + (k + 0.5) * T / 6, y + 1 + Math.sin(time * 3 + k + i) * 1.5, 2.2, 0, 7); ctx.fill(); }
+      if (c > 0 && !cells[i - 1]) for (k = 0; k < 5; k++) { ctx.beginPath(); ctx.arc(x + 1, y + (k + 0.5) * T / 5, 1.8, 0, 7); ctx.fill(); }
+      if (c < W - 1 && !cells[i + 1]) for (k = 0; k < 5; k++) { ctx.beginPath(); ctx.arc(x + T - 1, y + (k + 0.5) * T / 5, 1.8, 0, 7); ctx.fill(); } } }
+}
+function drawHatch(fl) {
+  var T = L.tile; ctx.save();
+  for (var i = 0; i < N; i++) { if (!fl[i]) continue; var x = L.bx + (i % W) * T, y = L.by + (i / W | 0) * T;
+    ctx.fillStyle = 'rgba(60,140,175,.26)'; ctx.fillRect(x, y, T, T);
+    ctx.save(); ctx.beginPath(); ctx.rect(x, y, T, T); ctx.clip(); ctx.strokeStyle = 'rgba(40,110,150,.42)'; ctx.lineWidth = 1.4; ctx.beginPath();
+    var off = (time * 6) % 8; for (var k = -T; k < T; k += 8) { ctx.moveTo(x + k + off, y + T); ctx.lineTo(x + k + off + T, y); } ctx.stroke(); ctx.restore(); }
+  ctx.restore();
+}
+function sprite(c2, type, owner, x, y, T, opts) {
+  opts = opts || {}; var col = COL[owner] || '#999', dk = COLD[owner] || '#666', s = T / 40, d = dusk(); c2.save(); c2.translate(x, y); c2.scale(s, s);
+  if (opts.alpha != null) c2.globalAlpha = opts.alpha;
+  c2.fillStyle = 'rgba(40,20,10,.22)'; c2.beginPath(); c2.ellipse(2, 12, 15, 5, 0, 0, 7); c2.fill();
+  if (type === 'H') {
+    c2.fillStyle = '#f7efe2'; c2.fillRect(-11, -4, 22, 16); c2.fillStyle = col; c2.beginPath(); c2.moveTo(-14, -3); c2.lineTo(0, -15); c2.lineTo(14, -3); c2.closePath(); c2.fill();
+    c2.fillStyle = dk; c2.fillRect(-3, 4, 6, 8); var glow = 0.35 + 0.65 * d; c2.fillStyle = 'rgba(255,214,110,' + glow + ')'; c2.fillRect(-9, 0, 5, 5); c2.fillRect(4, 0, 5, 5);
+    if (d > 0.4) { c2.fillStyle = 'rgba(255,210,100,' + (d - 0.4) * 0.5 + ')'; c2.beginPath(); c2.arc(-6.5, 2.5, 7, 0, 7); c2.arc(6.5, 2.5, 7, 0, 7); c2.fill(); }
+    c2.fillStyle = '#8b6a52'; c2.fillRect(6, -13, 3, 6);
+  } else if (type === 'B') {
+    var n = opts.nb || {}; c2.fillStyle = '#a7774c'; c2.fillRect(-10, -10, 20, 20);
+    if (n.u) c2.fillRect(-7, -20, 14, 11); if (n.d) c2.fillRect(-7, 9, 14, 11); if (n.l) c2.fillRect(-20, -7, 11, 14); if (n.r) c2.fillRect(9, -7, 11, 14);
+    c2.strokeStyle = '#7d5232'; c2.lineWidth = 1.2; for (var k = -8; k <= 8; k += 4) { c2.beginPath(); c2.moveTo(-10, k); c2.lineTo(10, k); c2.stroke(); }
+    c2.fillStyle = col; c2.fillRect(-10, -10, 20, 3);
+  } else if (type === 'D') {
+    var g = c2.createLinearGradient(0, -12, 0, 12); g.addColorStop(0, '#f4dfae'); g.addColorStop(1, '#c79a5f'); c2.fillStyle = g;
+    c2.beginPath(); c2.moveTo(-18, 12); c2.quadraticCurveTo(-10, -12, 0, -10); c2.quadraticCurveTo(10, -14, 18, 12); c2.closePath(); c2.fill();
+    c2.strokeStyle = '#6f8f3c'; c2.lineWidth = 1.6; [[-8, -2], [-2, -6], [5, -4], [10, 2]].forEach(function (p) { c2.beginPath(); c2.moveTo(p[0], p[1] + 4); c2.lineTo(p[0] - 3, p[1] - 5); c2.moveTo(p[0], p[1] + 4); c2.lineTo(p[0] + 2, p[1] - 6); c2.stroke(); });
+    c2.fillStyle = '#5a3e2b'; c2.fillRect(12, -14, 1.5, 14); c2.fillStyle = col; c2.beginPath(); c2.moveTo(13.5, -14); c2.lineTo(20, -11); c2.lineTo(13.5, -8); c2.fill();
+  } else if (type === 'P') {
+    c2.fillStyle = '#6d4a30'; [[-9, -14], [7, -14], [-9, 12], [7, 12]].forEach(function (p) { c2.fillRect(p[0], p[1], 3, 5); });
+    c2.fillStyle = '#b6855a'; c2.fillRect(-10, -16, 20, 30); c2.strokeStyle = '#7d5232'; c2.lineWidth = 1; for (k = -13; k <= 12; k += 4) { c2.beginPath(); c2.moveTo(-10, k); c2.lineTo(10, k); c2.stroke(); }
+    c2.fillStyle = col; c2.fillRect(-10, -16, 20, 4); c2.fillStyle = '#fff'; c2.beginPath(); c2.arc(0, 4, 4, 0, 7); c2.fill(); c2.strokeStyle = col; c2.lineWidth = 2; c2.beginPath(); c2.arc(0, 4, 4, 0, 7); c2.stroke();
+  } else if (type === 'L') {
+    if (!opts.icon) { var a = time * 0.9 + x * 0.01; c2.fillStyle = 'rgba(255,236,160,' + (0.12 + 0.25 * d) + ')'; c2.beginPath(); c2.moveTo(0, -16); c2.arc(0, -16, 60, a - 0.22, a + 0.22); c2.closePath(); c2.fill(); }
+    c2.fillStyle = '#fbf4e8'; c2.beginPath(); c2.moveTo(-7, 12); c2.lineTo(-4, -12); c2.lineTo(4, -12); c2.lineTo(7, 12); c2.closePath(); c2.fill();
+    c2.fillStyle = col; c2.fillRect(-6.3, 4, 12.6, 4); c2.fillRect(-5, -5, 10, 4); c2.fillStyle = '#ffe27a'; c2.fillRect(-4, -17, 8, 5); c2.fillStyle = dk; c2.beginPath(); c2.moveTo(-6, -17); c2.lineTo(0, -22); c2.lineTo(6, -17); c2.fill();
+  } else if (type === 'U') {
+    c2.strokeStyle = '#5a3e2b'; c2.lineWidth = 1.6; c2.beginPath(); c2.moveTo(0, -8); c2.lineTo(3, 12); c2.stroke();
+    for (k = 0; k < 6; k++) { c2.fillStyle = k % 2 ? '#fff6e6' : col; c2.beginPath(); c2.moveTo(0, -10); c2.arc(0, -4, 14, Math.PI + k * Math.PI / 6, Math.PI + (k + 1) * Math.PI / 6); c2.closePath(); c2.fill(); }
+    c2.fillStyle = '#f0c27a'; c2.fillRect(5, 6, 10, 5);
+  }
+  c2.restore();
+}
+function nbOf(s, i) { var o = s.po[i], r = i / W | 0, c = i % W, ok = function (j) { return s.po[j] === o && /[BPLH]/.test(s.pt[j]); };
+  return { u: r > 0 && ok(i - W), d: r < H - 1 && ok(i + W), l: c > 0 && ok(i - 1), r: c < W - 1 && ok(i + 1) }; }
+function drawPieces(s, skip, doom) {
+  var T = L.tile;
+  for (var i = 0; i < N; i++) { var t = s.pt[i]; if (!t || (skip && skip[i])) continue; var p = cellXY(i);
+    var bob = t === 'U' ? Math.sin(time * 2 + i) * 0.6 : 0;
+    sprite(ctx, t, s.po[i], p.x, p.y + bob, T, { nb: t === 'B' ? nbOf(s, i) : null });
+    if (doom && doom[i]) { var a = 0.55 + 0.35 * Math.sin(time * 6); ctx.strokeStyle = 'rgba(200,40,40,' + a + ')'; ctx.lineWidth = 3; var q = T * 0.28;
+      ctx.beginPath(); ctx.moveTo(p.x - q, p.y - q); ctx.lineTo(p.x + q, p.y + q); ctx.moveTo(p.x + q, p.y - q); ctx.lineTo(p.x - q, p.y + q); ctx.stroke(); } }
+}
+function drawGulls(w, h) {
+  ctx.strokeStyle = 'rgba(40,30,50,.55)'; ctx.lineWidth = 2; ctx.lineCap = 'round';
+  gulls.forEach(function (g) { var x = g.x * (w + 80) - 40, y = g.y * h + Math.sin(time * 0.7 + g.ph) * 12, f = Math.sin(time * 6 + g.ph) * 5;
+    ctx.beginPath(); ctx.moveTo(x - 10, y - f); ctx.quadraticCurveTo(x - 4, y - 6, x, y); ctx.quadraticCurveTo(x + 4, y - 6, x + 10, y - f); ctx.stroke(); });
+  ctx.lineCap = 'butt';
+}
+// ---------- preview ----------
+function viewState() { if (!G) return null; if (pending) return E.place(G, pending); return G; }
+function preview(st, extra) {
+  var key = st.moves + '|' + st.round + '|' + st.turn + '|' + st.pt.join('') + st.po.join('') + '|' + (extra ? extra.card + ':' + extra.cell : '');
+  if (previewCache.key === key) return previewCache.p;
+  var base = extra ? E.place(st, extra) : st, o = E.previewTide(base), fl = new Uint8Array(N), doom = new Uint8Array(N);
+  if (o) { o.order.forEach(function (c) { fl[c] = 1; }); o.destroyed.forEach(function (d) { doom[d.cell] = 1; }); }
+  previewCache = { key: key, p: { fl: fl, doom: doom, o: o, base: base } }; return previewCache.p;
+}
+function humanTurn() { return G && !G.over && mode === 'game' && !ai[G.cur] && !anim && !busy; }
+// ---------- render ----------
+function render() {
+  var w = L.w, h = L.h; ctx.setTransform(L.dpr, 0, 0, L.dpr, 0, 0);
+  var sx = 0, sy = 0; if (shake > 0) { sx = (Math.random() - 0.5) * shake * 14; sy = (Math.random() - 0.5) * shake * 14; }
+  drawBg(w, h); ctx.save(); ctx.translate(sx, sy);
+  var s = G || demo; drawTiles(s); drawSea();
+  if (anim) drawAnim(); else if (G) {
+    var hv = null; if (humanTurn() && hoverCell >= 0 && !pending) { var t = G.hands[G.cur][sel]; if (t && E.legal(G, t, hoverCell)) hv = { card: sel, cell: hoverCell }; }
+    var vs = viewState(), pv = G.over ? null : preview(vs, hv);
+    if (pv) drawHatch(pv.fl);
+    if (humanTurn() && G.hands[G.cur][sel]) { var tt = G.hands[G.cur][sel]; ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 2; ctx.setLineDash([4, 4]);
+      for (var i = 0; i < N; i++) if (E.legal(vs, tt, i) && !pending) { var x = L.bx + (i % W) * L.tile, y = L.by + (i / W | 0) * L.tile; ctx.strokeRect(x + 3, y + 3, L.tile - 6, L.tile - 6); }
+      ctx.setLineDash([]); }
+    drawPieces(vs, null, pv && pv.doom);
+    if (pending) { var p = cellXY(pending.cell); ctx.strokeStyle = COL[G.cur]; ctx.lineWidth = 3; ctx.strokeRect(p.x - L.tile / 2 + 2, p.y - L.tile / 2 + 2, L.tile - 4, L.tile - 4); }
+    if (hv) { var q = cellXY(hv.cell); sprite(ctx, G.hands[G.cur][sel], G.cur, q.x, q.y, L.tile, { alpha: 0.6 + 0.2 * Math.sin(time * 5) });
+      ctx.strokeStyle = COL[G.cur]; ctx.lineWidth = 2.5; ctx.strokeRect(q.x - L.tile / 2 + 2, q.y - L.tile / 2 + 2, L.tile - 4, L.tile - 4); }
+    if (aiGhost) { var a2 = cellXY(aiGhost.cell); sprite(ctx, G.hands[G.cur][aiGhost.card], G.cur, a2.x, a2.y, L.tile, { alpha: 0.55 }); }
+  } else drawPieces(s);
+  drawParts(); ctx.restore(); drawGulls(w, h);
+  if (anim && anim.storm) { ctx.fillStyle = 'rgba(30,20,60,' + 0.25 * anim.dark + ')'; ctx.fillRect(0, 0, w, h);
+    ctx.strokeStyle = 'rgba(200,210,255,.35)'; ctx.lineWidth = 1; ctx.beginPath(); for (var k = 0; k < 90; k++) { var rx = (hash(k, 1) * w + time * 300) % w, ry = (hash(k, 2) * h + time * 900) % h; ctx.moveTo(rx, ry); ctx.lineTo(rx - 4, ry + 14); } ctx.stroke();
+    if (anim.flash > 0) { ctx.fillStyle = 'rgba(255,255,255,' + anim.flash + ')'; ctx.fillRect(0, 0, w, h); } }
+}
+var aiGhost = null, demo = E.newGame({ seed: 7 });
+(function () { var d = demo; [[22, 'H', 0], [23, 'B', 0], [24, 'L', 0], [26, 'H', 1], [36, 'H', 1], [63, 'D', 0], [66, 'D', 1], [92, 'P', 1], [57, 'U', 0]].forEach(function (a) { if (E.legal(d, a[1], a[0])) { d.pt[a[0]] = a[1]; d.po[a[0]] = a[2]; } }); })();
+// ---------- particles ----------
+function burst(x, y, col, n, spd) { for (var i = 0; i < n; i++) { var a = Math.random() * 7, v = (0.3 + Math.random()) * (spd || 60); parts.push({ x: x, y: y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 20, life: 1, col: col, sz: 1.5 + Math.random() * 2.5 }); } }
+function drawParts() {
+  parts.forEach(function (p) { ctx.globalAlpha = Math.max(0, p.life); ctx.fillStyle = p.col; ctx.beginPath(); ctx.arc(p.x, p.y, p.sz, 0, 7); ctx.fill(); }); ctx.globalAlpha = 1;
+  popups.forEach(function (p) { ctx.globalAlpha = Math.max(0, Math.min(1, p.life * 2)); ctx.font = '800 ' + Math.round(L.tile * 0.42) + 'px Avenir Next, Helvetica, sans-serif'; ctx.textAlign = 'center';
+    ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(40,20,30,.6)'; ctx.strokeText(p.t, p.x, p.y); ctx.fillStyle = p.col; ctx.fillText(p.t, p.x, p.y); }); ctx.globalAlpha = 1;
+}
+function stepParts(dt) {
+  parts.forEach(function (p) { p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 90 * dt; p.life -= dt * 1.2; }); parts = parts.filter(function (p) { return p.life > 0; });
+  popups.forEach(function (p) { p.y -= 22 * dt; p.life -= dt * 0.6; }); popups = popups.filter(function (p) { return p.life > 0; });
+}
+// ---------- tide animation ----------
+function startTide(before, after) {
+  var o = after.lastTide, idx = new Int16Array(N).fill(-1); o.order.forEach(function (c, k) { idx[c] = k; });
+  anim = { t: 0, before: before, after: after, o: o, idx: idx, n: o.order.length, storm: o.storm, dark: 0, flash: 0, done: {}, scored: false, dur: 4.6 };
+  A.wave(); if (o.storm) { A.rumble(); shake = 1; }
+  banner(o.storm ? 'Storm: ' + o.vol + ' tiles of sea' : 'High tide: ' + o.vol + ' tiles', o.storm ? o.ev.name + '.' : tideQuip());
+  updatePanel();
+}
+function tideQuip() { var q = ['The sea arrives, punctual as ever.', 'The Ministry of Tides regrets any inconvenience.', 'A routine inspection by the Atlantic.', 'Water, as forecast, continues to be wet.', 'The tide returns, having forgotten something.']; return q[(G.round + G.seed) % q.length]; }
+function drawAnim() {
+  var a = anim, t = a.t, fill = Math.min(1, t / 1.8), rec = t > 3.3 ? Math.max(0, 1 - (t - 3.3) / 1.0) : 1, cells = new Float32Array(N), skip = new Uint8Array(N);
+  for (var i = 0; i < N; i++) { var k = a.idx[i]; if (k < 0) continue; var lv = fill * a.n - k; if (lv > 0) cells[i] = Math.min(1, lv) * rec; }
+  a.o.destroyed.forEach(function (d) { var lv = fill * a.n - a.idx[d.cell]; if (lv > 0.5) { skip[d.cell] = 1; if (!a.done[d.cell]) { a.done[d.cell] = 1; var p = cellXY(d.cell); burst(p.x, p.y, '#fff', 14, 70); burst(p.x, p.y, COL[d.owner], 8, 50); A.poof(); } } });
+  var base = t > 2.0 ? a.after : a.before; if (t > 2.0) skip = null;
+  drawPieces(base, skip, null); drawWater(cells, 1, true);
+  if (t > 2.3 && !a.scored) { a.scored = true; scorePopups(a.after, a.o); }
+}
+function scorePopups(s, o) {
+  var any = false;
+  for (var p = 0; p < 2; p++) { var net = E.network(s, p);
+    for (var i = 0; i < N; i++) if (s.po[i] === p && /[HLU]/.test(s.pt[i])) { var v = 1; if (s.pt[i] === 'H') { if (E.linked(s, net, i)) v++; if (E.hasView(s, i)) v++; }
+      var c = cellXY(i); popups.push({ x: c.x, y: Math.max(L.by + L.tile * 0.55, c.y - L.tile * 0.3), t: '+' + v, col: '#ffe9a8', life: 1.6 }); burst(c.x, c.y, '#ffe27a', 6, 40); any = true; } }
+  if (any) A.score();
+  [0, 1].forEach(function (p) { if (o.parts[p].dignity < 0) toast('Seagull Inspector: −1 to ' + pname(p) + ' for insufficient dignity.'); });
+}
+function stepAnim(dt) {
+  if (!anim) return; anim.t += dt * SPEED;
+  if (anim.storm) { anim.dark = Math.min(1, anim.t / 0.6) * (anim.t > 3.8 ? Math.max(0, 1 - (anim.t - 3.8)) : 1); anim.flash = Math.max(0, anim.flash - dt * 3); if (Math.random() < dt * 0.9) { anim.flash = 0.5; shake = Math.max(shake, 0.5); } }
+  if (anim.t >= anim.dur) { var after = anim.after; anim = null; G = after; A.chime(); hideBanner(); onTurnStart(); }
+}
+// ---------- UI panel ----------
+function pname(p) { if (ai[p] != null) return LEVELS[ai[p]]; if (ai[0] != null || ai[1] != null) return 'You'; return PNAME[p]; }
+var cardCanvases = {};
+function iconCanvas(type, owner) { var k = type + owner; if (cardCanvases[k]) return cardCanvases[k];
+  var c = document.createElement('canvas'); c.width = 108; c.height = 88; var c2 = c.getContext('2d'); c2.scale(2, 2); sprite(c2, type, owner, 27, 24, 34, { icon: true, nb: { l: true, r: true } }); cardCanvases[k] = c.toDataURL(); return cardCanvases[k]; }
+function updatePanel() {
+  if (!G) return; var s = anim ? anim.after : G, cur = G.cur;
+  var ph = '';
+  for (var p = 0; p < 2; p++) { var nh = 0; for (var i = 0; i < N; i++) if (s.po[i] === p && s.pt[i] === 'H') nh++;
+    ph += '<div class="pl' + (p === cur && !s.over && !anim ? ' on' : '') + '" style="color:' + COL[p] + '"><div class="nm">● ' + pname(p) + '</div><div class="sc">' + s.score[p] + '</div><div class="sub">' + nh + ' house' + (nh === 1 ? '' : 's') + ' standing</div></div>'; }
+  $('players').innerHTML = ph;
+  var hand = G.hands[cur], hh = '', vs = viewState();
+  var isH = !ai[cur];
+  $('turnLbl').innerHTML = anim ? 'The tide is in. Please remain dignified.' : G.over ? 'Game over' : (isH ? '<span style="color:' + COL[cur] + '">' + pname(cur) + '</span>' + (pname(cur) === 'You' ? ', your move' : ' to move') + ' · pick a piece' : '<span style="color:' + COL[cur] + '">' + pname(cur) + '</span> is plotting…');
+  hand.forEach(function (t, k) { var any = false; for (var i = 0; i < N; i++) if (E.legal(G, t, i)) { any = true; break; }
+    hh += '<button class="card' + (k === sel && isH ? ' sel' : '') + (any ? '' : ' dis') + '" data-k="' + k + '"><img src="' + iconCanvas(t, cur) + '" width="54" height="44" alt=""><div class="cn">' + E.NAMES[t] + '</div><div class="cd">' + DESC[t] + '</div></button>'; });
+  $('hand').innerHTML = hh;
+  [].forEach.call(document.querySelectorAll('.card'), function (b) { b.onclick = function () { pickCard(+b.dataset.k); }; b.onmouseenter = function () { A.tick(); }; });
+  var noLegal = isH && !anim && E.legalMoves(G).length === 1 && E.legalMoves(G)[0].cell === -1;
+  $('bEnd').disabled = !humanTurn() || (!pending && !noLegal); $('bEnd').textContent = noLegal ? 'Pass (no room)' : (G.turn === 3 && pending ? 'End turn · tide!' : 'End turn');
+  $('bUndo').disabled = !humanTurn() || !pending;
+  var tt = '';
+  G.tides.forEach(function (t, r) { tt += '<div class="tcol' + (t.storm ? ' st' : '') + (r === s.round && !s.over ? ' now' : '') + (r < s.round ? ' past' : '') + '" title="Tide ' + (r + 1) + ': ' + t.vol + ' tiles' + (t.storm ? ' (storm)' : '') + '"><div>' + (t.storm ? '⚡' : '') + '</div><div class="tbar" style="height:' + Math.round(t.vol * 1.25) + 'px"></div><div>' + t.vol + '</div></div>'; });
+  $('tideTbl').innerHTML = tt;
+  var nt = s.over ? null : G.tides[s.round], left = 4 - G.turn;
+  $('nextTide').innerHTML = s.over ? 'The tides have concluded their business.' : (anim ? '' : '<b>Next tide:</b> ' + nt.vol + ' tiles of sea, in ' + left + ' placement' + (left > 1 ? 's' : '') + '.' + (nt.storm ? '<br><b style="color:#5a3f8a">⚡ Storm:</b> ' + nt.ev.name + '. Boardwalks break, flooded sand erodes.' : '') + '<br><span style="opacity:.7">Blue hatching = flooded next tide. Red ✕ = doomed.</span>');
+  $('roundInfo').textContent = s.over ? 'Final' : 'Tide ' + (s.round + 1) + ' of ' + s.rounds + (G.tides[s.round].storm ? ' · storm' : '') + (ai[0] == null && ai[1] == null ? ' · hot-seat' : ' · vs ' + LEVELS[ai[1]]);
+  $('ordin').textContent = ORD[(s.round * 3 + s.seed) % ORD.length];
+  $('panel').style.display = 'flex';
+}
+function pickCard(k) { if (!humanTurn()) return; A.init(); A.tick(); sel = k; var t = G.hands[G.cur][k];
+  if (pending) { var c = pending.cell; pending = null; if (E.legal(G, t, c)) pending = { card: k, cell: c }; }
+  tutStep('card'); updatePanel(); dirty = true; }
+function banner(t, sub) { $('banner').innerHTML = '<div>' + t + (sub ? '<small>' + sub + '</small>' : '') + '</div>'; $('banner').style.opacity = 1; }
+function hideBanner() { $('banner').style.opacity = 0; }
+var toastT = null; function toast(t, ms) { banner(t); clearTimeout(toastT); toastT = setTimeout(function () { if (!anim) hideBanner(); }, ms || 2200); }
+// ---------- flow ----------
+function newGame(aiCfg, tut) {
+  A.init(); ai = aiCfg; var seed = TEST && Q.get('seed') ? +Q.get('seed') : (Date.now() ^ (Math.random() * 1e9)) >>> 0;
+  G = E.newGame({ seed: seed, p2bonus: 0 }); mode = 'game'; sel = 0; pending = null; anim = null; parts = []; popups = []; aiGhost = null; busy = false;
+  tutorial = tut ? { step: 0 } : null; closeOv(); onTurnStart(); if (tutorial) showCoach();
+}
+function onTurnStart() {
+  sel = 0; pending = null; aiGhost = null; previewCache.key = '';
+  if (G.over) { updatePanel(); setTimeout(showScore, 500); return; }
+  updatePanel(); dirty = true;
+  if (ai[G.cur] != null) runAI();
+  else if (ai[0] == null && ai[1] == null && G.moves > 0) toast(PNAME[G.cur] + ', your move', 1200);
+}
+function clickCell(c) {
+  if (!humanTurn() || c < 0) return; A.init(); var t = G.hands[G.cur][sel];
+  if (!E.legal(G, t, c)) { if (pending && pending.cell === c) return; toast(t === 'P' ? 'Piers need low ground (elevation 0–1).' : t === 'L' ? 'Lighthouses need high ground (elevation 3+).' : 'That tile is occupied.'); return; }
+  if (pending && pending.cell === c) return;
+  pending = { card: sel, cell: c }; A.click(); var p = cellXY(c); burst(p.x, p.y, '#fff3c4', 10, 45); tutStep('place'); updatePanel(); dirty = true;
+}
+function undo() { if (!humanTurn() || !pending) return; pending = null; A.tick(); tutStep('undo'); updatePanel(); dirty = true; }
+function endTurn() {
+  if (!humanTurn()) return; var mv = pending;
+  if (!mv) { var lm = E.legalMoves(G); if (lm.length === 1 && lm[0].cell === -1) mv = lm[0]; else return; }
+  doCommit(mv); tutStep('end');
+}
+function doCommit(mv) {
+  var before = E.place(G, mv), after = E.commit(G, mv); pending = null; aiGhost = null; previewCache.key = '';
+  if (after.lastTide) { startTide(before, after); }
+  else { G = after; onTurnStart(); }
+}
+// AI worker
+var worker = null, wcb = null;
+try { var src = 'var TideEngine=(' + EngineFactorySrc + ')();onmessage=function(e){var s=e.data.s;var m=TideEngine.chooseMove(s,e.data.l,650);postMessage(m);}';
+  worker = new Worker(URL.createObjectURL(new Blob([src], { type: 'text/javascript' }))); worker.onmessage = function (e) { var f = wcb; wcb = null; if (f) f(e.data); };
+  worker.onerror = function () { worker = null; }; } catch (e) { worker = null; }
+function runAI() {
+  busy = true; updatePanel(); var g0 = G, t0 = performance.now();
+  var done = function (m) { if (G !== g0 || mode !== 'game') return; var wait = Math.max(0, 550 / SPEED - (performance.now() - t0));
+    if (TEST) { window.__tt.aiTimes.push(performance.now() - t0); }
+    setTimeout(function () { if (G !== g0) return; aiGhost = m.cell >= 0 ? m : null; dirty = true;
+      setTimeout(function () { if (G !== g0) return; busy = false; if (m.cell >= 0) { A.click(); var p = cellXY(m.cell); burst(p.x, p.y, '#fff3c4', 10, 45); } doCommit(m); }, 380 / SPEED); }, wait); };
+  if (worker) { wcb = done; worker.postMessage({ s: G, l: ai[G.cur] }); }
+  else setTimeout(function () { done(E.chooseMove(G, ai[G.cur], 650)); }, 30);
+}
+// ---------- overlays ----------
+function ov(html) { $('ov').innerHTML = '<div class="box">' + html + '</div>'; $('ov').style.display = 'flex';
+  [].forEach.call($('ov').querySelectorAll('[data-a]'), function (b) { b.onclick = function () { A.init(); A.tick(); act(b.dataset.a); }; }); }
+function closeOv() { $('ov').style.display = 'none'; paused = false; }
+function act(a) {
+  if (a === 'hot') newGame([null, null], !store.get('tutDone', false));
+  else if (a === 'ai0' || a === 'ai1' || a === 'ai2') newGame([null, +a[2]], !store.get('tutDone', false));
+  else if (a === 'tut') newGame([null, 0], true);
+  else if (a === 'rules') showRules();
+  else if (a === 'menu') showMenu();
+  else if (a === 'resume') closeOv();
+  else if (a === 'again') newGame(ai, false);
+  else if (a === 'back') { if (mode === 'menu') showMenu(); else showPause(); }
+}
+function showMenu() { mode = 'menu'; G = null; hideCoach(); $('panel').style.display = 'none'; $('roundInfo').textContent = '';
+  ov('<h1>TIDE<span>~</span>TABLE</h1><div class="tag">Build a beach town between tides. The sea has been notified.</div>' +
+    '<button class="mbtn" data-a="hot">Two Players · Hot-seat<small>Share the trackpad. Take turns. Remain civil.</small></button>' +
+    '<div style="margin:14px 0 2px;font-weight:700;font-size:13px">Solo against the Ministry</div><div class="row3"><button class="mbtn" data-a="ai0">Beachcomber<small>gentle</small></button><button class="mbtn" data-a="ai1">Harbor Master<small>competent</small></button><button class="mbtn" data-a="ai2">Admiral<small>unkind</small></button></div>' +
+    '<div class="row3"><button class="mbtn" data-a="tut">Guided first game<small>20-second tutorial</small></button><button class="mbtn" data-a="rules">Rules<small>one page</small></button></div>' +
+    '<div class="foot">Hover to preview · click to place · Esc menu · U undo. Approved by the Ministry of Tides, Form 27-B.</div>'); }
+function rulesHtml() { return '<div class="rules"><ul>' +
+  '<li><b>Ten tides.</b> Each tide, players alternate placing 4 pieces (2 each), then the sea floods the number of tiles shown in the <b>Tide Table</b>.</li>' +
+  '<li><b>Water</b> enters from the sea and always fills the <b>lowest reachable</b> sand first. Small dots on a tile show its elevation.</li>' +
+  '<li><b>Blue hatching</b> shows exactly what the next tide floods; a <b>red ✕</b> marks pieces that will be lost.</li>' +
+  '<li>Flooded houses, lighthouses, umbrellas and dunes are destroyed. Boardwalks survive, except in <b>storms ⚡</b>, which also erode flooded sand by one level.</li>' +
+  '<li><b>Dunes</b> count as 3 levels higher, so water goes elsewhere. Possibly next door. Dunes block sea views.</li>' +
+  '<li><b>After each tide</b>, each surviving house scores 1, +1 if linked (adjacent) to your boardwalk network connected to your pier or lighthouse, +1 sea view (nothing tall between it and the sea). Lighthouses and umbrellas score 1 each.</li>' +
+  '<li>The <b>Seagull Inspector</b> deducts 1 from whoever has more umbrellas: insufficient dignity.</li>' +
+  '<li><b>End of game:</b> 3 districts (dark lines). Most houses in a district earns +3. Highest score wins.</li>' +
+  '<li>You hold 3 pieces. Pick one, click a tile, Undo if you like, then End turn. Piers need elevation 0–1, lighthouses 3+.</li></ul></div><button class="mbtn" data-a="back">Back</button>'; }
+function showRules() { ov('<h2>How the tide works</h2>' + rulesHtml()); }
+function showPause() { if (mode !== 'game') return; paused = true; ov('<h2>Paused</h2><div class="tag">The sea has agreed to wait. Briefly.</div><button class="mbtn" data-a="resume">Resume</button><button class="mbtn" data-a="rules">Rules</button><button class="mbtn" data-a="again">Restart</button><button class="mbtn" data-a="menu">Main menu</button>'); }
+function showScore() {
+  if (!G || !G.over || mode !== 'game') return; mode = 'over'; hideCoach();
+  var b = G.bd, rows = [['Houses survived (per tide)', 'houses'], ['Boardwalk links', 'links'], ['Sea views', 'views'], ['Lighthouses', 'lights'], ['Umbrellas', 'umbrellas'], ['Seagull Inspector', 'dignity'], ['District majorities', 'districts'], ['Second-player courtesy', 'bonus']];
+  var t = '<table class="sc"><tr><th></th><th style="color:' + COL[0] + '">' + pname(0) + '</th><th style="color:' + COL[1] + '">' + pname(1) + '</th></tr>';
+  rows.forEach(function (r) { if (r[1] === 'bonus' && !b[0].bonus && !b[1].bonus) return; t += '<tr><td>' + r[0] + '</td><td>' + b[0][r[1]] + '</td><td>' + b[1][r[1]] + '</td></tr>'; });
+  t += '<tr class="tot"><td>Total</td><td>' + G.score[0] + '</td><td>' + G.score[1] + '</td></tr></table>';
+  var w = G.winner, head = w < 0 ? 'A draw. The Ministry is furious.' : (pname(w) === 'You' ? 'You win!' : pname(w) + ' wins!');
+  var quip = w < 0 ? 'Both towns are declared equally damp.' : ['The town survives, legally speaking.', 'A triumph of planning over plumbing.', 'The Seagull Inspector nods, almost imperceptibly.', 'The sea concedes on a technicality.'][G.seed % 4];
+  ov('<h2 style="color:' + (w < 0 ? '#3b2a22' : COL[w]) + '">' + head + '</h2><div class="tag">' + quip + '</div>' + t + '<div class="row3"><button class="mbtn" data-a="again">Play again</button><button class="mbtn" data-a="menu">Main menu</button></div>');
+  for (var i = 0; i < 40; i++) burst(L.w * Math.random(), L.h * 0.3, ['#ffe27a', '#e2674a', '#2a9d97', '#fff'][i % 4], 4, 120);
+  A.chime();
+}
+// ---------- tutorial ----------
+var TUT = [
+  { k: 'card', el: 'hand', t: '<b>Welcome to Tide Table.</b> You hold three pieces. <b>Click a card</b> to choose one (a House is a fine start).' },
+  { k: 'place', el: 'board', t: '<b>Hover the beach</b> to preview, then <b>click a dashed tile</b> to place. Blue hatching is what the next tide will flood: build on dry sand.' },
+  { k: 'end', el: 'acts', t: 'Changed your mind? <b>Undo</b> or click another tile. Happy? Click <b>End turn</b>.' },
+  { k: 'done', el: 'tideBox', t: 'The <b>Tide Table</b> shows how much sea arrives each tide. ⚡ marks storms. Link houses by boardwalk to a pier or lighthouse, and use dunes to send water elsewhere. That is all. Good luck.' }
+];
+function showCoach() { if (!tutorial) return hideCoach(); var st = TUT[tutorial.step]; if (!st) return hideCoach(); var c = $('coach');
+  c.innerHTML = st.t + '<div class="cx"><span>Tip ' + (tutorial.step + 1) + ' of ' + TUT.length + '</span><button id="cSkip">' + (st.k === 'done' ? 'Got it' : 'Skip tutorial') + '</button></div>'; c.style.display = 'block';
+  var r; if (st.el === 'board') r = { left: L.bx + L.tile * W * 0.5 - 140, top: L.by + 8, width: 0, height: 0 }; else r = $(st.el).getBoundingClientRect();
+  if (st.el === 'board') { c.style.left = r.left + 'px'; c.style.top = r.top + 'px'; } else { c.style.left = Math.max(8, r.left - 296) + 'px'; c.style.top = Math.max(60, r.top) + 'px'; }
+  $('cSkip').onclick = function () { tutorial = null; store.set('tutDone', true); hideCoach(); }; }
+function hideCoach() { $('coach').style.display = 'none'; }
+function tutStep(k) { if (!tutorial) return; var st = TUT[tutorial.step]; if (!st) return;
+  if (st.k === k || (k === 'place' && st.k === 'card') || (k === 'end' && (st.k === 'card' || st.k === 'place'))) { tutorial.step = TUT.indexOf(st) + (k === 'end' && st.k !== 'end' ? (3 - tutorial.step) : 1); if (k === 'end') tutorial.step = 3; showCoach(); } }
+// ---------- input ----------
+var tip = $('tip');
+cv.addEventListener('pointermove', function (e) { var c = cellAt(e.clientX, e.clientY); if (c !== hoverCell) { hoverCell = c; dirty = true; }
+  if (c >= 0 && (G || mode === 'menu') && !$('ov').style.display.match(/flex/)) { var s = viewState() || demo, e2 = s.elev[c], pv = G && !G.over && !anim ? preview(viewState()) : null;
+    tip.style.display = 'block'; tip.textContent = 'Elevation ' + e2 + (s.pt[c] ? ' · ' + E.NAMES[s.pt[c]] + ' (' + PNAME[s.po[c]] + ')' : '') + (pv && pv.fl[c] ? ' · floods next tide' : '');
+    tip.style.left = Math.min(L.w - 230, e.clientX + 14) + 'px'; tip.style.top = (e.clientY + 18) + 'px'; } else tip.style.display = 'none';
+  cv.style.cursor = (c >= 0 && humanTurn() && G.hands[G.cur][sel] && E.legal(G, G.hands[G.cur][sel], c)) ? 'pointer' : 'default'; });
+cv.addEventListener('pointerleave', function () { hoverCell = -1; tip.style.display = 'none'; dirty = true; });
+cv.addEventListener('pointerdown', function (e) { A.init(); var c = cellAt(e.clientX, e.clientY); if (e.pointerType === 'touch') hoverCell = c; clickCell(c); });
+$('bEnd').onclick = function () { A.init(); endTurn(); }; $('bUndo').onclick = undo;
+$('bMenu').onclick = function () { A.init(); if (mode === 'game') showPause(); else if (mode !== 'menu') showMenu(); };
+function setMuteIcon() { $('bMute').textContent = A.muted ? '✕' : '♪'; $('bMute').style.opacity = A.muted ? 0.6 : 1; }
+$('bMute').onclick = function () { A.init(); A.setMuted(!A.muted); setMuteIcon(); }; setMuteIcon();
+window.addEventListener('keydown', function (e) { var k = e.key.toLowerCase(); if (k === 'escape' || k === 'p') { if ($('ov').style.display === 'flex' && mode === 'game') closeOv(); else showPause(); } else if (k === 'u') undo(); });
+window.addEventListener('resize', function () { layout(); if (tutorial) showCoach(); });
+window.addEventListener('blur', function () { if (mode === 'game' && $('ov').style.display !== 'flex') showPause(); paused = true; A.suspend(true); });
+window.addEventListener('focus', function () { A.suspend(false); if ($('ov').style.display !== 'flex') paused = false; });
+document.addEventListener('visibilitychange', function () { if (document.hidden) { paused = true; A.suspend(true); } else { A.suspend(false); if ($('ov').style.display !== 'flex') paused = false; } });
+document.addEventListener('pointerdown', function () { A.init(); if (A.ctx && A.ctx.state === 'suspended') A.suspend(false); }, true);
+// ---------- loop ----------
+var frames = 0, lastDraw = 0;
+function loop(ts) {
+  requestAnimationFrame(loop); var dt = Math.min(0.05, (ts - lastT) / 1000 || 0); lastT = ts;
+  if (paused && !anim) { return; } if (paused) return;
+  var active = anim || parts.length || popups.length || shake > 0;
+  if (!active && ts - lastDraw < 32) return; // idle: ~30 fps cap
+  var step = active ? dt : Math.min(0.05, (ts - lastDraw) / 1000); lastDraw = ts; time += step;
+  gulls.forEach(function (g) { g.x += g.s * step; if (g.x > 1.05) { g.x = -0.05; g.y = 0.1 + Math.random() * 0.6; } });
+  stepAnim(step); stepParts(step); shake = Math.max(0, shake - step * 1.5); render(); frames++;
+}
+layout(); showMenu(); requestAnimationFrame(loop);
+// ---------- test hooks & self-check (only with ?test=1) ----------
+if (TEST) {
+  window.__tt = { aiTimes: [], get G() { return G; }, get mode() { return mode; }, get anim() { return !!anim; }, get busy() { return busy; }, get pending() { return pending; }, get paused() { return paused; },
+    cellXY: cellXY, E: E, frames: function () { return frames; }, tutorial: function () { return tutorial; } };
+  setTimeout(function () {
+    var ok = true, msg = [], t0 = performance.now(), games = 0;
+    try { for (var g = 0; g < 12; g++) { var s = E.newGame({ seed: 1000 + g }), R = E.mulberry(g + 5), guard = 0;
+        while (!s.over) { if (guard++ > 200) throw new Error('no termination');
+          var ms = E.legalMoves(s), m = g < 9 ? ms[Math.floor(R() * ms.length)] : E.chooseMove(s, g % 3, 300);
+          var snap = JSON.stringify(s), p = E.place(s, m); if (JSON.stringify(s) !== snap) throw new Error('place mutated state');
+          s = E.commit(s, m); if (s.score.some(function (x) { return !isFinite(x); })) throw new Error('NaN score');
+          [0, 1].forEach(function (q) { if (E.sum(s.bd[q]) !== s.score[q]) throw new Error('breakdown mismatch'); }); }
+        games++; } } catch (e) { ok = false; msg.push(e.message); }
+    var b = document.createElement('div'); b.id = 'selfcheck'; b.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:20;font:11px monospace;background:' + (ok ? '#2a7' : '#c33') + ';color:#fff;padding:4px 8px;border-radius:6px;pointer-events:none';
+    b.textContent = 'self-check ' + (ok ? 'PASS' : 'FAIL ' + msg.join(';')) + ' · ' + games + ' games · ' + Math.round(performance.now() - t0) + 'ms'; document.body.appendChild(b); window.__tt.selfcheck = { ok: ok, games: games, msg: msg };
+  }, 50);
+}
+})();
+
+</script></body></html>

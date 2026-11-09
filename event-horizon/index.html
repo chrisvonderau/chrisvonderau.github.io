@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Event Horizon: Chrono-Drift</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #020108;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, monospace;
+      color: #e0f2fe;
+      touch-action: none;
+    }
+    canvas#stage {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      cursor: crosshair;
+      z-index: 1;
+    }
+    #hud {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 28px 36px;
+      z-index: 10;
+    }
+    .hud-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .telemetry-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: rgba(186, 215, 255, 0.55);
+    }
+    .value {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: #00f0ff;
+      text-shadow: 0 0 16px rgba(0, 240, 255, 0.45);
+      font-feature-settings: "tnum";
+    }
+    .sub-value {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      color: rgba(220, 235, 255, 0.85);
+      font-feature-settings: "tnum";
+    }
+    #phase-banner {
+      position: absolute;
+      top: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      transition: opacity 0.4s ease;
+    }
+    #phase-title {
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: #ffaa33;
+      text-shadow: 0 0 18px rgba(255, 170, 51, 0.55);
+    }
+    #phase-desc {
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: rgba(255, 255, 255, 0.55);
+      margin-top: 5px;
+      text-transform: uppercase;
+    }
+    .bar-container {
+      width: 180px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .bar-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #00f0ff, #7b2cbf);
+      box-shadow: 0 0 12px #00f0ff;
+      transition: width 0.06s linear;
+    }
+    #overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(6, 4, 18, 0.88) 0%, rgba(2, 1, 8, 0.98) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: auto;
+      z-index: 100;
+      transition: opacity 0.35s ease;
+      backdrop-filter: blur(12px);
+    }
+    #overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .title {
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: 0.38em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #ffffff 15%, #00f0ff 60%, #ff8833 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .subtitle {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.26em;
+      color: rgba(200, 220, 255, 0.65);
+      text-transform: uppercase;
+      margin-bottom: 36px;
+      text-align: center;
+    }
+    .instructions {
+      max-width: 560px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 38px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: rgba(220, 235, 255, 0.88);
+      background: rgba(255, 255, 255, 0.03);
+      padding: 24px 28px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .instructions kbd {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 11px;
+      color: #00f0ff;
+    }
+    .start-btn {
+      padding: 15px 46px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: #020108;
+      background: linear-gradient(135deg, #00f0ff, #70d6ff);
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      box-shadow: 0 0 28px rgba(0, 240, 255, 0.5);
+      transition: all 0.2s ease;
+    }
+    .start-btn:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 38px rgba(0, 240, 255, 0.85);
+    }
+    #time-warp-indicator {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      padding: 7px 20px;
+      border-radius: 20px;
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      color: #00f0ff;
+      opacity: 0;
+      transition: opacity 0.15s ease, background 0.2s ease;
+      z-index: 10;
+    }
+    #time-warp-indicator.active {
+      opacity: 1;
+      background: rgba(255, 140, 0, 0.2);
+      border-color: rgba(255, 140, 0, 0.65);
+      color: #ffaa33;
+      box-shadow: 0 0 24px rgba(255, 140, 0, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="stage"></canvas>
+
+  <div id="hud">
+    <div class="hud-row">
+      <div class="telemetry-group">
+        <span class="label">Telemetry Sync</span>
+        <span class="value" id="hud-score">00 / 08</span>
+        <div class="bar-container">
+          <div class="bar-fill" id="sync-bar" style="width: 0%;"></div>
+        </div>
+      </div>
+      <div class="telemetry-group" style="align-items: flex-end;">
+        <span class="label">Chrono Capacitor</span>
+        <span class="value" id="hud-chrono">100%</span>
+        <div class="bar-container">
+          <div class="bar-fill" id="chrono-bar" style="background: linear-gradient(90deg, #ff8833, #00f0ff); width: 100%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="phase-banner">
+      <div id="phase-title">Phase I: Lagrange Stabilizer</div>
+      <div id="phase-desc">Static Singularity Field • Intercept Resonant Nodes</div>
+    </div>
+
+    <div class="hud-row">
+      <div class="telemetry-group">
+        <span class="label">Relative Velocity</span>
+        <span class="sub-value" id="hud-vel">0.00 c</span>
+      </div>
+      <div class="telemetry-group" style="align-items: flex-end;">
+        <span class="label">Schwarzschild Horizon Margin</span>
+        <span class="sub-value" id="hud-prox" style="color: #00f0ff;">NOMINAL</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="time-warp-indicator">Chrono-Dilation Anchor Active (10% Spacetime Flux)</div>
+
+  <div id="overlay">
+    <div class="title">Event Horizon</div>
+    <div class="subtitle">Chrono-Drift Relativistic Engine</div>
+    <div class="instructions">
+      <div><strong>Geodesic Flight System:</strong></div>
+      <div>• <strong>Trackpad / Cursor:</strong> Cast a local gravitational micro-singularity. Steer your unpowered probe through curved spacetime geodesics.</div>
+      <div>• <strong>Spacebar (Hold) or Secondary Tap:</strong> Engage <em>Chrono-Dilation Anchor</em> (slows spacetime flux to 10% to compute multi-body slingshot vectors). Consumes Chrono Capacitor.</div>
+      <div>• <strong>Predictive Path Matrix:</strong> The dotted cyan projection calculates your exact trajectory 60 steps ahead through the shifting gravitational field.</div>
+      <div>• <strong>Objective:</strong> Collect all 8 telemetry nodes across 3 phases. Avoid crossing the black event horizon rings or contacting inverted past trajectory ribbons in Phase III.</div>
+    </div>
+    <button class="start-btn" id="start-btn">Initialize Flight System</button>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       SYNTHESIS ENGINE: AudioContext multi-operator FM, sub-drone, doppler
+       ========================================================================== */
+    class RelativisticAudio {
+      constructor() {
+        this.ctx = null;
+        this.subOsc = null;
+        this.subGain = null;
+        this.warpOsc = null;
+        this.warpGain = null;
+        this.noiseFilter = null;
+        this.noiseGain = null;
+        this.initialized = false;
+      }
+
+      init() {
+        if (this.initialized) {
+          if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+          return;
+        }
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        this.ctx = new AudioCtx();
+
+        // 1. Deep Sub-bass gravitational drone (36Hz)
+        this.subOsc = this.ctx.createOscillator();
+        this.subGain = this.ctx.createGain();
+        this.subOsc.type = 'sawtooth';
+        this.subOsc.frequency.setValueAtTime(36, this.ctx.currentTime);
+
+        const subFilter = this.ctx.createBiquadFilter();
+        subFilter.type = 'lowpass';
+        subFilter.frequency.setValueAtTime(75, this.ctx.currentTime);
+
+        this.subOsc.connect(subFilter);
+        subFilter.connect(this.subGain);
+        this.subGain.connect(this.ctx.destination);
+        this.subGain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+        this.subOsc.start();
+
+        // 2. High Doppler lensing carrier
+        this.warpOsc = this.ctx.createOscillator();
+        this.warpGain = this.ctx.createGain();
+        this.warpOsc.type = 'sine';
+        this.warpOsc.frequency.setValueAtTime(210, this.ctx.currentTime);
+        this.warpGain.gain.setValueAtTime(0.001, this.ctx.currentTime);
+
+        this.warpOsc.connect(this.warpGain);
+        this.warpGain.connect(this.ctx.destination);
+        this.warpOsc.start();
+
+        // 3. Relativistic cosmic dust friction (Pink noise)
+        const bufferSize = this.ctx.sampleRate * 2;
+        const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        let b0 = 0, b1 = 0, b2 = 0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          b0 = 0.997 * b0 + white * 0.05;
+          b1 = 0.963 * b1 + white * 0.11;
+          b2 = 0.570 * b2 + white * 0.55;
+          output[i] = (b0 + b1 + b2) * 0.1;
+        }
+        const noiseSource = this.ctx.createBufferSource();
+        noiseSource.buffer = noiseBuffer;
+        noiseSource.loop = true;
+
+        this.noiseFilter = this.ctx.createBiquadFilter();
+        this.noiseFilter.type = 'bandpass';
+        this.noiseFilter.frequency.setValueAtTime(320, this.ctx.currentTime);
+        this.noiseFilter.Q.setValueAtTime(2.5, this.ctx.currentTime);
+
+        this.noiseGain = this.ctx.createGain();
+        this.noiseGain.gain.setValueAtTime(0.02, this.ctx.currentTime);
+
+        noiseSource.connect(this.noiseFilter);
+        this.noiseFilter.connect(this.noiseGain);
+        this.noiseGain.connect(this.ctx.destination);
+        noiseSource.start();
+
+        this.initialized = true;
+      }
+
+      update(speedRatio, distRatio, isWarping) {
+        if (!this.initialized || !this.ctx || this.ctx.state !== 'running') return;
+        const now = this.ctx.currentTime;
+
+        const subFreq = 34 + speedRatio * 48;
+        this.subOsc.frequency.setTargetAtTime(subFreq, now, 0.06);
+
+        const proximityTone = Math.max(0, 1 - distRatio);
+        const targetWarpGain = (proximityTone * 0.15) + (isWarping ? 0.09 : 0.001);
+        this.warpGain.gain.setTargetAtTime(targetWarpGain, now, 0.05);
+        this.warpOsc.frequency.setTargetAtTime(190 + proximityTone * 480 + (isWarping ? -50 : 0), now, 0.06);
+
+        this.noiseFilter.frequency.setTargetAtTime(220 + speedRatio * 1800, now, 0.08);
+        this.noiseGain.gain.setTargetAtTime(0.01 + speedRatio * 0.05, now, 0.08);
+      }
+
+      playPing(freq = 587.33, dur = 1.0) {
+        if (!this.initialized || !this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now);
+        osc.frequency.exponentialRampToValueAtTime(freq * 1.45, now + 0.12);
+
+        gain.gain.setValueAtTime(0.32, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + dur);
+      }
+
+      playCollapse() {
+        if (!this.initialized || !this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(110, now);
+        osc.frequency.exponentialRampToValueAtTime(16, now + 1.2);
+
+        gain.gain.setValueAtTime(0.55, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 1.2);
+      }
+    }
+
+    /* ==========================================================================
+       SIMULATION STATE & OBJECT DEFINITIONS
+       ========================================================================== */
+    const canvas = document.getElementById('stage');
+    const ctx = canvas.getContext('2d');
+    const audio = new RelativisticAudio();
+
+    let width, height;
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', () => {
+      resize();
+      initStars();
+      clampNodesToStage();
+    });
+    resize();
+
+    let phase = 1;
+    let restartPhase = 1;
+    let loopRunning = false;
+    let score = 0;
+    const TOTAL_NODES = 8;
+    const NODE_EDGE_MARGIN = 30;
+    const RIBBON_RADIUS = 4;
+    const RIBBON_CLEARANCE = 24;
+    let chronoCapacitor = 100;
+    let isSlowMotion = false;
+    let isAlive = true;
+    let spaceKeyDown = false;
+    let stars = [];
+    let blackHoles = [];
+    let telemetryNodes = [];
+    let eventRibbons = [];
+    let particles = [];
+
+    const probe = {
+      x: 0,
+      y: 0,
+      vx: 0,
+      vy: 0,
+      radius: 5,
+      history: [],
+      maxHistory: 85
+    };
+
+    const cursor = {
+      x: width / 2,
+      y: height / 2,
+      active: true,
+      mass: 900
+    };
+
+    function initStars() {
+      stars = [];
+      const count = Math.floor((width * height) / 3000);
+      for (let i = 0; i < count; i++) {
+        stars.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          size: Math.random() * 1.5 + 0.5,
+          brightness: Math.random() * 0.7 + 0.3,
+          color: Math.random() > 0.4 ? '#ffffff' : (Math.random() > 0.5 ? '#90c0ff' : '#ffd090')
+        });
+      }
+    }
+
+    class BlackHole {
+      constructor(x, y, mass, radius, orbitSpeed = 0, orbitRadius = 0, center = null) {
+        this.x = x;
+        this.y = y;
+        this.mass = mass;
+        this.horizonRadius = radius;
+        this.ergosphereRadius = radius * 2.8;
+        this.lensingRadius = radius * 6.5;
+        this.orbitSpeed = orbitSpeed;
+        this.orbitRadius = orbitRadius;
+        this.orbitAngle = Math.random() * Math.PI * 2;
+        this.center = center;
+        this.rotation = 0;
+      }
+
+      update(dt) {
+        this.rotation += 0.85 * dt;
+        if (this.orbitRadius > 0 && this.center) {
+          this.orbitAngle += this.orbitSpeed * dt;
+          this.x = this.center.x + Math.cos(this.orbitAngle) * this.orbitRadius;
+          this.y = this.center.y + Math.sin(this.orbitAngle) * this.orbitRadius;
+        }
+      }
+
+      draw(ctx) {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+
+        // Gravitational Lensing Outer Halo
+        const glowGrad = ctx.createRadialGradient(0, 0, this.horizonRadius * 0.9, 0, 0, this.lensingRadius);
+        glowGrad.addColorStop(0, 'rgba(0, 0, 0, 1)');
+        glowGrad.addColorStop(0.18, 'rgba(255, 140, 40, 0.58)');
+        glowGrad.addColorStop(0.35, 'rgba(0, 240, 255, 0.34)');
+        glowGrad.addColorStop(0.7, 'rgba(100, 30, 240, 0.12)');
+        glowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+        ctx.fillStyle = glowGrad;
+        ctx.beginPath();
+        ctx.arc(0, 0, this.lensingRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Accretion Ring with Relativistic Doppler Beaming
+        ctx.rotate(this.rotation);
+        const ringGrad = ctx.createLinearGradient(-this.ergosphereRadius, 0, this.ergosphereRadius, 0);
+        ringGrad.addColorStop(0, 'rgba(140, 225, 255, 0.95)');
+        ringGrad.addColorStop(0.5, 'rgba(255, 180, 50, 0.65)');
+        ringGrad.addColorStop(1, 'rgba(220, 40, 20, 0.15)');
+
+        ctx.strokeStyle = ringGrad;
+        ctx.lineWidth = this.horizonRadius * 0.55;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, this.ergosphereRadius, this.ergosphereRadius * 0.42, 0, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Event Horizon (Schwarzschild Radius)
+        ctx.fillStyle = '#010005';
+        ctx.beginPath();
+        ctx.arc(0, 0, this.horizonRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Photon Sphere Rim
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+        ctx.lineWidth = 1.3;
+        ctx.beginPath();
+        ctx.arc(0, 0, this.horizonRadius * 1.04, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+    }
+
+    class TelemetryNode {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.radius = 9;
+        this.pulse = Math.random() * Math.PI;
+        this.collected = false;
+      }
+
+      update(dt) {
+        this.pulse += 3.5 * dt;
+      }
+
+      draw(ctx) {
+        if (this.collected) return;
+        ctx.save();
+        ctx.translate(this.x, this.y);
+
+        ctx.shadowColor = '#00f0ff';
+        ctx.shadowBlur = 12 + Math.sin(this.pulse) * 4;
+
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(0, 0, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = '#00f0ff';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(0, 0, 10 + Math.sin(this.pulse) * 2.2, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+    }
+
+    function clampNodesToStage() {
+      telemetryNodes.forEach(node => {
+        node.x = Math.max(NODE_EDGE_MARGIN, Math.min(width - NODE_EDGE_MARGIN, node.x));
+        node.y = Math.max(NODE_EDGE_MARGIN, Math.min(height - NODE_EDGE_MARGIN, node.y));
+      });
+    }
+
+    function loadPhase(p) {
+      phase = p;
+      score = 0;
+      chronoCapacitor = 100;
+      blackHoles = [];
+      telemetryNodes = [];
+      eventRibbons = [];
+      particles = [];
+
+      const centerX = width / 2;
+      const centerY = height / 2;
+
+      probe.x = width * 0.18;
+      probe.y = height * 0.5;
+      probe.vx = 0;
+      probe.vy = 2.4;
+      probe.history = [];
+
+      const pTitle = document.getElementById('phase-title');
+      const pDesc = document.getElementById('phase-desc');
+
+      if (phase === 1) {
+        pTitle.textContent = "Phase I: Lagrange Stabilizer";
+        pDesc.textContent = "Static Singularity Field • Intercept Resonant Nodes";
+        blackHoles.push(new BlackHole(centerX, centerY, 7400, 38));
+
+        for (let i = 0; i < TOTAL_NODES; i++) {
+          const ang = (i / TOTAL_NODES) * Math.PI * 2;
+          const dist = 190 + (i % 2) * 95;
+          telemetryNodes.push(new TelemetryNode(centerX + Math.cos(ang) * dist, centerY + Math.sin(ang) * dist));
+        }
+      } else if (phase === 2) {
+        pTitle.textContent = "Phase II: Orbital Decay";
+        pDesc.textContent = "Dynamic Binary Horizon • Extreme Mass Precession";
+        const bh1 = new BlackHole(centerX - 130, centerY, 5500, 28, 0.45, 130, { x: centerX, y: centerY });
+        const bh2 = new BlackHole(centerX + 130, centerY, 5500, 28, 0.45, 130, { x: centerX, y: centerY });
+        bh2.orbitAngle = Math.PI;
+        blackHoles.push(bh1, bh2);
+
+        for (let i = 0; i < TOTAL_NODES; i++) {
+          const ang = (i / TOTAL_NODES) * Math.PI * 2;
+          const dist = 220 + (i % 3) * 65;
+          telemetryNodes.push(new TelemetryNode(centerX + Math.cos(ang) * dist, centerY + Math.sin(ang) * dist));
+        }
+      } else if (phase === 3) {
+        pTitle.textContent = "Phase III: Chrono Singularity";
+        pDesc.textContent = "Non-Euclidean Frame-Dragging • Trajectory Inversion";
+        const centerHole = new BlackHole(centerX, centerY, 8900, 44);
+        const satHole = new BlackHole(centerX + 265, centerY, 4000, 24, -0.65, 265, { x: centerX, y: centerY });
+        blackHoles.push(centerHole, satHole);
+
+        for (let i = 0; i < TOTAL_NODES; i++) {
+          const ang = (i / TOTAL_NODES) * Math.PI * 2;
+          const dist = 160 + (i % 4) * 85;
+          telemetryNodes.push(new TelemetryNode(centerX + Math.cos(ang) * dist, centerY + Math.sin(ang) * dist));
+        }
+      }
+
+      clampNodesToStage();
+      updateHUD();
+    }
+
+    function updateHUD() {
+      document.getElementById('hud-score').textContent = `${score.toString().padStart(2, '0')} / ${TOTAL_NODES.toString().padStart(2, '0')}`;
+      document.getElementById('sync-bar').style.width = `${(score / TOTAL_NODES) * 100}%`;
+      document.getElementById('hud-chrono').textContent = `${Math.round(chronoCapacitor)}%`;
+      document.getElementById('chrono-bar').style.width = `${chronoCapacitor}%`;
+
+      const speed = Math.hypot(probe.vx, probe.vy);
+      const cRatio = Math.min(0.99, speed * 0.08).toFixed(2);
+      document.getElementById('hud-vel').textContent = `${cRatio} c`;
+    }
+
+    function triggerExplosion(x, y, color = '#00f0ff') {
+      for (let i = 0; i < 45; i++) {
+        const ang = Math.random() * Math.PI * 2;
+        const spd = Math.random() * 6.5 + 1;
+        particles.push({
+          x: x,
+          y: y,
+          vx: Math.cos(ang) * spd,
+          vy: Math.sin(ang) * spd,
+          life: 1.0,
+          decay: Math.random() * 0.02 + 0.015,
+          color: color
+        });
+      }
+    }
+
+    function checkFail(reason) {
+      if (!isAlive) return;
+      isAlive = false;
+      audio.playCollapse();
+      triggerExplosion(probe.x, probe.y, '#ff4422');
+
+      setTimeout(() => {
+        const overlay = document.getElementById('overlay');
+        overlay.classList.remove('hidden');
+        document.querySelector('.title').textContent = "Horizon Breach";
+        document.querySelector('.subtitle').textContent = reason || "Spacetime Singularity Consumed Probe";
+        const btn = document.getElementById('start-btn');
+        btn.textContent = "Recalibrate Trajectory";
+        restartPhase = phase;
+      }, 900);
+    }
+
+    function checkPhaseProgress() {
+      if (score >= TOTAL_NODES) {
+        if (phase < 3) {
+          audio.playPing(880, 1.8);
+          loadPhase(phase + 1);
+        } else {
+          isAlive = false;
+          audio.playPing(1174, 2.5);
+          const overlay = document.getElementById('overlay');
+          overlay.classList.remove('hidden');
+          document.querySelector('.title').textContent = "Relativistic Orbit Mastered";
+          document.querySelector('.subtitle').textContent = "All Geodesic Data Synchronized Beyond Horizon";
+          const btn = document.getElementById('start-btn');
+          btn.textContent = "Re-Initialize System";
+          restartPhase = 1;
+        }
+      }
+    }
+
+    /* ==========================================================================
+       EVENT HANDLERS & INPUT
+       ========================================================================== */
+    function overlayHidden() {
+      return document.getElementById('overlay').classList.contains('hidden');
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && overlayHidden()) {
+        e.preventDefault();
+        if (e.repeat) return;
+        spaceKeyDown = true;
+        isSlowMotion = true;
+        document.getElementById('time-warp-indicator').classList.add('active');
+      }
+    });
+
+    window.addEventListener('keyup', (e) => {
+      if (e.code === 'Space') {
+        if (overlayHidden()) e.preventDefault();
+        spaceKeyDown = false;
+        isSlowMotion = false;
+        document.getElementById('time-warp-indicator').classList.remove('active');
+      }
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      cursor.x = e.clientX;
+      cursor.y = e.clientY;
+    });
+
+    window.addEventListener('pointerdown', (e) => {
+      if (e.button === 2) {
+        isSlowMotion = true;
+        document.getElementById('time-warp-indicator').classList.add('active');
+      }
+    });
+
+    window.addEventListener('pointerup', () => {
+      if (!spaceKeyDown) {
+        isSlowMotion = false;
+        document.getElementById('time-warp-indicator').classList.remove('active');
+      }
+    });
+
+    window.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    document.getElementById('start-btn').addEventListener('click', (e) => {
+      audio.init();
+      document.getElementById('overlay').classList.add('hidden');
+      e.currentTarget.blur();
+      initStars();
+      isAlive = true;
+      loadPhase(restartPhase);
+      lastTime = performance.now();
+      if (!loopRunning) {
+        loopRunning = true;
+        requestAnimationFrame(gameLoop);
+      }
+    });
+
+    /* ==========================================================================
+       PHYSICS LOOP
+       ========================================================================== */
+    let lastTime = performance.now();
+
+    function updatePhysics(dt) {
+      if (!isAlive) return;
+
+      let timeRate = 1.0;
+      if (isSlowMotion && chronoCapacitor > 0) {
+        timeRate = 0.12;
+        chronoCapacitor = Math.max(0, chronoCapacitor - 24 * dt);
+        if (chronoCapacitor <= 0) {
+          isSlowMotion = false;
+          document.getElementById('time-warp-indicator').classList.remove('active');
+        }
+      } else {
+        chronoCapacitor = Math.min(100, chronoCapacitor + 14 * dt);
+      }
+
+      const effectiveDt = dt * timeRate;
+
+      blackHoles.forEach(bh => bh.update(effectiveDt));
+
+      let fx = 0;
+      let fy = 0;
+      let minHoleDist = 999999;
+
+      blackHoles.forEach(bh => {
+        const dx = bh.x - probe.x;
+        const dy = bh.y - probe.y;
+        const distSq = dx * dx + dy * dy;
+        const dist = Math.sqrt(distSq);
+
+        if (dist < minHoleDist) minHoleDist = dist;
+
+        if (dist <= bh.horizonRadius) {
+          checkFail("Probe Crossed Schwarzschild Radius");
+          return;
+        }
+
+        const force = bh.mass / Math.max(distSq, 1200);
+        fx += (dx / dist) * force;
+        fy += (dy / dist) * force;
+
+        if (dist < bh.ergosphereRadius) {
+          const swirl = (1 - dist / bh.ergosphereRadius) * 2.2;
+          fx += (-dy / dist) * swirl;
+          fy += (dx / dist) * swirl;
+        }
+      });
+
+      // Cursor Gravitational Tug
+      if (cursor.active) {
+        const cdx = cursor.x - probe.x;
+        const cdy = cursor.y - probe.y;
+        const cdist = Math.hypot(cdx, cdy);
+        if (cdist > 15) {
+          const cForce = cursor.mass / Math.max(cdist * 1.2, 100);
+          fx += (cdx / cdist) * cForce;
+          fy += (cdy / cdist) * cForce;
+        }
+      }
+
+      // Phase III Dynamic Hazard: Frame-dragging historical ribbons
+      if (phase === 3 && probe.history.length > 32) {
+        const sample = probe.history[probe.history.length - 28];
+        // Skip samples the probe hasn't cleared yet, or slow flight collides with its own wake
+        if (Math.hypot(probe.x - sample.x, probe.y - sample.y) > RIBBON_CLEARANCE) {
+          eventRibbons.push({ x: sample.x, y: sample.y, radius: RIBBON_RADIUS, life: 1.0 });
+        }
+      }
+
+      probe.vx += fx * effectiveDt;
+      probe.vy += fy * effectiveDt;
+
+      const currentSpeed = Math.hypot(probe.vx, probe.vy);
+      if (currentSpeed > 14) {
+        probe.vx = (probe.vx / currentSpeed) * 14;
+        probe.vy = (probe.vy / currentSpeed) * 14;
+      }
+
+      probe.x += probe.vx * (effectiveDt * 60);
+      probe.y += probe.vy * (effectiveDt * 60);
+
+      probe.history.push({ x: probe.x, y: probe.y, vx: probe.vx, vy: probe.vy });
+      if (probe.history.length > probe.maxHistory) probe.history.shift();
+
+      if (probe.x < 0) probe.x = width;
+      if (probe.x > width) probe.x = 0;
+      if (probe.y < 0) probe.y = height;
+      if (probe.y > height) probe.y = 0;
+
+      // Telemetry nodes collection
+      telemetryNodes.forEach(node => {
+        if (!node.collected) {
+          node.update(effectiveDt);
+          const dist = Math.hypot(probe.x - node.x, probe.y - node.y);
+          if (dist < probe.radius + node.radius + 6) {
+            node.collected = true;
+            score++;
+            audio.playPing(440 + score * 80, 0.9);
+            triggerExplosion(node.x, node.y, '#00f0ff');
+            checkPhaseProgress();
+          }
+        }
+      });
+
+      // Event ribbons hazard check
+      for (let i = eventRibbons.length - 1; i >= 0; i--) {
+        const r = eventRibbons[i];
+        r.life -= 0.35 * effectiveDt;
+        if (r.life <= 0) {
+          eventRibbons.splice(i, 1);
+          continue;
+        }
+        const dist = Math.hypot(probe.x - r.x, probe.y - r.y);
+        if (dist < probe.radius + r.radius + 2) {
+          checkFail("Spacetime Fracture: Collision with Historical Geodesic");
+          return;
+        }
+      }
+
+      // Particles
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx * effectiveDt * 60;
+        p.y += p.vy * effectiveDt * 60;
+        p.life -= p.decay * (effectiveDt * 60);
+        if (p.life <= 0) particles.splice(i, 1);
+      }
+
+      updateHUD();
+
+      const proxRatio = Math.min(1.0, minHoleDist / 420);
+      const proxEl = document.getElementById('hud-prox');
+      if (proxRatio < 0.25) {
+        proxEl.textContent = "CRITICAL LENSING";
+        proxEl.style.color = "#ff3322";
+      } else if (proxRatio < 0.55) {
+        proxEl.textContent = "ACCELERATING DECAY";
+        proxEl.style.color = "#ffaa33";
+      } else {
+        proxEl.textContent = "NOMINAL";
+        proxEl.style.color = "#00f0ff";
+      }
+
+      audio.update(currentSpeed / 14, proxRatio, isSlowMotion);
+    }
+
+    /* ==========================================================================
+       RENDERING PIPELINE & PREDICTIVE TRAJECTORY TRACER
+       ========================================================================== */
+    function renderTrajectoryPrediction() {
+      if (!isAlive) return;
+
+      let simX = probe.x;
+      let simY = probe.y;
+      let simVx = probe.vx;
+      let simVy = probe.vy;
+      const simDt = 0.016;
+      const steps = 60;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.45)';
+      ctx.lineWidth = 1.2;
+      ctx.setLineDash([4, 6]);
+
+      ctx.moveTo(simX, simY);
+
+      for (let i = 0; i < steps; i++) {
+        let fx = 0;
+        let fy = 0;
+
+        for (let bh of blackHoles) {
+          const dx = bh.x - simX;
+          const dy = bh.y - simY;
+          const distSq = dx * dx + dy * dy;
+          const dist = Math.sqrt(distSq);
+
+          if (dist > bh.horizonRadius) {
+            const force = bh.mass / Math.max(distSq, 1200);
+            fx += (dx / dist) * force;
+            fy += (dy / dist) * force;
+
+            if (dist < bh.ergosphereRadius) {
+              const swirl = (1 - dist / bh.ergosphereRadius) * 2.2;
+              fx += (-dy / dist) * swirl;
+              fy += (dx / dist) * swirl;
+            }
+          }
+        }
+
+        if (cursor.active) {
+          const cdx = cursor.x - simX;
+          const cdy = cursor.y - simY;
+          const cdist = Math.hypot(cdx, cdy);
+          if (cdist > 15) {
+            const cForce = cursor.mass / Math.max(cdist * 1.2, 100);
+            fx += (cdx / cdist) * cForce;
+            fy += (cdy / cdist) * cForce;
+          }
+        }
+
+        simVx += fx * simDt;
+        simVy += fy * simDt;
+
+        const spd = Math.hypot(simVx, simVy);
+        if (spd > 14) {
+          simVx = (simVx / spd) * 14;
+          simVy = (simVy / spd) * 14;
+        }
+
+        simX += simVx * (simDt * 60);
+        simY += simVy * (simDt * 60);
+
+        ctx.lineTo(simX, simY);
+      }
+
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function render() {
+      ctx.clearRect(0, 0, width, height);
+
+      // 1. Starfield deflection
+      ctx.save();
+      for (let s of stars) {
+        let sx = s.x;
+        let sy = s.y;
+
+        for (let bh of blackHoles) {
+          const dx = sx - bh.x;
+          const dy = sy - bh.y;
+          const dist = Math.hypot(dx, dy);
+          if (dist < bh.lensingRadius && dist > bh.horizonRadius) {
+            const bend = ((bh.lensingRadius - dist) / bh.lensingRadius) * 20;
+            sx += (dx / dist) * bend;
+            sy += (dy / dist) * bend;
+          }
+        }
+
+        ctx.fillStyle = s.color;
+        ctx.globalAlpha = s.brightness;
+        ctx.fillRect(sx, sy, s.size, s.size);
+      }
+      ctx.restore();
+
+      // 2. Black Holes
+      blackHoles.forEach(bh => bh.draw(ctx));
+
+      // 3. Event ribbons (Phase III)
+      if (phase === 3 && eventRibbons.length > 0) {
+        ctx.save();
+        for (let r of eventRibbons) {
+          ctx.beginPath();
+          ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255, 60, 120, ${r.life * 0.65})`;
+          ctx.shadowColor = '#ff2060';
+          ctx.shadowBlur = 8;
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      // 4. Cursor Gravitational Singularity Reticle & Tension Line
+      ctx.save();
+      const tugGrad = ctx.createRadialGradient(cursor.x, cursor.y, 2, cursor.x, cursor.y, 60);
+      tugGrad.addColorStop(0, 'rgba(0, 240, 255, 0.45)');
+      tugGrad.addColorStop(0.5, 'rgba(0, 240, 255, 0.08)');
+      tugGrad.addColorStop(1, 'rgba(0, 240, 255, 0)');
+      ctx.fillStyle = tugGrad;
+      ctx.beginPath();
+      ctx.arc(cursor.x, cursor.y, 60, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.4)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(cursor.x, cursor.y, 14, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.15)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3, 5]);
+      ctx.beginPath();
+      ctx.moveTo(probe.x, probe.y);
+      ctx.lineTo(cursor.x, cursor.y);
+      ctx.stroke();
+      ctx.restore();
+
+      // 5. Predictive Geodesic Trajectory
+      renderTrajectoryPrediction();
+
+      // 6. Telemetry Targets
+      telemetryNodes.forEach(node => node.draw(ctx));
+
+      // 7. Chrono-Drift Relativistic Trail
+      if (probe.history.length > 1) {
+        ctx.save();
+        for (let i = 1; i < probe.history.length; i++) {
+          const p1 = probe.history[i - 1];
+          const p2 = probe.history[i];
+          const alpha = i / probe.history.length;
+          const speed = Math.hypot(p2.vx, p2.vy);
+
+          const hue = 180 + Math.min(180, speed * 18);
+          ctx.strokeStyle = `hsla(${hue}, 100%, 65%, ${alpha * 0.75})`;
+          ctx.lineWidth = 1.2 + alpha * 2.2;
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      // 8. Needle Probe Craft
+      if (isAlive) {
+        ctx.save();
+        ctx.translate(probe.x, probe.y);
+        const heading = Math.atan2(probe.vy, probe.vx);
+        ctx.rotate(heading);
+
+        ctx.shadowColor = '#00f0ff';
+        ctx.shadowBlur = 14;
+
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.moveTo(10, 0);
+        ctx.lineTo(-6, -5);
+        ctx.lineTo(-3, 0);
+        ctx.lineTo(-6, 5);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.strokeStyle = '#00f0ff';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // 9. Particles
+      ctx.save();
+      for (let p of particles) {
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.life;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    function gameLoop(timestamp) {
+      const dt = Math.min((timestamp - lastTime) / 1000, 0.05);
+      lastTime = timestamp;
+
+      updatePhysics(dt);
+      render();
+
+      requestAnimationFrame(gameLoop);
+    }
+  </script>
+</body>
+</html>

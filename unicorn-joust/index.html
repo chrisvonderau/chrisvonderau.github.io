@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Unicorn Joust</title>
+    <link rel="stylesheet" type="text/css" href="./styles.css?v=20260523c">
+  </head>
+  <body>
+    <main class="arcade-shell">
+      <canvas
+        id="gameCanvas"
+        width="960"
+        height="540"
+        aria-label="Unicorn Joust local two-player arcade game"
+      ></canvas>
+
+      <div id="screenActions" class="screen-actions">
+        <button id="startButton" type="button">Start Match</button>
+      </div>
+
+      <button id="soundButton" class="sound-button" type="button" aria-pressed="false">
+        Sound On
+      </button>
+
+      <p class="sr-only">
+        Player one uses W, A, and D. Player two uses the arrow keys. Press P to pause.
+      </p>
+    </main>
+
+    <script src="./game.js?v=20260523c"></script>
+  </body>
+</html>

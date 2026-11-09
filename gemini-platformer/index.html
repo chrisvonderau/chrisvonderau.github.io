@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0,
+maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Aether Prism 3D</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; user-select: none;
+-webkit-user-select: none; }
+body, html { width: 100%; height: 100%; overflow: hidden; background:
+#060814; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+sans-serif; touch-action: none; }
+#canvas-container { width: 100%; height: 100%; position: absolute; top: 0;
+left: 0; z-index: 1; }
+#hud {
+position: absolute; top: 20px; left: 20px; right: 20px; display: flex;
+justify-content: space-between; align-items: center;
+z-index: 10; pointer-events: none;
+}
+.hud-card {
+background: rgba(18, 24, 48, 0.65); backdrop-filter: blur(24px);
+-webkit-backdrop-filter: blur(24px);
+border: 1px solid rgba(0, 240, 255, 0.25); border-radius: 14px; padding:
+10px 18px; color: #fff;
+display: flex; align-items: baseline; gap: 8px; box-shadow: 0 10px 30px
+rgba(0, 0, 0, 0.5);
+}
+.hud-label { font-size: 11px; font-weight: 700; text-transform: uppercase;
+letter-spacing: 1.5px; color: #7f93b5; }
+.hud-value { font-size: 20px; font-weight: 800; color: #00f0ff;
+text-shadow: 0 0 10px rgba(0,240,255,0.7); }
+#overlay-svg { position: absolute; top: 0; left: 0; width: 100%; height:
+100%; z-index: 5; pointer-events: none; }
+#guide {
+position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+z-index: 10;
+background: rgba(10, 14, 28, 0.75); backdrop-filter: blur(16px);
+-webkit-backdrop-filter: blur(16px);
+border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 20px; padding:
+8px 20px; color: #b5c7e8;
+font-size: 12px; font-weight: 500; pointer-events: none; white-space:
+nowrap;
+}
+#respawn {
+position: absolute; top: 0; left: 0; width: 100%; height: 100%; background:
+#ff0055;
+opacity: 0; pointer-events: none; z-index: 20; transition: opacity 0.2s
+ease-out;
+}
+</style>
+<script src="
+https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+<div id="canvas-container"></div>
+<svg id="overlay-svg"></svg>
+<div id="hud">
+<div class="hud-card">
+<span class="hud-label">Sector</span>
+<span class="hud-value" id="sector-display">01</span>
+</div>
+<div class="hud-card">
+<span class="hud-label">Prisms</span>
+<span class="hud-value" id="prism-display">0 / 4</span>
+</div>
+</div>
+<div id="guide">Trackpad / Touch: Click & Drag to Slingshot Character</div>
+<div id="respawn"></div>
+
+<script>
+// --- SYNTHESIZER AUDIO ENGINE ---
+class SoundFX {
+constructor() {
+this.ctx = null;
+this.scale = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 659.25];
+}
+init() {
+if (!this.ctx) {
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+this.ctx = new AudioContext();
+}
+if (this.ctx.state === 'suspended') this.ctx.resume();
+}
+playTension(val) {
+if (!this.ctx) return;
+const osc = this.ctx.createOscillator();
+const gain = this.ctx.createGain();
+osc.type = 'sawtooth';
+osc.frequency.setValueAtTime(100 + val * 240, this.ctx.currentTime);
+gain.gain.setValueAtTime(0.02 * val, this.ctx.currentTime);
+gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.06);
+osc.connect(gain);
+gain.connect(this.ctx.destination);
+osc.start();
+osc.stop(this.ctx.currentTime + 0.06);
+}
+playLaunch(intensity) {
+if (!this.ctx) return;
+const osc = this.ctx.createOscillator();
+const gain = this.ctx.createGain();
+osc.type = 'sine';
+osc.frequency.setValueAtTime(160 + intensity * 350, this.ctx.currentTime);
+osc.frequency.exponentialRampToValueAtTime(70, this.ctx.currentTime + 0.3);
+gain.gain.setValueAtTime(0.28, this.ctx.currentTime);
+gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.3);
+osc.connect(gain);
+gain.connect(this.ctx.destination);
+osc.start();
+osc.stop(this.ctx.currentTime + 0.3);
+}
+playLand() {
+if (!this.ctx) return;
+const osc = this.ctx.createOscillator();
+const gain = this.ctx.createGain();
+osc.type = 'triangle';
+osc.frequency.setValueAtTime(90, this.ctx.currentTime);
+osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.15);
+gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.15);
+osc.connect(gain);
+gain.connect(this.ctx.destination);
+osc.start();
+osc.stop(this.ctx.currentTime + 0.15);
+}
+playGem(index) {
+if (!this.ctx) return;
+const note = this.scale[index % this.scale.length] * 2;
+const osc = this.ctx.createOscillator();
+const gain = this.ctx.createGain();
+osc.type = 'sine';
+osc.frequency.setValueAtTime(note, this.ctx.currentTime);
+gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.5);
+osc.connect(gain);
+gain.connect(this.ctx.destination);
+osc.start();
+osc.stop(this.ctx.currentTime + 0.5);
+}
+playVoid() {
+if (!this.ctx) return;
+const osc = this.ctx.createOscillator();
+const gain = this.ctx.createGain();
+osc.type = 'sawtooth';
+osc.frequency.setValueAtTime(200, this.ctx.currentTime);
+osc.frequency.exponentialRampToValueAtTime(30, this.ctx.currentTime + 0.35);
+gain.gain.setValueAtTime(0.35, this.ctx.currentTime);
+gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.35);
+osc.connect(gain);
+gain.connect(this.ctx.destination);
+osc.start();
+osc.stop(this.ctx.currentTime + 0.35);
+}
+}
+const sfx = new SoundFX();
+
+// --- THREE.JS RENDER PIPELINE ---
+const container = document.getElementById('canvas-container');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x060814);
+scene.fog = new THREE.FogExp2(0x060814, 0.03);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true,
+powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+container.appendChild(renderer.domElement);
+
+// Isometric Camera
+const aspect = window.innerWidth / window.innerHeight;
+const frustumSize = 14;
+const camera = new THREE.OrthographicCamera(
+-frustumSize * aspect, frustumSize * aspect, frustumSize, -frustumSize,
+-40, 100
+);
+const isoAngle = Math.PI / 4;
+const camDist = 26;
+camera.position.set(camDist * Math.cos(isoAngle), camDist * 0.82, camDist *
+Math.sin(isoAngle));
+camera.lookAt(0, 0, 0);
+
+// Lights
+const ambientLight = new THREE.AmbientLight(0x222b45, 1.4);
+scene.add(ambientLight);
+
+const sun = new THREE.DirectionalLight(0xffffff, 2.0);
+sun.position.set(16, 32, 12);
+sun.castShadow = true;
+sun.shadow.mapSize.width = 2048;
+sun.shadow.mapSize.height = 2048;
+sun.shadow.camera.near = 0.5;
+sun.shadow.camera.far = 70;
+const shadowBound = 16;
+sun.shadow.camera.left = -shadowBound;
+sun.shadow.camera.right = shadowBound;
+sun.shadow.camera.top = shadowBound;
+sun.shadow.camera.bottom = -shadowBound;
+sun.shadow.bias = -0.0006;
+scene.add(sun);
+
+const cyanRim = new THREE.DirectionalLight(0x00f0ff, 1.5);
+cyanRim.position.set(-16, 12, -18);
+scene.add(cyanRim);
+
+// --- MATERIALS ---
+const platformMat = new THREE.MeshStandardMaterial({
+color: 0x111628,
+roughness: 0.2,
+metalness: 0.85
+});
+
+const edgeMat = new THREE.MeshBasicMaterial({
+color: 0x00f0ff,
+wireframe: true,
+transparent: true,
+opacity: 0.25
+});
+
+const prismMat = new THREE.MeshStandardMaterial({
+color: 0xff0066,
+emissive: 0xff0055,
+emissiveIntensity: 0.9,
+roughness: 0.1,
+metalness: 0.9
+});
+
+// --- PLAYER OBJECT ---
+const playerRadius = 0.42;
+const playerGroup = new THREE.Group();
+
+const orb = new THREE.Mesh(
+new THREE.SphereGeometry(playerRadius, 32, 32),
+new THREE.MeshStandardMaterial({
+color: 0xffffff,
+emissive: 0x00f0ff,
+emissiveIntensity: 0.6,
+roughness: 0.05,
+metalness: 0.1,
+transparent: true,
+opacity: 0.95
+})
+);
+orb.castShadow = true;
+playerGroup.add(orb);
+
+const innerCore = new THREE.Mesh(
+new THREE.SphereGeometry(playerRadius * 0.45, 16, 16),
+new THREE.MeshBasicMaterial({ color: 0x00ffff })
+);
+playerGroup.add(innerCore);
+scene.add(playerGroup);
+
+// Particle Trail
+const maxTrail = 35;
+const trailPositions = new Float32Array(maxTrail * 3);
+const trailGeo = new THREE.BufferGeometry();
+trailGeo.setAttribute('position', new THREE.BufferAttribute(trailPositions,
+3));
+const trailMat = new THREE.PointsMaterial({
+color: 0x00f0ff,
+size: 0.16,
+transparent: true,
+opacity: 0.7,
+blending: THREE.AdditiveBlending
+});
+const trailMesh = new THREE.Points(trailGeo, trailMat);
+scene.add(trailMesh);
+const trailPoints = [];
+
+// --- LEVEL PLATFORMS & GEMS ---
+const platforms = [];
+const collectibles = [];
+let score = 0;
+const totalScore = 4;
+
+function addPlatform(x, y, z, w, h, d) {
+const group = new THREE.Group();
+const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), platformMat);
+mesh.castShadow = true;
+mesh.receiveShadow = true;
+group.add(mesh);
+
+const outline = new THREE.Mesh(new THREE.BoxGeometry(w * 1.001, h * 1.001,
+d * 1.001), edgeMat);
+group.add(outline);
+
+group.position.set(x, y, z);
+scene.add(group);
+
+platforms.push({
+minX: x - w / 2, maxX: x + w / 2,
+minZ: z - d / 2, maxZ: z + d / 2,
+topY: y + h / 2
+});
+}
+
+function addPrism(x, y, z) {
+const mesh = new THREE.Mesh(new THREE.OctahedronGeometry(0.36, 0),
+prismMat);
+mesh.position.set(x, y, z);
+mesh.castShadow = true;
+scene.add(mesh);
+collectibles.push({ mesh, collected: false, baseY: y });
+}
+
+// Build Stage
+addPlatform(0, 0, 0, 4.5, 1.2, 4.5);
+addPrism(0, 1.5, 0);
+
+addPlatform(5.5, 0.7, -3.2, 3.2, 1.2, 5.0);
+addPrism(5.5, 2.1, -3.2);
+
+addPlatform(9.5, 1.6, 0.5, 3.0, 1.2, 3.0);
+addPrism(9.5, 3.0, 0.5);
+
+addPlatform(14.0, 2.5, -2.5, 4.0, 1.2, 4.0);
+addPrism(14.0, 3.9, -2.5);
+
+addPlatform(19.0, 3.4, 1.0, 5.0, 1.2, 5.0);
+
+// --- KINETICS & GESTURE INPUT ---
+const spawnPos = new THREE.Vector3(0, 1.2, 1.5);
+const playerPos = spawnPos.clone();
+playerGroup.position.copy(playerPos);
+
+const velocity = new THREE.Vector3(0, 0, 0);
+const gravity = -30.0;
+const friction = 0.93;
+let isGrounded = false;
+
+let isAiming = false;
+let touchStart = { x: 0, y: 0 };
+let touchCurrent = { x: 0, y: 0 };
+const maxDrag = 135;
+const svg = document.getElementById('overlay-svg');
+
+window.addEventListener('pointerdown', (e) => {
+sfx.init();
+isAiming = true;
+touchStart = { x: e.clientX, y: e.clientY };
+touchCurrent = { x: e.clientX, y: e.clientY };
+});
+
+window.addEventListener('pointermove', (e) => {
+if (!isAiming) return;
+touchCurrent = { x: e.clientX, y: e.clientY };
+const dx = touchCurrent.x - touchStart.x;
+const dy = touchCurrent.y - touchStart.y;
+const dist = Math.min(Math.hypot(dx, dy), maxDrag);
+sfx.playTension(dist / maxDrag);
+
+const angle = Math.atan2(dy, dx);
+const endX = touchStart.x + Math.cos(angle) * dist;
+const endY = touchStart.y + Math.sin(angle) * dist;
+
+svg.innerHTML = `
+<defs>
+<linearGradient id="lineGrad" x1="${touchStart.x}" y1="${touchStart.y}"
+x2="${endX}" y2="${endY}" gradientUnits="userSpaceOnUse">
+<stop offset="0%" stop-color="#00f0ff" stop-opacity="0.9"/>
+<stop offset="100%" stop-color="#ff0066" stop-opacity="0.2"/>
+</linearGradient>
+</defs>
+<line x1="${touchStart.x}" y1="${touchStart.y}" x2="${endX}" y2="${endY}"
+stroke="url(#lineGrad)" stroke-width="4" stroke-linecap="round"/>
+<circle cx="${endX}" cy="${endY}" r="5" fill="#ff0066"/>
+`;
+});
+
+window.addEventListener('pointerup', () => {
+if (!isAiming) return;
+isAiming = false;
+svg.innerHTML = '';
+
+const dx = touchCurrent.x - touchStart.x;
+const dy = touchCurrent.y - touchStart.y;
+const dist = Math.hypot(dx, dy);
+
+if (dist > 8) {
+const force = Math.min(dist / maxDrag, 1.0) * 19.0;
+const angle = Math.atan2(dy, dx);
+
+const screenX = -Math.cos(angle);
+const screenY = -Math.sin(angle);
+
+const worldX = (screenX - screenY) * 0.7071;
+const worldZ = (screenX + screenY) * 0.7071;
+
+velocity.x = worldX * force;
+velocity.z = worldZ * force;
+
+if (isGrounded) {
+velocity.y = Math.min(7.5 + (dist / maxDrag) * 7.5, 15.0);
+isGrounded = false;
+}
+sfx.playLaunch(force / 19.0);
+}
+});
+
+function respawnPlayer() {
+sfx.playVoid();
+const flash = document.getElementById('respawn');
+flash.style.opacity = '0.5';
+setTimeout(() => { flash.style.opacity = '0'; }, 200);
+
+playerPos.copy(spawnPos);
+velocity.set(0, 0, 0);
+trailPoints.length = 0;
+}
+
+// --- GAME ENGINE LOOP ---
+let prevTime = performance.now();
+const camLookTarget = new THREE.Vector3();
+
+function renderFrame(now) {
+requestAnimationFrame(renderFrame);
+
+const dt = Math.min((now - prevTime) / 1000, 0.05);
+prevTime = now;
+
+velocity.y += gravity * dt;
+playerPos.x += velocity.x * dt;
+playerPos.y += velocity.y * dt;
+playerPos.z += velocity.z * dt;
+
+let onPlatform = false;
+const playerBase = playerPos.y - playerRadius;
+
+for (let i = 0; i < platforms.length; i++) {
+const p = platforms[i];
+if (
+playerPos.x >= p.minX - playerRadius * 0.35 &&
+playerPos.x <= p.maxX + playerRadius * 0.35 &&
+playerPos.z >= p.minZ - playerRadius * 0.35 &&
+playerPos.z <= p.maxZ + playerRadius * 0.35
+) {
+if (playerBase <= p.topY && playerBase >= p.topY - 0.75 && velocity.y <= 0)
+{
+playerPos.y = p.topY + playerRadius;
+if (velocity.y < -3.5) sfx.playLand();
+velocity.y = 0;
+onPlatform = true;
+break;
+}
+}
+}
+
+isGrounded = onPlatform;
+if (isGrounded) {
+velocity.x *= Math.pow(friction, dt * 60);
+velocity.z *= Math.pow(friction, dt * 60);
+}
+
+if (playerPos.y < -6.5) {
+respawnPlayer();
+}
+
+playerGroup.position.copy(playerPos);
+
+collectibles.forEach((item, idx) => {
+if (!item.collected) {
+item.mesh.rotation.y += 2.2 * dt;
+item.mesh.position.y = item.baseY + Math.sin(now * 0.0035 + idx) * 0.12;
+
+if (playerPos.distanceTo(item.mesh.position) < playerRadius + 0.38) {
+item.collected = true;
+scene.remove(item.mesh);
+score++;
+document.getElementById('prism-display').innerText = `${score} /
+${totalScore}`;
+sfx.playGem(score);
+}
+}
+});
+
+if (velocity.length() > 0.6) {
+trailPoints.unshift(playerPos.clone());
+if (trailPoints.length > maxTrail) trailPoints.pop();
+} else if (trailPoints.length > 0) {
+trailPoints.pop();
+}
+
+const arr = trailMesh.geometry.attributes.position.array;
+for (let i = 0; i < maxTrail; i++) {
+if (i < trailPoints.length) {
+arr[i * 3] = trailPoints[i].x;
+arr[i * 3 + 1] = trailPoints[i].y;
+arr[i * 3 + 2] = trailPoints[i].z;
+} else {
+arr[i * 3] = playerPos.x;
+arr[i * 3 + 1] = playerPos.y;
+arr[i * 3 + 2] = playerPos.z;
+}
+}
+trailMesh.geometry.attributes.position.needsUpdate = true;
+
+camLookTarget.lerp(playerPos, 0.08);
+camera.position.set(
+camLookTarget.x + camDist * Math.cos(isoAngle),
+camLookTarget.y + camDist * 0.82,
+camLookTarget.z + camDist * Math.sin(isoAngle)
+);
+camera.lookAt(camLookTarget);
+sun.position.set(camLookTarget.x + 16, camLookTarget.y + 32,
+camLookTarget.z + 12);
+sun.target = playerGroup;
+
+renderer.render(scene, camera);
+}
+requestAnimationFrame(renderFrame);
+
+window.addEventListener('resize', () => {
+const w = window.innerWidth;
+const h = window.innerHeight;
+const a = w / h;
+camera.left = -frustumSize * a;
+camera.right = frustumSize * a;
+camera.top = frustumSize;
+camera.bottom = -frustumSize;
+camera.updateProjectionMatrix();
+renderer.setSize(w, h);
+});
+</script>
+</body>
+</html>

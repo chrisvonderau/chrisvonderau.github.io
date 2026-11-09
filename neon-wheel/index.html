@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WHEEL OF FORTUNE: NEON EDITION</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: #0a0a14;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        h1 {
+            color: #00ffcc;
+            text-shadow: 0 0 15px rgba(0,255,204,0.5);
+            margin: 5px 0 15px 0;
+            font-size: 2.2rem;
+            letter-spacing: 2px;
+        }
+        #game-layout {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            justify-content: center;
+            max-width: 1200px;
+            width: 100%;
+        }
+        #left-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        #wheel-container {
+            position: relative;
+            width: 360px;
+            height: 360px;
+        }
+        #wheel-pointer {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid #ff0055;
+            z-index: 5;
+            filter: drop-shadow(0 0 5px #ff0055);
+        }
+        canvas {
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(0,0,0,0.6), 0 0 15px rgba(0,240,255,0.2);
+        }
+        #board-panel {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        #puzzle-container {
+            background: #111122;
+            border: 4px solid #3d3d5c;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+        .puzzle-row {
+            display: flex;
+            gap: 6px;
+        }
+        .tile {
+            width: 45px;
+            height: 55px;
+            background: #22223b;
+            border: 2px solid #3d3d5c;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #fff;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+        .tile.blank {
+            background: #fff;
+            border-color: #ddd;
+            color: #000;
+        }
+        .tile.revealed {
+            background: #00ffcc;
+            color: #000;
+            box-shadow: 0 0 15px #00ffcc;
+            border-color: #fff;
+        }
+        #category-display {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #ff0077;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+        #status-bar {
+            background: #151525;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 5px solid #00f0ff;
+            font-size: 1.1rem;
+            min-height: 55px;
+            display: flex;
+            align-items: center;
+        }
+        #scoreboard {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+        }
+        .score-box {
+            flex: 1;
+            background: #1a1a30;
+            border: 2px solid #00f0ff;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0,240,255,0.1);
+        }
+        .score-box h3 { margin: 0 0 5px 0; font-size: 0.9rem; color: #888; }
+        .score-box div { font-size: 1.8rem; font-weight: bold; color: #fff; }
+        .score-box.active {
+            border-color: #ff0077;
+            box-shadow: 0 0 15px rgba(255,0,119,0.3);
+        }
+        .score-box.active h3 { color: #ff0077; }
+        #keyboard {
+            display: grid;
+            grid-template-columns: repeat(13, 13fr);
+            gap: 6px;
+            width: 100%;
+        }
+        .key {
+            background: #22223b;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 12px 0;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .key:hover:not(:disabled) {
+            background: #00f0ff;
+            color: #000;
+        }
+        .key:disabled {
+            opacity: 0.25;
+            cursor: not-allowed;
+        }
+        #controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            width: 100%;
+        }
+        .action-btn {
+            flex: 1;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        #spin-btn { background: #ff0077; color: white; box-shadow: 0 0 15px rgba(255,0,119,0.4); }
+        #spin-btn:hover:not(:disabled) { background: #ff3399; box-shadow: 0 0 25px rgba(255,0,119,0.7); }
+        #vowel-btn { background: #00f0ff; color: #000; box-shadow: 0 0 15px rgba(0,240,255,0.3); }
+        #vowel-btn:hover:not(:disabled) { background: #33f5ff; box-shadow: 0 0 25px rgba(0,240,255,0.6); }
+        #solve-btn { background: #00ffcc; color: #000; box-shadow: 0 0 15px rgba(0,255,204,0.3); }
+        #solve-btn:hover:not(:disabled) { background: #33ffdd; box-shadow: 0 0 25px rgba(0,255,204,0.6); }
+        .action-btn:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
+    </style>
+</head>
+<body>
+
+    <h1>WHEEL OF FORTUNE: NEON</h1>
+
+    <div id="game-layout">
+        <div id="left-panel">
+            <div id="wheel-container">
+                <div id="wheel-pointer"></div>
+                <canvas id="wheelCanvas" width="360" height="360"></canvas>
+            </div>
+            <div id="controls">
+                <button id="spin-btn" class="action-btn" onclick="spinWheel()">SPIN WHEEL</button>
+                <button id="vowel-btn" class="action-btn" onclick="prepareBuyVowel()">BUY VOWEL (-$250)</button>
+                <button id="solve-btn" class="action-btn" onclick="solvePuzzle()">SOLVE</button>
+            </div>
+        </div>
+
+        <div id="board-panel">
+            <div id="scoreboard">
+                <div id="player-box" class="score-box active">
+                    <h3>ROUND ACCOUNT</h3>
+                    <div id="player-wallet">$0</div>
+                </div>
+                <div id="total-box" class="score-box">
+                    <h3>GRAND TOTAL BANK</h3>
+                    <div id="player-bank">$0</div>
+                </div>
+            </div>
+            <div id="category-display">Category: <span id="category-text">Loading...</span></div>
+            <div id="puzzle-container"></div>
+            <div id="status-bar">Spin the wheel or try to solve the puzzle!</div>
+            <div id="keyboard"></div>
+        </div>
+    </div>
+
+<script>
+    // Game Data bank
+    const puzzles = [
+        { category: "Famous Movie Quote", phrase: "MAY THE FORCE BE WITH YOU" },
+        { category: "Classic Video Game", phrase: "SUPER MARIO BROS" },
+        { category: "Tech Giants", phrase: "APPLE MACBOOK AIR" },
+        { category: "Food & Drink", phrase: "PEPPERONI PIZZA" },
+        { category: "On the Map", phrase: "LOS ANGELES CALIFORNIA" }
+    ];
+
+    const wheelValues = [
+        "600", "700", "500", "800", "BANKRUPT", 
+        "650", "500", "900", "LOSE A TURN", "2500", 
+        "600", "700", "600", "LOSE A TURN", "700", 
+        "500", "800", "500", "BANKRUPT", "650", 
+        "500", "900", "700", "600"
+    ];
+    
+    const wheelColors = [
+        "#ff0055", "#00f0ff", "#ffcc00", "#ff00aa", "#000000", 
+        "#00ffcc", "#9900ff", "#ff6600", "#444444", "#00ff00",
+        "#ff0055", "#00f0ff", "#ffcc00", "#444444", "#ff00aa", 
+        "#00ffcc", "#9900ff", "#ff6600", "#000000", "#00ffcc",
+        "#ffcc00", "#ff00aa", "#00f0ff", "#9900ff"
+    ];
+
+    let currentPuzzle;
+    let guessedLetters = new Set();
+    let wallet = 0;
+    let grandBank = 0;
+    let currentSpinValue = null;
+    let gamePhase = "SPINNING"; // SPINNING, GUESSING_CONSONANT, GUESSING_VOWEL
+    
+    // Wheel Spin Physics setup
+    const canvas = document.getElementById("wheelCanvas");
+    const ctx = canvas.getContext("2d");
+    let currentAngle = 0;
+    let isSpinning = false;
+
+    // Build Keyboard UI
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const keyboardEl = document.getElementById("keyboard");
+    
+    function buildKeyboard() {
+        keyboardEl.innerHTML = "";
+        for (let char of alphabet) {
+            const btn = document.createElement("button");
+            btn.innerText = char;
+            btn.className = "key";
+            btn.id = "key-" + char;
+            btn.onclick = () => handleLetterGuess(char);
+            keyboardEl.appendChild(btn);
+        }
+    }
+
+    // Physical Wheel Draw Rendering
+    function drawWheel() {
+        const numSegments = wheelValues.length;
+        const arcSize = (Math.PI * 2) / numSegments;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (let i = 0; i < numSegments; i++) {
+            const angle = currentAngle + (i * arcSize);
+            ctx.fillStyle = wheelColors[i];
+            
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, canvas.height / 2);
+            ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 2, angle, angle + arcSize);
+            ctx.lineTo(canvas.width / 2, canvas.height / 2);
+            ctx.fill();
+
+            // Render Segment Typography Texts
+            ctx.save();
+            ctx.fillStyle = wheelValues[i] === "BANKRUPT" || wheelValues[i] === "LOSE A TURN" ? "#fff" : "#000";
+            if(wheelValues[i] === "BANKRUPT") ctx.fillStyle = "#ff0033";
+            
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate(angle + arcSize / 2);
+            ctx.textAlign = "right";
+            ctx.font = "bold 13px sans-serif";
+            ctx.fillText(wheelValues[i], canvas.width / 2 - 15, 5);
+            ctx.restore();
+        }
+
+        // Center hub visual cap
+        ctx.fillStyle = "#111122";
+        ctx.beginPath();
+        ctx.arc(canvas.width / 2, canvas.height / 2, 25, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "#00f0ff";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+    }
+
+    // Load Puzzle onto Visual Board
+    function loadPuzzle() {
+        currentPuzzle = puzzles[Math.floor(Math.random() * puzzles.length)];
+        document.getElementById("category-text").innerText = currentPuzzle.category;
+        guessedLetters.clear();
+        wallet = 0;
+        updateUI();
+
+        const container = document.getElementById("puzzle-container");
+        container.innerHTML = "";
+
+        // Break puzzle phrase into dynamic rows
+        const words = currentPuzzle.phrase.split(" ");
+        let currentRow = document.createElement("div");
+        currentRow.className = "puzzle-row";
+        container.appendChild(currentRow);
+
+        let letterCountInRow = 0;
+
+        words.forEach(word => {
+            if (letterCountInRow + word.length > 14) {
+                currentRow = document.createElement("div");
+                currentRow.className = "puzzle-row";
+                container.appendChild(currentRow);
+                letterCountInRow = 0;
+            }
+
+            for (let letter of word) {
+                const tile = document.createElement("div");
+                tile.className = "tile blank";
+                tile.dataset.letter = letter;
+                tile.innerText = "";
+                currentRow.appendChild(tile);
+            }
+
+            // Create blank spacing gap between words
+            const space = document.createElement("div");
+            space.className = "tile";
+            space.style.border = "none";
+            space.style.background = "transparent";
+            currentRow.appendChild(space);
+            letterCountInRow += word.length + 1;
+        });
+    }
+
+    function updateBoard() {
+        const tiles = document.querySelectorAll(".tile.blank");
+        tiles.forEach(tile => {
+            const letter = tile.dataset.letter;
+            if (guessedLetters.has(letter)) {
+                tile.classList.add("revealed");
+                tile.innerText = letter;
+            }
+        });
+    }
+
+    function spinWheel() {
+        if (isSpinning) return;
+        isSpinning = true;
+        setButtonsDisabled(true);
+        document.getElementById("status-bar").innerText = "The wheel is spinning...";
+
+        let spinVelocity = Math.random() * 0.4 + 0.3; 
+        const friction = 0.985;
+
+        function animateSpin() {
+            currentAngle += spinVelocity;
+            spinVelocity *= friction;
+            drawWheel();
+
+            if (spinVelocity < 0.002) {
+                isSpinning = false;
+                evaluateWheelStop();
+            } else {
+                requestAnimationFrame(animateSpin);
+            }
+        }
+        animateSpin();
+    }
+
+    function evaluateWheelStop() {
+        const numSegments = wheelValues.length;
+        const arcSize = (Math.PI * 2) / numSegments;
+        
+        // Calculate pointer selection (top pointer is at 1.5 * Math.PI positional angle offset)
+        let normalizedAngle = (2.5 * Math.PI - currentAngle) % (Math.PI * 2);
+        if (normalizedAngle < 0) normalizedAngle += Math.PI * 2;
+        
+        const sectorIndex = Math.floor(normalizedAngle / arcSize) % numSegments;
+        currentSpinValue = wheelValues[sectorIndex];
+
+        if (currentSpinValue === "BANKRUPT") {
+            wallet = 0;
+            document.getElementById("status-bar").innerText = "Oh no! You landed on BANKRUPT!";
+            gamePhase = "SPINNING";
+            setTimeout(updateUI, 2000);
+        } else if (currentSpinValue === "LOSE A TURN") {
+            document.getElementById("status-bar").innerText = "You hit LOSE A TURN! Spin again to break the lock.";
+            gamePhase = "SPINNING";
+            setTimeout(updateUI, 2000);
+        } else {
+            document.getElementById("status-bar").innerText = `Landed on: $${currentSpinValue}! Guess a CONSONANT.`;
+            gamePhase = "GUESSING_CONSONANT";
+            updateUI();
+        }
+    }
+
+    function handleLetterGuess(letter) {
+        if (guessedLetters.has(letter)) return;
+        guessedLetters.add(letter);
+        document.getElementById("key-" + letter).disabled = true;
+
+        const isVowel = "AEIOU".includes(letter);
+        
+        // Count matches
+        let matchCount = 0;
+        for (let char of currentPuzzle.phrase) {
+            if (char === letter) matchCount++;
+        }
+
+        if (gamePhase === "GUESSING_CONSONANT") {
+            if (isVowel) {
+                document.getElementById("status-bar").innerText = "That's a vowel! You must choose a consonant after spinning.";
+                guessedLetters.delete(letter);
+                document.getElementById("key-" + letter).disabled = false;
+                return;
+            }
+            if (matchCount > 0) {
+                const cashWon = matchCount * parseInt(currentSpinValue);
+                wallet += cashWon;
+                document.getElementById("status-bar").innerText = `Found ${matchCount} '${letter}'s! Added $${cashWon} to your round wallet.`;
+            } else {
+                document.getElementById("status-bar").innerText = `Sorry, no '${letter}'s found. Spin again!`;
+            }
+        } else if (gamePhase === "GUESSING_VOWEL") {
+            wallet -= 250;
+            if (matchCount > 0) {
+                document.getElementById("status-bar").innerText = `Found ${matchCount} '${letter}'s!`;
+            } else {
+                document.getElementById("status-bar").innerText = `No '${letter}'s found.`;
+            }
+        }
+
+        updateBoard();
+        gamePhase = "SPINNING";
+        updateUI();
+        checkAutoWin();
+    }
+
+    function prepareBuyVowel() {
+        if (wallet < 250) return;
+        gamePhase = "GUESSING_VOWEL";
+        document.getElementById("status-bar").innerText = "Select a VOWEL from the input set.";
+        updateUI();
+    }
+
+    function solvePuzzle() {
+        const solution = prompt("Type your solution for the puzzle below:").toUpperCase().trim();
+        if (solution === currentPuzzle.phrase) {
+            grandBank += wallet;
+            document.getElementById("status-bar").innerText = `CORRECT! You solved the puzzle and win $${wallet}!`;
+            setTimeout(() => {
+                alert(`Congratulations! Puzzle Solved. You secured $${wallet} this round! Loading next board.`);
+                loadPuzzle();
+                buildKeyboard();
+            }, 500);
+        } else {
+            alert("Incorrect guess! Don't lose heart, keep spinning.");
+        }
+    }
+
+    function checkAutoWin() {
+        // Check if all non-space characters have been guessed
+        const uniqueLetters = new Set(currentPuzzle.phrase.replace(/\s/g, ""));
+        let allSolved = true;
+        for(let l of uniqueLetters) {
+            if(!guessedLetters.has(l)) allSolved = false;
+        }
+        if(allSolved) {
+            setTimeout(() => {
+                grandBank += wallet;
+                alert(`You uncovered the whole board! Total winnings: $${wallet}. Loading next game!`);
+                loadPuzzle();
+                buildKeyboard();
+            }, 800);
+        }
+    }
+
+    function setButtonsDisabled(disabled) {
+        document.getElementById("spin-btn").disabled = disabled;
+        document.getElementById("vowel-btn").disabled = disabled;
+        document.getElementById("solve-btn").disabled = disabled;
+    }
+
+    function updateUI() {
+        document.getElementById("player-wallet").innerText = `$${wallet}`;
+        document.getElementById("player-bank").innerText = `$${grandBank}`;
+
+        if (isSpinning) return;
+
+        if (gamePhase === "SPINNING") {
+            setButtonsDisabled(false);
+            document.getElementById("spin-btn").disabled = false;
+            document.getElementById("vowel-btn").disabled = (wallet < 250);
+            toggleKeyboardInteractivity(false);
+        } else if (gamePhase === "GUESSING_CONSONANT" || gamePhase === "GUESSING_VOWEL") {
+            setButtonsDisabled(true);
+            toggleKeyboardInteractivity(true);
+        }
+    }
+
+    function toggleKeyboardInteractivity(activate) {
+        for (let char of alphabet) {
+            const btn = document.getElementById("key-" + char);
+            if (btn && !guessedLetters.has(char)) {
+                btn.disabled = !activate;
+            }
+        }
+    }
+
+    // Connect hardware MacBook keyboard events
+    window.addEventListener("keydown", (e) => {
+        const keyUpper = e.key.toUpperCase();
+        if (alphabet.includes(keyUpper) && (gamePhase === "GUESSING_CONSONANT" || gamePhase === "GUESSING_VOWEL")) {
+            const btn = document.getElementById("key-" + keyUpper);
+            if (btn && !btn.disabled) {
+                handleLetterGuess(keyUpper);
+            }
+        }
+    });
+
+    // Boot Routine Initializers
+    buildKeyboard();
+    loadPuzzle();
+    drawWheel();
+</script>
+</body>
+</html>

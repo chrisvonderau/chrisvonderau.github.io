@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEGAL JEOPARDY: THE SUPREME SHOWDOWN</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: #020208;
+            color: #fff;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        h1 {
+            color: #ffcc00;
+            text-shadow: 0 0 15px rgba(255, 204, 0, 0.6), 0 0 30px rgba(255, 204, 0, 0.3);
+            margin: 0 0 5px 0;
+            font-size: 2.5rem;
+            letter-spacing: 3px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+        #subtitle {
+            color: #00f0ff;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        #game-container {
+            max-width: 1100px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        #scoreboard {
+            background: #0a0a1f;
+            border: 2px solid #00f0ff;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+            padding: 15px 30px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #score-display {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #00ffcc;
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+            font-family: monospace;
+        }
+        #jeopardy-board {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            width: 100%;
+        }
+        .category-header {
+            background: linear-gradient(135deg, #0d1b2a, #1b263b);
+            border: 2px solid #415a77;
+            color: #ffcc00;
+            padding: 20px 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1rem;
+            text-transform: uppercase;
+            border-radius: 6px;
+            min-height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            letter-spacing: 1px;
+        }
+        .clue-cell {
+            background: linear-gradient(135deg, #001f3f, #003366);
+            border: 2px solid #0055a5;
+            color: #ffcc00;
+            font-size: 1.8rem;
+            font-weight: bold;
+            font-family: 'Georgia', serif;
+            padding: 25px 0;
+            text-align: center;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .clue-cell:hover:not(.disabled) {
+            transform: scale(1.04);
+            border-color: #00f0ff;
+            background: linear-gradient(135deg, #003366, #0055a5);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+            color: #fff;
+        }
+        .clue-cell.disabled {
+            background: #0d0d13;
+            border-color: #222;
+            color: #333;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        /* Modal Overlay Flash System */
+        #modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 2, 8, 0.95);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        #modal-card {
+            background: radial-gradient(circle, #002244 0%, #001122 100%);
+            border: 4px solid #ffcc00;
+            box-shadow: 0 0 40px rgba(255, 204, 0, 0.4);
+            max-width: 750px;
+            width: 100%;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn {
+            from { transform: scale(0.7); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        #timer-bar {
+            width: 100%; height: 8px;
+            background: #222;
+            margin-bottom: 30px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        #timer-fill {
+            width: 100%; height: 100%;
+            background: #00ffcc;
+            transition: width 1s linear;
+        }
+        #clue-text {
+            font-family: 'Georgia', serif;
+            font-size: 2.2rem;
+            line-height: 1.4;
+            color: #fff;
+            margin-bottom: 35px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+        }
+        #options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .option-btn {
+            background: rgba(255,255,255,0.03);
+            border: 2px solid #0055a5;
+            color: #00f0ff;
+            padding: 18px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+        .option-btn:hover:not(:disabled) {
+            background: #0055a5;
+            color: #fff;
+            border-color: #00f0ff;
+            box-shadow: 0 0 15px rgba(0,240,255,0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>LEGAL JEOPARDY</h1>
+    <div id="subtitle">The Supreme Court Showdown</div>
+
+    <div id="game-container">
+        <div id="scoreboard">
+            <div style="font-size: 1.2rem; font-weight: bold; letter-spacing: 1px; color: #888;">CURRENT STANDING</div>
+            <div id="score-display">$0</div>
+        </div>
+
+        <div id="jeopardy-board">
+            </div>
+    </div>
+
+    <div id="modal-overlay">
+        <div id="modal-card">
+            <div id="timer-bar"><div id="timer-fill"></div></div>
+            <div id="clue-text">LOADING LAW CLUE...</div>
+            <div id="options-container">
+                </div>
+        </div>
+    </div>
+
+<script>
+    // Native Audio Engine synthesized via Web Audio API 
+    const AudioEngine = {
+        ctx: null,
+        init() {
+            if (!this.ctx) {
+                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        },
+        playSelect() {
+            this.init();
+            let osc = this.ctx.createOscillator();
+            let gain = this.ctx.createGain();
+            osc.connect(gain); gain.connect(this.ctx.destination);
+            osc.type = 'triangle';
+            
+            // Rolling arcade chimes
+            let now = this.ctx.currentTime;
+            osc.frequency.setValueAtTime(261.63, now); // C4
+            osc.frequency.setValueAtTime(329.63, now + 0.08); // E4
+            osc.frequency.setValueAtTime(392.00, now + 0.16); // G4
+            osc.frequency.setValueAtTime(523.25, now + 0.24); // C5
+            
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+            osc.start(now); osc.stop(now + 0.4);
+        },
+        playCorrect() {
+            this.init();
+            let now = this.ctx.currentTime;
+            [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
+                let osc = this.ctx.createOscillator();
+                let gain = this.ctx.createGain();
+                osc.connect(gain); gain.connect(this.ctx.destination);
+                osc.type = 'sawtooth';
+                osc.frequency.value = f;
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+                osc.start(now); osc.stop(now + 0.6);
+            });
+        },
+        playWrong() {
+            this.init();
+            let osc = this.ctx.createOscillator();
+            let gain = this.ctx.createGain();
+            osc.connect(gain); gain.connect(this.ctx.destination);
+            osc.type = 'sawtooth';
+            let now = this.ctx.currentTime;
+            osc.frequency.setValueAtTime(180, now);
+            osc.frequency.linearRampToValueAtTime(90, now + 0.5); // Downward dive
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+            osc.start(now); osc.stop(now + 0.5);
+        },
+        playTick() {
+            this.init();
+            let osc = this.ctx.createOscillator();
+            let gain = this.ctx.createGain();
+            osc.connect(gain); gain.connect(this.ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.value = 800;
+            gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.05);
+            osc.start(); osc.stop(this.ctx.currentTime + 0.06);
+        }
+    };
+
+    // Legal Jeopardy Structural Dataset
+    const boardData = [
+        {
+            category: "Constitutional Law",
+            clues: [
+                { val: 200, q: "This Amendment protects citizens against unreasonable searches and seizures by law enforcement.", a: "The 4th Amendment", opts: ["The 1st Amendment", "The 4th Amendment", "The 5th Amendment", "The 8th Amendment"] },
+                { val: 400, q: "This clause in Article VI establishes that federal law trumps conflicting state statutes.", a: "The Supremacy Clause", opts: ["The Commerce Clause", "The Supremacy Clause", "The Due Process Clause", "The Elastic Clause"] },
+                { val: 600, q: "To pass this highest level of judicial review, a law must serve a 'compelling government interest'.", a: "Strict Scrutiny", opts: ["Rational Basis Review", "Intermediate Scrutiny", "Strict Scrutiny", "Lemon Test"] },
+                { val: 800, q: "This 1965 Supreme Court landmark case established an implicit constitutional right to privacy regarding contraception.", a: "Griswold v. Connecticut", opts: ["Roe v. Wade", "Griswold v. Connecticut", "Lochner v. New York", "Mapp v. Ohio"] }
+            ]
+        },
+        {
+            category: "Criminal Justice",
+            clues: [
+                { val: 200, q: "This is the requisite standard of proof required to convict a defendant in a criminal trial.", a: "Beyond a reasonable doubt", opts: ["Preponderance of evidence", "Clear and convincing evidence", "Probable cause", "Beyond a reasonable doubt"] },
+                { val: 400, q: "This rule excludes illegally obtained evidence from being introduced against a defendant at trial.", a: "The Exclusionary Rule", opts: ["The Hearsay Rule", "The Exclusionary Rule", "The Miranda Rule", "The Attenuation Doctrine"] },
+                { val: 600, q: "The Latin term 'Mens Rea' translates directly to this essential element of a crime.", a: "Guilty mind", opts: ["Guilty act", "Guilty mind", "Body of crime", "On face value"] },
+                { val: 800, q: "This defense applies when law enforcement induces a person to commit a crime they were otherwise un-disposed to commit.", a: "Entrapment", opts: ["Duress", "Entrapment", "Necessity", "Self-Defense"] }
+            ]
+        },
+        {
+            category: "Torts & Liability",
+            clues: [
+                { val: 200, q: "This civil wrong occurs when a person fails to exercise the care that a reasonably prudent person would.", a: "Negligence", opts: ["Assault", "Negligence", "Battery", "Trespass"] },
+                { val: 400, q: "Written or published defamation is legally classified as this specific tort.", a: "Libel", opts: ["Slander", "Libel", "Battery", "Conversion"] },
+                { val: 600, q: "Under this doctrine, an employer can be held liable for torts committed by an employee within the scope of work.", a: "Respondeat Superior", opts: ["Res Ipsa Loquitur", "Caveat Emptor", "Respondeat Superior", "Stare Decisis"] },
+                { val: 800, q: "This standard imposes liability without a finding of fault, often applied to ultra-hazardous activities.", a: "Strict Liability", opts: ["Gross Negligence", "Strict Liability", "Comparative Fault", "Vicarious Liability"] }
+            ]
+        },
+        {
+            category: "Intellectual Property",
+            clues: [
+                { val: 200, q: "This legal framework protects original works of authorship fixed in a tangible medium, like books or songs.", a: "Copyright", opts: ["Trademark", "Patent", "Copyright", "Trade Secret"] },
+                { val: 400, q: "This defense allows limited use of copyrighted material without permission for commentary, search, or parody.", a: "Fair Use", opts: ["Public Domain", "First Sale Doctrine", "Fair Use", "Creative Commons"] },
+                { val: 600, q: "Utility patents granted by the USPTO typically protect an approved invention for this many years.", a: "20 Years", opts: ["10 Years", "14 Years", "20 Years", "Life of author + 70 years"] },
+                { val: 800, q: "This doctrine prevents an IP holder from controlling the distribution of a specific copy after its initial lawful sale.", a: "First Sale Doctrine", opts: ["Fair Use Doctrine", "First Sale Doctrine", "Shop Right Doctrine", "Merger Doctrine"] }
+            ]
+        },
+        {
+            category: "Famous Trials",
+            clues: [
+                { val: 200, q: "This 1995 trial was widely broadcasted as the 'Trial of the Century' resulting in an acquittal for a former NFL star.", a: "O.J. Simpson Trial", opts: ["Rodney King Trial", "O.J. Simpson Trial", "Manson Family Trial", "Scottsboro Boys Trial"] },
+                { val: 400, q: "This historic 1925 trial contested a Tennessee law banning the teaching of human evolution in public schools.", a: "The Scopes Monkey Trial", opts: ["The Salem Witch Trials", "The Scopes Monkey Trial", "The Dred Scott Case", "Plessy v. Ferguson"] },
+                { val: 600, q: "These post-WWII military tribunals prosecuted prominent members of the political and military leadership of Nazi Germany.", a: "The Nuremberg Trials", opts: ["The Tokyo Tribunals", "The Hague Trials", "The Nuremberg Trials", "The Geneva Conventions"] },
+                { val: 800, q: "This 1803 landmark case established the principle of judicial review in the United States.", a: "Marbury v. Madison", opts: ["McCulloch v. Maryland", "Marbury v. Madison", "Gibbons v. Ogden", "Dred Scott v. Sandford"] }
+            ]
+        }
+    ];
+
+    let totalScore = 0;
+    const boardEl = document.getElementById("jeopardy-board");
+    const overlayEl = document.getElementById("modal-overlay");
+    const clueTextEl = document.getElementById("clue-text");
+    const optionsContEl = document.getElementById("options-container");
+    const timerFillEl = document.getElementById("timer-fill");
+    
+    let activeClue = null;
+    let timerInterval = null;
+    let timeLeft = 15;
+
+    // Construct the Game Board System Matrix
+    function initGame() {
+        boardEl.innerHTML = "";
+        
+        // 1. Append Category Title Banners
+        boardData.forEach(cat => {
+            const header = document.createElement("div");
+            header.className = "category-header";
+            header.innerText = cat.category;
+            boardEl.appendChild(header);
+        });
+
+        // 2. Interleave row-by-row point tiles logically
+        for (let rowIndex = 0; rowIndex < 4; rowIndex++) {
+            for (let catIndex = 0; catIndex < boardData.length; catIndex++) {
+                const clue = boardData[catIndex].clues[rowIndex];
+                const cell = document.createElement("div");
+                cell.className = "clue-cell";
+                cell.innerText = `$${clue.val}`;
+                
+                cell.onclick = () => {
+                    if (!cell.classList.contains("disabled")) {
+                        cell.classList.add("disabled");
+                        cell.innerText = "—";
+                        launchClue(clue);
+                    }
+                };
+                boardEl.appendChild(cell);
+            }
+        }
+    }
+
+    function launchClue(clue) {
+        AudioEngine.playSelect();
+        activeClue = clue;
+        clueTextEl.innerText = clue.q;
+        optionsContEl.innerHTML = "";
+        
+        // Populate options choice set buttons
+        clue.opts.forEach(option => {
+            const btn = document.createElement("button");
+            btn.className = "option-btn";
+            btn.innerText = option;
+            btn.onclick = () => evaluateAnswer(option);
+            optionsContEl.appendChild(btn);
+        });
+
+        overlayEl.style.display = "flex";
+        startTimer();
+    }
+
+    function startTimer() {
+        timeLeft = 15;
+        timerFillEl.style.width = "100%";
+        
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            timerFillEl.style.width = `${(timeLeft / 15) * 100}%`;
+            
+            if (timeLeft <= 5 && timeLeft > 0) {
+                AudioEngine.playTick();
+            }
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                evaluateAnswer(null); // Time out counts as incorrect
+            }
+        }, 1000);
+    }
+
+    function evaluateAnswer(selectedAnswer) {
+        clearInterval(timerInterval);
+        
+        // Turn off options immediately
+        const buttons = optionsContEl.querySelectorAll(".option-btn");
+        buttons.forEach(b => b.disabled = true);
+
+        if (selectedAnswer === activeClue.a) {
+            AudioEngine.playCorrect();
+            totalScore += activeClue.val;
+            clueTextEl.innerHTML = `<span style="color: #00ffcc; font-weight: bold;">CORRECT!</span><br><br>The answer is indeed ${activeClue.a}.`;
+        } else {
+            AudioEngine.playWrong();
+            totalScore -= activeClue.val;
+            const contextText = selectedAnswer === null ? "Time Expired!" : "INCORRECT.";
+            clueTextEl.innerHTML = `<span style="color: #ff0055; font-weight: bold;">${contextText}</span><br><br>Correct Answer: <br>${activeClue.a}`;
+        }
+
+        document.getElementById("score-display").innerText = (totalScore >= 0 ? "$" : "-$") + Math.abs(totalScore);
+
+        // Retain view card context briefly for learning before packing away card overlay
+        setTimeout(() => {
+            overlayEl.style.display = "none";
+        }, 2500);
+    }
+
+    // Auto boot routine setup
+    initGame();
+</script>
+</body>
+</html>

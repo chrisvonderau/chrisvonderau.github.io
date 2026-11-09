@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mime High-Rise</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="game-shell" aria-label="Mime High-Rise arcade game">
+      <section class="hud" aria-live="polite">
+        <div class="brand">
+          <span class="mark"></span>
+          <span>Mime High-Rise</span>
+        </div>
+        <div class="meters">
+          <span>Level <strong id="levelText">1</strong></span>
+          <span>Score <strong id="scoreText">0</strong></span>
+          <span>Lives <strong id="livesText">3</strong></span>
+        </div>
+        <button id="soundButton" class="sound-button" type="button">Sound On</button>
+      </section>
+
+      <div class="stage-frame">
+        <canvas id="gameCanvas" width="1280" height="820"></canvas>
+        <div id="overlay" class="overlay is-visible">
+          <div class="overlay-panel">
+            <p class="eyebrow">Cartoon arcade climb</p>
+            <h1>Mime High-Rise</h1>
+            <p id="overlayText">A gibbon has taken over the scaffold. Reach the rooftop spotlight before the rolling soccer balls steal the show.</p>
+            <button id="primaryButton" type="button">Start Run</button>
+          </div>
+        </div>
+      </div>
+
+      <nav class="touch-controls" aria-label="Touch controls">
+        <button type="button" data-control="left" aria-label="Left">&lt;</button>
+        <button type="button" data-control="up" aria-label="Up">^</button>
+        <button type="button" data-control="down" aria-label="Down">v</button>
+        <button type="button" data-control="right" aria-label="Right">&gt;</button>
+        <button type="button" data-control="jump" class="jump" aria-label="Jump">JUMP</button>
+      </nav>
+    </main>
+
+    <script src="game.js"></script>
+  </body>
+</html>
