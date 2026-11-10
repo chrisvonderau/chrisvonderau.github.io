@@ -1481,6 +1481,8 @@
       ctx.font = "700 18px Trebuchet MS, monospace";
       ctx.fillText("Move: Arrow Keys or A/D   Fire: Space", WIDTH / 2, 248);
       ctx.fillText("Pause: P   Mute: M", WIDTH / 2, 282);
+      ctx.font = "700 15px Trebuchet MS, monospace";
+      ctx.fillText("Controller: Stick/D-pad Move   A/RT Fire   Start Pause   Y Mute", WIDTH / 2, 316);
 
       ctx.fillStyle = "#fff36a";
       ctx.font = "700 24px Trebuchet MS, monospace";

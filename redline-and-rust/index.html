@@ -4528,7 +4528,7 @@ void main() {
     this._dann=now;
     this.padConnected=!1;
     this.gp=null;
-    this.padSteer=0;this.padBrake=0;this.padThrottle=0;this.lt=0;this.rt=0;this.stickX=0;this.stickY=0;this.held=[];this.edges=[];
+    this.padSteer=0;this.padBrake=0;this.padThrottle=0;this.lt=0;this.rt=0;this.stickX=0;this.stickY=0;this.held=[];this.edges=[];this.prevHeld=[];this.prevLt=0;this.prevRt=0;
     this.hooks.onPadDisconnect?.()
   }
   notePad(){this.mode!=="pad"&&this.setMode("pad");this.padUsed=!0}
@@ -4537,8 +4537,8 @@ void main() {
     let gp=this.readPad();
     if(!gp){
       this.miss=(this.miss||0)+1;
+      this.padSteer=0;this.padBrake=0;this.padThrottle=0;this.lt=0;this.rt=0;this.held=[];this.edges=[];
       if(this.padConnected&&this.miss>=12) this.announceDisconnect();
-      else if(!this.padConnected){this.padSteer=0;this.padBrake=0;this.padThrottle=0;this.edges=[]}
       return
     }
     this.miss=0;

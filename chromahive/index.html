@@ -3238,9 +3238,11 @@ body:hover canvas#game{cursor:default}
     read(rec, gp);
     rec.pbp = [];                    // first snapshot: a held button counts as a fresh press (Safari wakes pads on press)
     fire({ type: 'connect', index: i, id: gp.id });
-    for (var s = 0; s < 2; s++) {
-      var ls = lastSlot[s];
-      if (ls && ls.id === gp.id && ls.index === i && slots[s] === null) { lastSlot[s] = null; setSlot(s, i, true); break; }
+    // reclaim the slot this pad had before it dropped: same index first, else same controller model at a new index
+    var ss, done = false;
+    for (var pass = 0; pass < 2 && !done; pass++) for (ss = 0; ss < 2; ss++) {
+      var ls = lastSlot[ss];
+      if (ls && ls.id === gp.id && (pass === 1 || ls.index === i) && slots[ss] === null) { lastSlot[ss] = null; setSlot(ss, i, true); done = true; break; }
     }
     if (setup) setup.dirty = true;
   }

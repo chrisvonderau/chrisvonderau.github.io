@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-M/0qL686EhaGE+llkpl2JYlgss6Gg/a1RVrZH+knF18='; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; media-src data: blob:; worker-src blob:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-M/0qL686EhaGE+llkpl2JYlgss6Gg/a1RVrZH+knF18=' 'sha256-EpeUlFEjVpuZBOo4pJc/GD2i/X1/Y3lMFdtr9ZlRNMA=' 'sha256-GhjM2ZY16cfNMcj70+xL4AHkx9fV62VSHqYBBBxdBZc='; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; media-src data: blob:; worker-src blob:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -4975,5 +4975,364 @@ hold Pause or Settings > Frame profiler to hide`:"\nC = copy report  F3 or ` = h
 #coc-touch .ct-hint{position:absolute;left:calc(40px + env(safe-area-inset-left));bottom:calc(40px + env(safe-area-inset-bottom));width:130px;height:130px;border-radius:50%;border:2px dashed rgba(255,255,255,.25);pointer-events:none;color:rgba(255,255,255,.5);font:700 12px system-ui;display:flex;align-items:center;justify-content:center;text-align:center}
 `,hp=700;function Py({root:n,input:e,onPause:t,isEnabled:i}){let s={visible:!1,on:!1,stickId:null,attackId:null,origin:{x:0,y:0},cur:{x:0,y:0},radius:62,lastNear:null},r=document.createElement("style");r.textContent=sT,document.head.appendChild(r);let a=(G,K="")=>{let ee=document.createElement("div");return ee.className="ct "+G,ee.innerHTML=K,ee},o=a("ct-zone");o.dataset.ct="zone";let l=a("ct-btn ct-attack","ATTACK");l.dataset.ct="attack";let c=a("ct-btn ct-special",'<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="6" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="0"/></svg>');c.dataset.ct="special";let u=document.createElement("span");u.textContent="SPECIAL",c.appendChild(u),c.setAttribute("aria-label","Special");let p=c.querySelector("circle"),f=a("ct-btn ct-jump","<span>JUMP</span>");f.dataset.ct="jump";let h=f.querySelector("span"),y=a("ct-pause","❚❚");y.dataset.ct="pause",y.setAttribute("aria-label","Pause");let S=document.createElement("div");S.className="ct-stick-base",S.innerHTML='<div class="ct-stick-knob"></div>';let g=S.firstChild,m=document.createElement("div");m.className="ct-hint",m.textContent="drag here to move",n.append(o,m,S,c,f,l,y),n.style.display="none";let d=e.raw.stick;function k(G){s.stickId===null&&(s.stickId=G.pointerId,s.origin.x=s.cur.x=G.clientX,s.origin.y=s.cur.y=G.clientY,d.active=!0,d.mag=0,S.style.display="block",S.style.left=G.clientX+"px",S.style.top=G.clientY+"px",g.style.transform="",m.style.display="none")}function E(G){if(G.pointerId!==s.stickId)return;s.cur.x=G.clientX,s.cur.y=G.clientY;let K=wh(s.origin,s.cur,s.radius);s.origin.x=K.ox,s.origin.y=K.oy,d.dx=K.dx,d.dy=K.dy,d.mag=K.mag,S.style.left=K.ox+"px",S.style.top=K.oy+"px";let ee=K.dx*K.mag*s.radius,he=K.dy*K.mag*s.radius;g.style.transform=`translate(${ee}px,${he}px)`}function A(G){G.pointerId===s.stickId&&(s.stickId=null,d.active=!1,d.mag=0,d.dx=d.dy=0,S.style.display="none")}let I=G=>{try{G.currentTarget.setPointerCapture(G.pointerId)}catch{}};o.addEventListener("pointerdown",G=>{G.preventDefault(),I(G),k(G)}),o.addEventListener("pointermove",E),o.addEventListener("pointerup",A),o.addEventListener("pointercancel",A),o.addEventListener("lostpointercapture",A),l.addEventListener("pointerdown",G=>{G.preventDefault(),I(G),s.attackId=G.pointerId,e.raw.touchFire=!0,e.raw.fireEdge=!0,l.classList.add("down")});let P=G=>{G.pointerId===s.attackId&&(s.attackId=null,e.raw.touchFire=!1,l.classList.remove("down"))};l.addEventListener("pointerup",P),l.addEventListener("pointercancel",P),l.addEventListener("lostpointercapture",P);let w=(G,K)=>{G.addEventListener("pointerdown",he=>{he.preventDefault(),I(he),G.classList.add("down"),K()});let ee=()=>G.classList.remove("down");G.addEventListener("pointerup",ee),G.addEventListener("pointercancel",ee),G.addEventListener("lostpointercapture",ee)};w(c,()=>e.pressSpecial()),w(f,()=>e.pressJump());let z=-1;y.addEventListener("pointerdown",G=>{G.preventDefault(),I(G),y.classList.add("down"),z=performance.now()}),y.addEventListener("pointerup",()=>{let G=z;z=-1,y.classList.remove("down"),G>=0&&performance.now()-G<hp&&t?.()});let V=()=>{z=-1,y.classList.remove("down")};y.addEventListener("pointercancel",V),y.addEventListener("lostpointercapture",V);let $=G=>{G.cancelable&&G.preventDefault()};for(let G of["gesturestart","gesturechange","gestureend"])document.addEventListener(G,$,{passive:!1});document.addEventListener("touchmove",G=>{(G.touches.length>1||!G.target.closest?.(".mc-scroll,[data-scroll]"))&&$(G)},{passive:!1}),document.addEventListener("dblclick",$,{passive:!1}),document.addEventListener("selectstart",G=>{G.target.closest?.("input,textarea")||$(G)}),document.addEventListener("contextmenu",$);function O(G){s.visible!==G&&(s.visible=G,n.style.display=G?"block":"none",G||F())}function F(){s.stickId=null,d.active=!1,d.mag=0,S.style.display="none",s.attackId=null,e.raw.touchFire=!1,l.classList.remove("down")}return{get on(){return s.on},enable(){s.on=!0},firstTouch(G){if(s.on=!0,i()&&(O(!0),G&&G.clientX<innerWidth/2)){k(G);try{o.setPointerCapture(G.pointerId)}catch{}}},update(G,K){if(O(s.on&&K),!s.visible||!G)return;let ee=G.player||{};if(G.heroId&&G.heroId!==s.heroId){s.heroId=G.heroId;let ae=iT(G.heroId);u.textContent=ae,c.setAttribute("aria-label","Special: "+ae)}let he=Math.max(0,Math.min(1,ee.specialCd??0));p.setAttribute("stroke-dashoffset",String(289*he)),c.classList.toggle("cool",he>.001),c.classList.toggle("ready",he<=.001);let fe=G.near,Q=fe?fe.prompt||fe.kind||"use":null;Q!==s.lastNear&&(s.lastNear=Q,f.classList.toggle("ctx",!!fe),h.textContent=fe?String(fe.kind||"USE").toUpperCase().slice(0,8):"JUMP",fe&&(h.textContent=fe.kind==="door"||/open/.test(fe.prompt||"")?"OPEN":"USE"))},elements:{zone:o,attack:l,special:c,specialText:u,jump:f,pause:y,base:S},release:F}}var Iy=["bronze","silver","gold","platinum"],rT={playerHit:.42,enemyDie:.14,special:.28,bossHit:.22,bossPhase:.5,bossDefeated:.7,chandelierCrash:.65,thunder:.12,landHard:.22,doorSlam:.35,armorAwake:.4,madnessStart:.35,barrelBreak:.1,explosion:.3,enemyBlock:.08,squireAwake:.3,squireDefeated:.4,thiefCaught:.12,squireCollapse:.35,squireRush:.18},aT={enemyDie:.05,playerHit:.07,bossHit:.045,bossDefeated:.18,perfectDodge:.06},up=n=>!!n&&(n.squire===!0||n.type==="squire"||n.variant==="squire"||n.kind==="squire"||/^squire/i.test(String(n.id||""))||/^squire/i.test(String(n.name||"")));function oT(){let n=navigator.maxTouchPoints||0,e=typeof matchMedia=="function"&&matchMedia("(pointer: coarse)").matches;return!!(/iPad/.test(navigator.userAgent)||/Macintosh/.test(navigator.userAgent)&&n>1||n>0&&e)}function Ly({canvas:n,uiRoot:e,touchRoot:t,buildinfo:i}){let s=bh(),r=new Map,a={on(X,xe){let ge=r.get(X)||[];return ge.includes(xe)||r.set(X,ge.concat([xe])),()=>a.off(X,xe)},off(X,xe){let ge=r.get(X);ge&&ge.includes(xe)&&r.set(X,ge.filter(Pe=>Pe!==xe))},emit(X,xe){let ge=r.get(X);if(ge)for(let Pe=0;Pe<ge.length;Pe++)try{ge[Pe](xe)}catch(Je){console.error("[core] listener "+X,Je)}}},o=oT(),l=ry(s,(X,xe)=>je(X,xe)),c=sy(s),u=l.get(),p=null,f=ay({initial:u.quality==="auto"?op({isTouch:o,cores:navigator.hardwareConcurrency}):u.quality,deviceDpr:window.devicePixelRatio||1}),h=Ay(n,{tier:f.tier}),y=!1,S=null,g=0,m=(X,xe)=>{if(S||(S=document.createElement("div"),S.id="mc-gl-lost",S.setAttribute("role","status"),S.style.cssText="position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:99999;background:rgba(10,8,20,.92);color:#fff;font:600 15px/1.35 system-ui,sans-serif;padding:10px 16px;border-radius:10px;display:flex;gap:12px;align-items:center"),S.textContent=X,xe){let ge=document.createElement("button");ge.textContent="Reload",ge.style.cssText="min-height:44px;padding:0 16px;font:inherit;border-radius:8px;border:0;cursor:pointer",ge.addEventListener("click",()=>location.reload()),S.appendChild(ge)}!S.isConnected&&document.body&&document.body.appendChild(S)};n.addEventListener("webglcontextlost",X=>{X.preventDefault(),y=!0;try{Ke.screen==="playing"&&me.pause()}catch(xe){console.warn("[core] ctx lost pause",xe)}m("Graphics were reset by the browser. Restoring…",!1),clearTimeout(g),g=setTimeout(()=>{y&&m("Graphics could not be restored.",!0)},6e3)},!1),n.addEventListener("webglcontextrestored",()=>{y=!1,clearTimeout(g),S&&S.remove();try{h.resize?.()}catch(X){console.warn("[core] ctx restored",X)}},!1);let d=Cy(h.camera);d.st.reducedMotion=u.reducedMotion;let k=ty({hz:60}),E=null,A=null,I=null,P=c.get().selectedHero,w=null,z=null,V=0,$=0,O=0,F=0,G=-1,K=null,ee=0,he=null,fe=!1,Q={x:0,y:0,z:0,vx:0,vz:0},ae={x:0,z:0},Y={x:0,y:0,z:0,id:null},Ee=(X,xe)=>{let ge=X.enemies;if(ge){for(let Pe=0;Pe<ge.length;Pe++)if(ge[Pe].id===xe)return ge[Pe]}return null},ve=(X,xe)=>{try{return X()}catch(ge){return console.warn("[core] "+xe,ge),null}},Ye=dy({info:()=>({tier:h.tier,step:f.step,dpr:h.pixelRatio,deviceDpr:window.devicePixelRatio||1,shadow:h.shadowCap,quality:l.get().quality,w:h.size.w,h:h.size.h,level:Ke.levelId,hero:P,warm:me.stats.warm||null}),isTouch:()=>o});function Ze(){let X=Object.keys(pi.ENEMY_TYPES||{}),xe=["normal","shy","madness","golden","phantom","thief","squire"],ge=[];for(let _e of X)for(let U of xe)ge.push({type:_e,variant:U});let Pe=new Set;for(let _e of Object.values(pi.HEROES||{}))_e?.primary?.kind&&Pe.add(_e.primary.kind),_e?.special?.kind&&Pe.add(_e.special.kind);let Je=[];for(let _e of Pe)Je.push({kind:_e,owner:"player"});Je.push({kind:"ectoBlob",owner:"enemy"},{kind:"ectoBlob",owner:"player"});let oe=Array.isArray(Bn.raw?.PICKUP_KINDS)?Bn.raw.PICKUP_KINDS:["coin","gem","key","heart","artifact","treasure","shard"];return{enemies:ge,projs:Je,pickups:oe}}let Ke={screen:"menu",hud:null,results:null,levelId:null,heroId:P,fps:0,tier:f.tier,error:null},me={state:Ke,events:a,isTouch:o,isMac:!o,handlesPauseKeys:!0,buildinfo:i,get heroes(){return pi.HEROES},get levels(){return pi.LEVELS},settings:l,save:{get:()=>c.get(),set:X=>c.set(X),reset:()=>{let X=c.reset();return a.emit("save",X),X}},upgrades:{list(){let X=c.get().upgrades;return(Array.isArray(pi.UPGRADES)?pi.UPGRADES:Object.values(pi.UPGRADES||{})).map(ge=>{let Pe=X[ge.id]||0,Je=ge.maxLevel??ge.max??(ge.costs||ge.cost||[]).length??1,oe=ge.costs||ge.cost||[];return{...ge,level:Pe,maxLevel:Je,cost:Pe<Je?(Array.isArray(oe)?oe[Pe]:oe)??null:null,affordable:Pe<Je&&c.get().treasure>=((Array.isArray(oe)?oe[Pe]:oe)??1/0)}})},buy(X){let xe=me.upgrades.list().find(ge=>ge.id===X);return xe?xe.level>=xe.maxLevel||xe.cost==null?{ok:!1,reason:"max"}:c.get().treasure<xe.cost?{ok:!1,reason:"funds"}:(c.update(ge=>{ge.treasure-=xe.cost,ge.upgrades[X]=(ge.upgrades[X]||0)+1}),a.emit("upgradeBought",{id:X,level:xe.level+1}),nn.sfx("buy"),{ok:!0}):{ok:!1,reason:"unknown"}}},worldToScreen:(X,xe,ge)=>h.worldToScreen(X,xe,ge),heroPreview:(X,xe)=>Ry(X,xe),uiSound:X=>nn.sfx("ui_"+X),setHero(X){pi.HEROES[X]&&(P=X,Ke.heroId=X,c.set({selectedHero:X}),a.emit("hero",X))},hasContinue(X=1){let xe=c.get().checkpoint;return!!(xe&&xe.levelId===X)},start(X=c.get().lastLevel||1,xe=P,ge={}){let Pe=(pi.LEVELS||[]).find(te=>te.id===X);if(!Pe||Pe.playable===!1)return a.emit("toast",{text:(Pe?Pe.name:"That level")+" — coming soon!"}),!1;xe=pi.HEROES[xe]?xe:Object.keys(pi.HEROES)[0];let Je=c.get(),oe=!ge.fresh&&Je.checkpoint&&Je.checkpoint.levelId===X&&Je.checkpoint.heroId===xe?Je.checkpoint.data:null,_e=Je.levels[X]?.heroes?.[xe]||null,U;try{U=pi.createWorld({levelId:X,heroId:xe,seed:Math.random()*2**31|0,upgrades:{...Je.upgrades},difficulty:ge.difficulty||"normal",checkpoint:oe,best:_e,memory:Je.memory?.[X]||null,skipIntro:!!oe||!!Je.levels[X]?.completed})}catch(te){return console.error("[core] createWorld failed",te),oe?(c.set({checkpoint:null}),me.start(X,xe,{...ge,fresh:!0})):(Ke.error=String(te&&te.message||te),a.emit("toast",{text:"The castle refused to load: "+Ke.error}),!1)}if(E=U,I=Pe,P=xe,Ke.levelId=X,Ke.heroId=xe,Ke.results=null,w=null,c.update(te=>{te.selectedHero=xe,te.lastLevel=X,te.stats.plays++}),l.get().quality==="auto"){let te=f.takePending();te&&(h.setTier(te),Ke.tier=te,me.stats.tier=te)}h.loadLevel(X,E.layout,xe,h.tier),h.setStep(f.current),f.warm(1.5),me.stats.dpr=h.pixelRatio;{let te=ve(()=>h.warmup(Ze(),E.layout?.playerStart),"warmup");te&&(me.stats.warm=te,Ye.mark("warmup",te.ms))}d.setLayout(E.layout,{cutout:!0}),d.snap(),d.setMode("follow"),A=E.snapshot(),Ke.hud=A,k.reset(),V=0,z=null,F=0,G=-1,$=0;try{document.activeElement?.blur?.(),n.focus({preventScroll:!0})}catch{}return Re("playing"),Ce(Pe.music||"explore"),nn.resume(),W(),!0},pause(){Ke.screen==="playing"&&(Re("paused"),nn.pause())},resume(){if(Ke.screen==="paused"){k.reset(),Re("playing"),nn.resume();try{n.focus({preventScroll:!0})}catch{}}},togglePause(){Ke.screen==="playing"?me.pause():Ke.screen==="paused"&&me.resume()},restartCheckpoint(){if(E){try{E.restoreCheckpoint()}catch(X){console.error(X)}try{A=E.snapshot(),Ke.hud=A,W()}catch{}F=0,z=null,d.endBeat(),d.snap(),Ke.screen==="paused"?me.resume():Ke.screen!=="playing"&&Re("playing")}},restartLevel(){I&&me.start(I.id,P,{fresh:!0})},toMenu(){E=null,A=null,Ke.hud=null,I=null,ye(),Re("menu"),Ce("menu"),nn.resume()},exitToTitle(){me.toMenu()},nextLevel(){let X=(pi.LEVELS||[]).find(xe=>xe.id===(I?.id||0)+1);return X&&X.playable!==!1&&c.get().unlockedLevels.includes(X.id)?me.start(X.id,P,{fresh:!0}):(a.emit("toast",{text:X?`${X.name} — coming soon!`:"More castle coming soon!"}),me.toMenu(),!1)},get world(){return E},get snapshot(){return A},stats:{avgMs:16.7,tier:f.tier,steps:0,dpr:1,step:0,shadow:0}};function Re(X){Ke.screen!==X&&(Ke.screen=X,We.setEnabled(X==="playing"),a.emit("screen",{screen:X}))}function Ce(X){X&&X!==K&&(K=X,nn.setMusic(X,{fade:1.2}))}function je(X,xe={}){nn.setVolumes({music:X.musicVolume,sfx:X.sfxVolume}),nn.mute(!!X.muted),d.st.reducedMotion=X.reducedMotion,X.quality!==xe.quality&&(X.quality==="auto"?f.force(op({isTouch:o,cores:navigator.hardwareConcurrency})):f.force(X.quality),h.setTier(f.tier),h.setStep(f.current),Ke.tier=f.tier,me.stats.tier=f.tier,me.stats.dpr=h.pixelRatio),a.emit("settings",X)}let Ge=!1,ft=()=>{if(!Ge){Ge=!0;try{nn.init()}catch(X){console.warn("[core] Audio.init",X)}}};requestAnimationFrame(()=>setTimeout(ft,0));function wt(){if(fe)return;ft();try{nn.unlock()}catch{}let X=!1;try{X=(nn.stats()||{}).state==="running"}catch{}if(X){fe=!0;for(let xe of He)window.removeEventListener(xe,wt,!0)}}let He=["pointerdown","pointerup","touchend","keydown","click"];for(let X of He)window.addEventListener(X,wt,!0);let We=ky({canvas:n,getSettings:()=>l.get(),onPauseKey:X=>{X&&X.defaultPrevented&&Ke.screen==="paused"||Ke.screen==="paused"&&document.querySelector('#coc-ui [data-screen="settings"],#coc-ui [data-screen="controls"]')||me.togglePause()},onMuteKey:()=>{let X=!l.get("muted");l.set("muted",X),p?.flash(X?"Sound off — press M to turn it back on":"Sound on")},onFirstTouch:X=>{qe.firstTouch(X)},onCameraAdjust:(X,xe)=>{X==="recenter"?d.recenter():d.adjust(X,xe)},onActivity:()=>wt()}),qe=Py({root:t,input:We,onPause:()=>me.pause(),isEnabled:()=>Ke.screen==="playing"});ve(()=>Ye.attachLongPress(qe.elements&&qe.elements.pause,hp),"profiler long-press"),o&&qe.enable(),window.addEventListener("pointerdown",X=>{wt(),X.pointerType==="touch"&&!qe.on&&(qe.enable(),me.isTouch=!0,a.emit("touchMode",!0))},!0),je(l.get(),{quality:l.get().quality}),p=oy({Audio:nn,settings:l,getScreen:()=>Ke.screen,isTouch:()=>!!(me.isTouch||qe.on),events:a});let b=window.devicePixelRatio||1,M=null,T=()=>{let X=window.devicePixelRatio||1;if(X===b)return;b=X,f.setDeviceDpr(X)&&l.get().quality==="auto"&&(h.setStep(f.current),me.stats.dpr=h.pixelRatio,me.stats.step=f.step,me.stats.shadow=h.shadowCap),x()},x=()=>{try{M?.removeEventListener?.("change",T),M=matchMedia(`(resolution: ${b}dppx)`),M.addEventListener?.("change",T)}catch{}};x(),addEventListener("resize",T),document.addEventListener("visibilitychange",()=>{document.hidden?(Ke.screen==="playing"&&me.pause(),nn.pause(),qe.release()):(Ke.screen!=="paused"&&nn.resume(),k.reset(),_=performance.now())}),window.addEventListener("blur",()=>{!me.isTouch&&Ke.screen==="playing"&&me.pause()}),window.addEventListener("pagehide",()=>{Ke.screen==="playing"&&me.pause()});function C(X){if(!X||!X.name)return;nn.onEvent(X),h.onEvent(X);let xe=rT[X.name];xe&&d.addTrauma(xe),X.name==="shake"&&d.addTrauma(Math.max(0,Math.min(.8,Number(X.amount)||.2)));let ge=aT[X.name];switch(ge&&(V=Math.max(V,ge*(l.get().reducedMotion?.5:1))),X.name){case"hitEnemy":d.addTrauma(X.weak?.2:X.crit?.12:.05);break;case"madnessStart":Ce("madness");break;case"madnessEnd":Ce(Ke.hud?.boss&&!up(Ke.hud.boss)?"boss":I?.music||"explore");break;case"bossIntro":up(X)||(z={kind:"intro",t:0,rumble:0},d.setMode("bossIntro"),d.addTrauma(.45),nn.duck?.(.7,500),nn.sfx?.("bossSwell"),K="boss",nn.setMusic("boss",{fade:Ur}));break;case"bossDefeated":case"armorDefeated":!up(X)&&!(z&&z.kind==="down")&&(z={kind:"down",t:0,rumble:0},d.setMode("bossDown"),nn.duck?.(.6,1400),nn.sfx?.("bossDownSwell"),Ce(I?.music||"explore"));break;case"checkpoint":R();break;case"playerDead":if(F=0,nn.duck?.(.5,1200),E?.memory&&I)try{let Pe=E.memory();c.update(Je=>{Je.memory[I.id]=Pe})}catch{}break;case"levelComplete":re(X);break}a.emit(X.name,X)}function W(){if(!E)return;let X;try{X=E.drainEvents()}catch{X=[]}for(let xe=0;xe<X.length;xe++)C(X[xe])}function R(){if(!(!E||typeof E.checkpointData!="function"))try{let X=E.checkpointData();c.update(xe=>{xe.checkpoint={levelId:I.id,heroId:P,data:X,at:Date.now()},E.memory&&(xe.memory[I.id]=E.memory())})}catch(X){console.warn("[core] autosave",X)}}function re(X){Ke.results={...X,levelId:I?.id,heroId:P},d.setMode("victory"),Ce("victory");let xe=I.id;c.update(ge=>{let Pe=ge.levels[xe]=ge.levels[xe]||{completed:!1};Pe.completed=!0,Number.isFinite(X.score)&&(Pe.bestScore=Math.max(Pe.bestScore||0,X.score)),Number.isFinite(X.time)&&(Pe.bestTime=Pe.bestTime?Math.min(Pe.bestTime,X.time):X.time),X.rank&&Iy.indexOf(X.rank)>Iy.indexOf(Pe.bestRank||"")&&(Pe.bestRank=X.rank),Number.isFinite(X.treasure)&&(Pe.bestTreasure=Math.max(Pe.bestTreasure||0,X.treasure)),Pe.heroes=Pe.heroes||{};let Je=Pe.heroes[P]=Pe.heroes[P]||{};Number.isFinite(X.score)&&(Je.score=Math.max(Je.score||0,X.score)),Number.isFinite(X.time)&&(Je.time=Je.time?Math.min(Je.time,X.time):X.time),Number.isFinite(X.treasure)&&(ge.treasure+=Math.max(0,Math.floor(X.treasure)));let oe=Array.isArray(X.unlocked)?X.unlocked:Number.isInteger(X.unlocked)?[X.unlocked]:[];for(let _e of oe)ge.unlockedLevels.includes(_e)||ge.unlockedLevels.push(_e);if(X.artifact){let _e=X.artifact.id||X.artifact;ge.artifacts.some(U=>(U.id||U)===_e)||ge.artifacts.push(X.artifact)}if(ge.checkpoint=null,E?.memory)try{ge.memory[xe]=E.memory()}catch{}}),G=2.6}function ye(){try{w=pi.createWorld({levelId:1,heroId:P||"bumblewick",seed:7,skipIntro:!0})}catch{w=null}w&&(h.loadLevel(1,w.layout,null,h.tier),d.setLayout(w.layout,{cutout:!0}),d.setMode("menu"),d.snap())}let _=performance.now(),v=0,q=0,J={x:0,y:0},ne={move:{x:0,z:0,mag:0},aim:null,fire:!1,jump:!1,special:!1,interact:!1},Te=(X,xe)=>h.groundAt(X,xe,h.heroPos.y>.5?h.heroPos.y:0);function Ae(X){let xe=1/0,ge=X.player;if(!ge||!X.enemies)return xe;for(let Pe of X.enemies){if(Pe.state==="dead"||Pe.hp<=0||Pe.hostile===!1||Pe.state==="dormant"||Pe.flags?.npc)continue;let Je=Math.hypot(Pe.x-ge.x,Pe.z-ge.z);Je<xe&&(xe=Je)}return xe}function pe(X){h.beforeStep(A);let xe=ne;if(X){let ge=h.worldToScreen(h.heroPos.x,h.heroPos.y+.8,h.heroPos.z);J.x=ge.x,J.y=ge.y;let Pe=h.size;xe=We.sample({heroScreen:J,yaw:d.yaw,ref:Math.min(Pe.w,Pe.h),aimPoint:Te,heroPos:h.heroPos,dt:k.dt}),he&&(xe={...xe,...he,move:he.move||xe.move})}try{E.step(xe,k.dt)}catch(ge){console.error("[core] world.step",ge)}X&&We.consumeEdges(),me.stats.steps++,A=E.snapshot(),W()}function we(X){requestAnimationFrame(we);let xe=performance.now(),ge=(X-_)/1e3;_=X,ge<0&&(ge=0);let Pe=ge*1e3;v++,q+=ge,q>=1&&(Ke.fps=Math.round(v/q),v=0,q=0);let Je=Ke.screen;if(document.hidden||y)return;if(Je==="paused"){(ee++&7)===0&&h.render(A,1,0);return}if(l.get().quality==="auto"&&Je==="playing"){let Se=f.sample(Pe);Se&&(h.setStep(Se),me.stats.dpr=h.pixelRatio,me.stats.step=f.step,me.stats.shadow=h.shadowCap,a.emit("quality",f.tier)),me.stats.avgMs=f.avgMs}let oe=Math.min(ge,.1),_e=1;if(E&&(Je==="playing"||Je==="results")){let Se=1;if(z&&Je==="playing"){z.t+=oe;let ie=!!l.get().reducedMotion;z.kind==="intro"?(Se=_y(z.t,ie),!z.rumble&&z.t>.9&&(z.rumble=1,d.addTrauma(.35)),z.t>=Ur&&(z=null)):(Se=My(z.t,ie),z.t>=Ra&&(z=null))}Ke.timeScale=Se;let Oe=k.advance(ge*Se);for(let ie=0;ie<Oe.steps;ie++){if(V>0){V-=k.dt,h.beforeStep(A);continue}pe(Je==="playing")}if(_e=Oe.alpha,A){A.phase==="dead"?(F+=oe,F>7&&ey.isStub&&me.restartCheckpoint()):F=0,G>0&&(G-=oe,G<=0&&Ke.screen==="playing"&&Re("results"));let ie=Ae(A),Ne=ie<5?1:ie>16?0:1-(ie-5)/11;(A.boss||A.madness?.active)&&(Ne=1),A.phase==="victory"&&(Ne=0),$+=(Ne-$)*es(oe,Ne>$?.6:2.5),O+=oe,O>.1&&(O=0,nn.setIntensity(Math.round($*100)/100),A.player&&nn.setListener(A.player.x,A.player.z,d.yaw))}Ke.hud=A}let U=A?.player;if(E&&U){let Se=h.interpHero(A,_e);Q.x=Se.x,Q.y=Se.y,Q.z=Se.z,Q.vx=Se.vx,Q.vz=Se.vz;let Oe=We.raw.mouseFire?Ty(Q,We.out.aim,ae):null,ie=A.boss?h.interpEnemy(Ee(A,A.boss.id),_e,Y):null;d.update(oe,Q,Oe,ie)}else if(w){let Se=w.layout?.playerStart||{x:0,z:0};Q.x=Se.x||0,Q.y=0,Q.z=(Se.z||0)+8,Q.vx=0,Q.vz=0,d.update(oe,Q,null,null)}qe.update(A,Ke.screen==="playing"&&!(A&&A.phase==="dead"));let te=performance.now();h.render(E?A:null,_e,oe),Je==="playing"&&a.emit("hud",A);let se=performance.now();Je==="playing"&&Ye.record(X,Pe,te-xe,se-te,A,V>0,h.vfx&&h.vfx.particles?h.vfx.particles():0)}return me.mountTouch=qe,me._internals={get glLost(){return y},view:h,cam:d,input:We,touch:qe,governor:f,loop:k,profiler:Ye,dispatch:C,fallbacks:Ta,get world(){return E},setInputOverride(X){he=X},simStep:(X=1)=>{for(let xe=0;xe<X;xe++)E&&pe(!0)},get cine(){return z?{...z}:null}},ye(),Ce("menu"),requestAnimationFrame(X=>{_=X,we(X)}),me}var zy={streams:{sim:"real",art:"real",audio:"real",ui:"real"},test:!1,commit:"727d06815d6c51302db29dd9833b8ef6e78fbc7d"};function cT(n){let e=document.getElementById("coc-boot")||document.body.appendChild(document.createElement("div"));e.id="coc-boot",e.style.display="flex",e.innerHTML="";let t=document.createElement("div");t.textContent="The castle gates are stuck!";let i=document.createElement("small");i.textContent=n+" — try reloading the page (Safari or Chrome, WebGL required).",e.append(t,i)}function Dy(){let n=document.getElementById("coc-canvas"),e=document.getElementById("coc-ui"),t=document.getElementById("coc-touch"),i;try{i=Ly({canvas:n,uiRoot:e,touchRoot:t,buildinfo:zy})}catch(s){console.error("[core] boot failed",s),cT(/WebGL|context/i.test(String(s))?"WebGL is not available":String(s&&s.message||s));return}try{let s=Q1(i,e);s&&typeof s.isUiTarget=="function"&&i._internals.input.setUiFilter(r=>s.isUiTarget(r))}catch(s){console.error("[core] mountUI failed",s)}document.getElementById("coc-boot")?.remove(),Ta.length&&console.warn("[core] using stub fallbacks for: "+Ta.join(", "))}Dy();})();
 </script>
+<!--vpad-->
+<script>/* VPad v1 — Xbox Wireless controller layer for Vonderau games (Gamepad API, standard mapping).
+   Re-reads navigator.getGamepads() every frame, so a controller that drops and reconnects
+   (new index or same) is picked up again with no reload. Up to 4 pads; slot 0 = player 1.
+   Turns buttons/sticks into the keyboard keys, clicks and mouse moves each game already understands,
+   so keyboard, trackpad and touch keep working untouched.
+
+   VPad.init({
+     map(slot, ctx) -> { A:'Space', B:['Escape'], Up:'ArrowUp', LUp:'ArrowUp', LT:{click:true}, Start:{sel:'#pause'}, X:{fn(){...}} },
+                       // controls: A B X Y LB RB LT RT Back Start LS RS Up Down Left Right Home
+                       //           LUp LDown LLeft LRight RUp RDown RLeft RRight (sticks as directions)
+                       // value: key code string ('KeyZ','Space','ArrowLeft','Enter','Escape','Digit1'...), array of them,
+                       //        {click:true} (virtual cursor click), {sel:'css'} (click first visible match),
+                       //        {fn(){}} (called once on press), {key:'x', code:'KeyX', keyCode:88} (custom key)
+     players: 2,                 // how many pads the game uses (default 1). Extra pads get slot 0's mapping if shareMap.
+     ui: { selector:'button', when(){ return true }, back:'Escape' },   // D-pad/left stick move a highlight, A presses it
+     cursor: { stick:'left'|'right', speed:900, when(){...} },         // virtual pointer for click/trackpad games
+     look: { stick:'right', speed:700, when(){...} },                  // mouse-look (movementX/Y) for aim games
+     keyTarget(){ return element },  // where key events go (default: focused element, else body; they bubble to window)
+     badge: true, deadzone: 0.35, onChange(info){} });
+*/
+(function () {
+  'use strict';
+  if (window.VPad) return;
+  var BTN = { A: 0, B: 1, X: 2, Y: 3, LB: 4, RB: 5, LT: 6, RT: 7, Back: 8, Start: 9, LS: 10, RS: 11, Up: 12, Down: 13, Left: 14, Right: 15, Home: 16 };
+  var KC = { Space: 32, Enter: 13, Escape: 27, Tab: 9, Backspace: 8, ShiftLeft: 16, ShiftRight: 16, ControlLeft: 17, ControlRight: 17, AltLeft: 18, AltRight: 18,
+    ArrowLeft: 37, ArrowUp: 38, ArrowRight: 39, ArrowDown: 40, Comma: 188, Period: 190, Slash: 191, Semicolon: 186, Quote: 222, BracketLeft: 219, BracketRight: 221,
+    Minus: 189, Equal: 187, Backquote: 192, Backslash: 220, PageUp: 33, PageDown: 34, Home: 36, End: 35, Delete: 46, Insert: 45 };
+  var KEYNAME = { Space: ' ', Enter: 'Enter', Escape: 'Escape', Tab: 'Tab', Backspace: 'Backspace', ShiftLeft: 'Shift', ShiftRight: 'Shift', ControlLeft: 'Control', ControlRight: 'Control',
+    AltLeft: 'Alt', AltRight: 'Alt', ArrowLeft: 'ArrowLeft', ArrowUp: 'ArrowUp', ArrowRight: 'ArrowRight', ArrowDown: 'ArrowDown', Comma: ',', Period: '.', Slash: '/', Semicolon: ';',
+    Quote: "'", BracketLeft: '[', BracketRight: ']', Minus: '-', Equal: '=', Backquote: '`', Backslash: '\\', PageUp: 'PageUp', PageDown: 'PageDown', Home: 'Home', End: 'End', Delete: 'Delete', Insert: 'Insert' };
+  function keySpec(s) {
+    if (s && typeof s === 'object') return { key: s.key, code: s.code || s.key, keyCode: s.keyCode || 0 };
+    var code = String(s), key, kc = KC[code];
+    if (/^Key[A-Z]$/.test(code)) { key = code.slice(3).toLowerCase(); kc = code.charCodeAt(3); }
+    else if (/^Digit[0-9]$/.test(code)) { key = code.slice(5); kc = 48 + (+key); }
+    else if (/^F([1-9]|1[0-2])$/.test(code)) { key = code; kc = 111 + (+code.slice(1)); }
+    else if (/^Numpad[0-9]$/.test(code)) { key = code.slice(6); kc = 96 + (+key); }
+    else key = KEYNAME[code] !== undefined ? KEYNAME[code] : code;
+    return { key: key, code: code, keyCode: kc || 0 };
+  }
+
+  var cfg = null, slots = [null, null, null, null], prev = [{}, {}, {}, {}], held = {}, lastT = 0, started = false;
+  var cursorEl = null, cursor = { x: 0, y: 0, shown: false, down: null }, uiFocus = null, uiRepeat = {}, badgeEl = null, toastEl = null, toastT = 0, lastInfo = '';
+
+  function pads() {
+    var raw = [];
+    try { raw = navigator.getGamepads ? navigator.getGamepads() : []; } catch (e) { raw = []; }
+    var list = [];
+    for (var i = 0; i < (raw ? raw.length : 0); i++) { var p = raw[i]; if (p && p.connected !== false) list.push(p); }
+    return list;
+  }
+  // Stable slots keyed by gamepad index; a reconnected pad (any index) takes the lowest free slot.
+  function assign(list) {
+    var seen = {}, i, j;
+    for (i = 0; i < list.length; i++) seen[list[i].index] = list[i];
+    for (j = 0; j < 4; j++) if (slots[j] !== null && !seen[slots[j]]) { slots[j] = null; prev[j] = {}; toast('Controller ' + (j + 1) + ' disconnected'); }
+    for (i = 0; i < list.length; i++) {
+      var idx = list[i].index; if (slots.indexOf(idx) >= 0) continue;
+      for (j = 0; j < 4; j++) if (slots[j] === null) { slots[j] = idx; prev[j] = {}; toast('Controller ' + (j + 1) + ' connected'); break; }
+    }
+    var out = [];
+    for (j = 0; j < 4; j++) out[j] = slots[j] === null ? null : seen[slots[j]];
+    return out;
+  }
+  function readPad(p, dz) {
+    var s = {}, k, b = p.buttons || [], a = p.axes || [];
+    for (k in BTN) { var bt = b[BTN[k]]; s[k] = !!bt && (typeof bt === 'object' ? (bt.pressed || bt.value > 0.5) : bt > 0.5); }
+    var lx = a[0] || 0, ly = a[1] || 0, rx = a[2] || 0, ry = a[3] || 0;
+    s.LLeft = lx < -dz; s.LRight = lx > dz; s.LUp = ly < -dz; s.LDown = ly > dz;
+    s.RLeft = rx < -dz; s.RRight = rx > dz; s.RUp = ry < -dz; s.RDown = ry > dz;
+    s.ax = [lx, ly, rx, ry];
+    return s;
+  }
+  function visible(el) {
+    if (VPad.isVisible) return VPad.isVisible(el);
+    if (!el || el.disabled) return false;
+    var r = el.getBoundingClientRect(); if (r.width < 2 || r.height < 2) return false;
+    if (r.bottom < 0 || r.right < 0 || r.top > innerHeight || r.left > innerWidth) return false;
+    var cs = getComputedStyle(el); if (cs.visibility === 'hidden' || cs.pointerEvents === 'none' || +cs.opacity === 0) return false;
+    var top = document.elementFromPoint(Math.min(innerWidth - 1, Math.max(0, r.left + r.width / 2)), Math.min(innerHeight - 1, Math.max(0, r.top + r.height / 2)));
+    return !top || el === top || el.contains(top) || top.contains(el);
+  }
+  function keyTarget() {
+    var t = cfg.keyTarget && cfg.keyTarget(); if (t) return t;
+    var a = document.activeElement; return a && a !== document.documentElement ? a : (document.body || document);
+  }
+  function sendKey(type, spec) {
+    var e;
+    try { e = new KeyboardEvent(type, { key: spec.key, code: spec.code, bubbles: true, cancelable: true }); }
+    catch (x) { e = document.createEvent('Event'); e.initEvent(type, true, true); e.key = spec.key; e.code = spec.code; }
+    try { Object.defineProperty(e, 'keyCode', { get: function () { return spec.keyCode; } }); Object.defineProperty(e, 'which', { get: function () { return spec.keyCode; } }); } catch (x) {}
+    e.__vpad = true;
+    keyTarget().dispatchEvent(e);
+  }
+  function mouse(type, x, y, target, extra) {
+    target = target || document.elementFromPoint(x, y) || document.body;
+    var o = { bubbles: true, cancelable: true, clientX: x, clientY: y, screenX: x, screenY: y, button: 0, buttons: type === 'mouseup' || type === 'pointerup' || type === 'click' ? 0 : 1, view: window };
+    if (extra) for (var k in extra) o[k] = extra[k];
+    var e;
+    if (/^pointer/.test(type) && window.PointerEvent) { o.pointerId = 1; o.pointerType = 'mouse'; o.isPrimary = true; e = new PointerEvent(type, o); }
+    else if (/^pointer/.test(type)) return target;
+    else e = new MouseEvent(type, o);
+    if (extra && extra.movementX !== undefined && e.movementX !== extra.movementX) { try { Object.defineProperty(e, 'movementX', { value: extra.movementX }); Object.defineProperty(e, 'movementY', { value: extra.movementY }); } catch (x) {} }
+    e.__vpad = true; target.dispatchEvent(e); return target;
+  }
+  function clickEl(el) {
+    if (!el) return;
+    var r = el.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
+    mouse('pointerdown', x, y, el); mouse('mousedown', x, y, el); mouse('pointerup', x, y, el); mouse('mouseup', x, y, el);
+    if (typeof el.click === 'function') el.click(); else mouse('click', x, y, el);
+  }
+  function firstVisible(sel) { var l = document.querySelectorAll(sel); for (var i = 0; i < l.length; i++) if (visible(l[i])) return l[i]; return null; }
+
+  // ---------- spatial menu navigation ----------
+  function uiItems() { var l = document.querySelectorAll(cfg.ui.selector || 'button'), out = []; for (var i = 0; i < l.length; i++) if (visible(l[i])) out.push(l[i]); return out; }
+  function setFocus(el) {
+    if (uiFocus && uiFocus !== el) uiFocus.classList.remove('vpad-focus');
+    uiFocus = el; if (!el) return;
+    el.classList.add('vpad-focus');
+    try { el.focus({ preventScroll: false }); } catch (x) {}
+    try { el.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch (x) {}
+  }
+  function uiMove(dx, dy) {
+    var items = uiItems(); if (!items.length) return;
+    if (!uiFocus || items.indexOf(uiFocus) < 0) { setFocus(items[0]); return; }
+    var r = uiFocus.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2, best = null, bs = 1e18;
+    for (var i = 0; i < items.length; i++) {
+      var el = items[i]; if (el === uiFocus) continue;
+      var q = el.getBoundingClientRect(), ex = q.left + q.width / 2 - cx, ey = q.top + q.height / 2 - cy;
+      var along = ex * dx + ey * dy; if (along <= 1) continue;
+      var across = Math.abs(ex * dy - ey * dx), score = along + across * 2.5;
+      if (score < bs) { bs = score; best = el; }
+    }
+    if (!best) { // fall back to list order so every item is reachable
+      var k = items.indexOf(uiFocus) + ((dx + dy) > 0 ? 1 : -1);
+      best = items[(k + items.length) % items.length];
+    }
+    setFocus(best);
+  }
+  function uiActive() { return !!(cfg.ui && (!cfg.ui.when || cfg.ui.when()) && uiItems().length); }
+
+  // ---------- badge / toast ----------
+  var SVG = '<svg width="22" height="14" viewBox="0 0 44 28" aria-hidden="true"><path fill="currentColor" d="M12 2h20c6 0 10 6 11 14 1 7-2 11-6 11-3 0-5-3-7-6H14c-2 3-4 6-7 6-4 0-7-4-6-11C2 8 6 2 12 2zm-1 7v3H8v3h3v3h3v-3h3v-3h-3V9h-3zm20 1a2 2 0 100 4 2 2 0 000-4zm5 4a2 2 0 100 4 2 2 0 000-4z"/></svg>';
+  function ensureDom() {
+    if (!document.body || badgeEl) return;
+    var st = document.createElement('style');
+    st.textContent = '.vpad-focus{outline:3px solid #4fd1ff!important;outline-offset:3px!important;box-shadow:0 0 0 6px rgba(79,209,255,.35)!important}' +
+      '#vpad-badge{position:fixed;right:10px;bottom:10px;z-index:2147483646;display:none;align-items:center;gap:6px;padding:4px 9px;border-radius:999px;background:rgba(10,14,22,.72);color:#7CFFB2;font:600 12px/1 system-ui,-apple-system,sans-serif;pointer-events:none;transition:opacity .6s}' +
+      '#vpad-toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);z-index:2147483647;padding:8px 14px;border-radius:10px;background:rgba(10,14,22,.85);color:#fff;font:600 14px/1.2 system-ui,-apple-system,sans-serif;pointer-events:none;opacity:0;transition:opacity .3s}' +
+      '#vpad-cursor{position:fixed;left:0;top:0;width:26px;height:26px;margin:-13px 0 0 -13px;border:3px solid #4fd1ff;border-radius:50%;box-shadow:0 0 0 2px rgba(0,0,0,.6),0 0 12px #4fd1ff;z-index:2147483647;pointer-events:none;display:none}' +
+      '#vpad-cursor.down{background:rgba(79,209,255,.45)}';
+    (document.head || document.body).appendChild(st);
+    badgeEl = document.createElement('div'); badgeEl.id = 'vpad-badge'; document.body.appendChild(badgeEl);
+    toastEl = document.createElement('div'); toastEl.id = 'vpad-toast'; document.body.appendChild(toastEl);
+    cursorEl = document.createElement('div'); cursorEl.id = 'vpad-cursor'; document.body.appendChild(cursorEl);
+    cursor.x = innerWidth / 2; cursor.y = innerHeight / 2;
+  }
+  function toast(msg) { ensureDom(); if (!toastEl || cfg.badge === false) return; toastEl.textContent = msg; toastEl.style.opacity = '1'; toastT = 2200; }
+  function updateBadge(dt, n) {
+    if (!badgeEl || cfg.badge === false) return;
+    var on = []; for (var j = 0; j < 4; j++) if (slots[j] !== null) on.push(j + 1);
+    var info = on.join(',');
+    if (info !== lastInfo) {
+      lastInfo = info;
+      badgeEl.innerHTML = on.length ? SVG + '<span>' + (on.length === 1 ? 'P' + on[0] : on.map(function (x) { return 'P' + x; }).join(' ')) + '</span>' : '';
+      badgeEl.style.display = on.length ? 'flex' : 'none'; badgeEl.style.opacity = '1'; badgeEl.__t = 4000;
+      if (cfg.onChange) try { cfg.onChange({ connected: on.length, slots: on }); } catch (x) {}
+    }
+    if (badgeEl.__t > 0) { badgeEl.__t -= dt; if (badgeEl.__t <= 0) badgeEl.style.opacity = '.45'; }
+    if (toastT > 0) { toastT -= dt; if (toastT <= 0 && toastEl) toastEl.style.opacity = '0'; }
+  }
+
+  function actionsOf(v) { return v === undefined || v === null || v === false ? [] : Array.isArray(v) ? v : [v]; }
+  function frame(t) {
+    requestAnimationFrame(frame);
+    var dt = lastT ? Math.min(100, t - lastT) : 16; lastT = t;
+    ensureDom();
+    var list = pads(), assigned = assign(list), want = {}, dz = cfg.deadzone || 0.35, inUi = false, any = false;
+    var uiChecked = false;
+    for (var j = 0; j < 4; j++) {
+      var p = assigned[j]; if (!p) continue;
+      var s = readPad(p, dz), was = prev[j], fresh = false;
+      var useSlot = j < (cfg.players || 1) ? j : (cfg.shareMap === false ? -1 : 0);
+      if (useSlot < 0) { prev[j] = s; continue; }
+      any = true;
+      var press = function (c) { return s[c] && !was[c] && !fresh; };
+      if (!uiChecked) { inUi = uiActive(); uiChecked = true; }
+      var map = cfg.map ? (cfg.map(useSlot, { ui: inUi, state: s }) || {}) : {};
+      // --- menu navigation (any pad may drive menus) ---
+      if (inUi) {
+        var dirs = [['Up', 'LUp', 0, -1], ['Down', 'LDown', 0, 1], ['Left', 'LLeft', -1, 0], ['Right', 'LRight', 1, 0]];
+        for (var d = 0; d < 4; d++) {
+          var c = dirs[d], on = s[c[0]] || s[c[1]], key = j + c[0];
+          if (on && !fresh) { var r = uiRepeat[key]; if (r === undefined) { uiMove(c[2], c[3]); uiRepeat[key] = 380; } else { r -= dt; if (r <= 0) { uiMove(c[2], c[3]); r = 120; } uiRepeat[key] = r; } }
+          else delete uiRepeat[key];
+        }
+        if (press('A')) { var items = uiItems(); if (!uiFocus || items.indexOf(uiFocus) < 0) setFocus(items[0] || null); else clickEl(uiFocus); }
+        if (press('B') && cfg.ui.back) runOnce(cfg.ui.back, s);
+      }
+      for (var ctl in map) {
+        if (inUi && /^(Up|Down|Left|Right|LUp|LDown|LLeft|LRight|A|B)$/.test(ctl) && !(cfg.ui && cfg.ui.passthrough)) continue;
+        var acts = actionsOf(map[ctl]);
+        for (var a = 0; a < acts.length; a++) {
+          var act = acts[a];
+          if (typeof act === 'string' || (act && act.code !== undefined && !act.fn)) { if (s[ctl] && !fresh) { var ks = keySpec(act); want[ks.code + '|' + ks.key] = ks; } }
+          else if (act && act.fn) { if (press(ctl)) try { act.fn(useSlot, s); } catch (x) { setTimeout(function () { throw x; }); } }
+          else if (act && act.sel) { if (press(ctl)) clickEl(firstVisible(act.sel)); }
+          else if (act && act.click) { pointerButton(s[ctl] && !fresh); }
+        }
+      }
+      if (cfg.cursor && j === 0) moveCursor(s, dt);
+      if (cfg.look && j === 0) lookMouse(s, dt);
+      prev[j] = s;
+    }
+    if (!uiChecked && cfg.ui) inUi = false;
+    if (!inUi && uiFocus) { uiFocus.classList.remove('vpad-focus'); uiFocus = null; }
+    // key diff: release first, then press
+    for (var h in held) if (!want[h]) { sendKey('keyup', held[h]); delete held[h]; }
+    for (var w in want) if (!held[w]) { held[w] = want[w]; sendKey('keydown', want[w]); }
+    if (!any && cursor.down) pointerButton(false);
+    if (cursorEl && (!any || !cfg.cursor || (cfg.cursor.when && !cfg.cursor.when()))) { if (cursor.shown) { cursorEl.style.display = 'none'; cursor.shown = false; } }
+    updateBadge(dt, list.length);
+  }
+  function runOnce(v, s) {
+    var acts = actionsOf(v);
+    for (var i = 0; i < acts.length; i++) {
+      var a = acts[i];
+      if (a && a.fn) a.fn(0, s); else if (a && a.sel) clickEl(firstVisible(a.sel));
+      else { var ks = keySpec(a); sendKey('keydown', ks); sendKey('keyup', ks); }
+    }
+  }
+  function moveCursor(s, dt) {
+    if (cfg.cursor.when && !cfg.cursor.when()) return;
+    var i = cfg.cursor.stick === 'right' ? 2 : 0, x = s.ax[i], y = s.ax[i + 1], m = Math.hypot(x, y), dz = 0.15;
+    var dpx = (s.Right ? 1 : 0) - (s.Left ? 1 : 0), dpy = (s.Down ? 1 : 0) - (s.Up ? 1 : 0);
+    if (cfg.cursor.dpad === false) dpx = dpy = 0;
+    if (m < dz && !dpx && !dpy) return;
+    var sp = (cfg.cursor.speed || 900) * dt / 1000, k = m < dz ? 0 : Math.pow((m - dz) / (1 - dz), 1.8) / m;
+    cursor.x = Math.max(0, Math.min(innerWidth - 1, cursor.x + (x * k + dpx * 0.5) * sp));
+    cursor.y = Math.max(0, Math.min(innerHeight - 1, cursor.y + (y * k + dpy * 0.5) * sp));
+    showCursor();
+    var tgt = cursor.down || null;
+    mouse('pointermove', cursor.x, cursor.y, tgt); mouse('mousemove', cursor.x, cursor.y, tgt);
+  }
+  function showCursor() { if (!cursorEl) return; cursorEl.style.display = 'block'; cursorEl.style.transform = 'translate(' + cursor.x + 'px,' + cursor.y + 'px)'; cursor.shown = true; }
+  function pointerButton(down) {
+    if (down && !cursor.down) {
+      showCursor(); var t = document.elementFromPoint(cursor.x, cursor.y) || (cfg.cursor && cfg.cursor.target && cfg.cursor.target()) || document.body;
+      cursor.down = t; mouse('pointerdown', cursor.x, cursor.y, t); mouse('mousedown', cursor.x, cursor.y, t); if (cursorEl) cursorEl.classList.add('down');
+    } else if (!down && cursor.down) {
+      var t0 = cursor.down, t1 = document.elementFromPoint(cursor.x, cursor.y) || t0; cursor.down = null;
+      mouse('pointerup', cursor.x, cursor.y, t1); mouse('mouseup', cursor.x, cursor.y, t1);
+      if (t1 === t0 || t0.contains(t1)) mouse('click', cursor.x, cursor.y, t1);
+      if (cursorEl) cursorEl.classList.remove('down');
+    }
+  }
+  function lookMouse(s, dt) {
+    if (cfg.look.when && !cfg.look.when()) return;
+    var i = cfg.look.stick === 'left' ? 0 : 2, x = s.ax[i], y = s.ax[i + 1], m = Math.hypot(x, y), dz = 0.12;
+    if (m < dz) return;
+    var k = Math.pow((m - dz) / (1 - dz), 1.6) / m, sp = (cfg.look.speed || 700) * dt / 1000;
+    var mx = x * k * sp, my = y * k * sp * (cfg.look.invertY ? -1 : 1);
+    var t = (cfg.look.target && cfg.look.target()) || document.pointerLockElement || document;
+    mouse('mousemove', cursor.x, cursor.y, t === document ? document.body : t, { movementX: mx, movementY: my });
+  }
+
+  var VPad = {
+    version: 1,
+    init: function (c) {
+      cfg = c || {};
+      if (started) return VPad; started = true;
+      addEventListener('mousemove', function (e) { if (!e.__vpad && cursor.shown && cursorEl) { cursorEl.style.display = 'none'; cursor.shown = false; cursor.x = e.clientX; cursor.y = e.clientY; } }, true);
+      addEventListener('blur', function () { for (var h in held) { sendKey('keyup', held[h]); delete held[h]; } });
+      addEventListener('gamepadconnected', function () {}); // Safari exposes pads only once a listener exists
+      requestAnimationFrame(frame);
+      return VPad;
+    },
+    configure: function (c) { for (var k in c) cfg[k] = c[k]; },
+    connected: function () { var n = 0; for (var j = 0; j < 4; j++) if (slots[j] !== null) n++; return n; },
+    state: function (slot) { var p = slots[slot]; return p === null ? null : prev[slot]; },
+    rumble: function (slot, ms, strong) {
+      var list = pads(); for (var i = 0; i < list.length; i++) if (list[i].index === slots[slot || 0]) {
+        var act = list[i].vibrationActuator; if (act && act.playEffect) act.playEffect('dual-rumble', { duration: ms || 120, strongMagnitude: strong == null ? 0.6 : strong, weakMagnitude: 0.4 }).catch(function () {});
+      }
+    },
+    releaseAll: function () { for (var h in held) { sendKey('keyup', held[h]); delete held[h]; } pointerButton(false); },
+    _debug: function () { return { slots: slots.slice(), held: Object.keys(held), ui: uiFocus, cursor: cursor }; },
+  };
+  window.VPad = VPad;
+})();
+</script>
+<script>/* Xbox controller for Castle of Chaos: left stick/D-pad move, A jump/interact, X or RT attack, B or LT special,
+   right stick camera (RS/Y recenter), Start pause/resume, View mute. Menus: D-pad/stick highlight, A select,
+   B back, LB/RB adjust a highlighted slider, Start = the screen's main button. */
+(function () {
+  function q(s) { return document.querySelector(s); }
+  function scr() { return q('#coc-ui .mc-screen'); }
+  function key(code, k, kc) {
+    var t = document.activeElement && document.activeElement !== document.documentElement ? document.activeElement : document.body;
+    ['keydown', 'keyup'].forEach(function (ty) {
+      var e = new KeyboardEvent(ty, { key: k, code: code, bubbles: true, cancelable: true });
+      try { Object.defineProperty(e, 'keyCode', { get: function () { return kc; } }); } catch (x) {}
+      e.__vpad = true; t.dispatchEvent(e);
+    });
+  }
+  function start() {
+    var s = scr();
+    if (!s) { key('KeyP', 'p', 80); return; }                         // in play: pause
+    if (s.getAttribute('data-screen') === 'splash') { key('Enter', 'Enter', 13); return; }
+    var b = s.querySelector('[data-act="resume"]') || s.querySelector('.mc-btn.primary:not([disabled])');
+    if (b) b.click(); else key('Escape', 'Escape', 27);              // settings/controls: back
+  }
+  function nudge(dir) {                                                // LB/RB step a highlighted slider
+    var r = document.activeElement;
+    if (!r || r.type !== 'range') return;
+    var st = +r.step || ((+r.max - +r.min) / 20) || 1;
+    r.value = Math.max(+r.min, Math.min(+r.max, +r.value + dir * st));
+    r.dispatchEvent(new Event('input', { bubbles: true })); r.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+  function camera(s) {                                                 // right stick = the game's two-finger scroll camera
+    var x = s.ax[2], y = s.ax[3], cv = document.getElementById('coc-canvas');
+    if (!cv || scr() || (Math.abs(x) < 0.25 && Math.abs(y) < 0.25)) return;
+    var e = new WheelEvent('wheel', { deltaX: Math.abs(x) < 0.25 ? 0 : x * 6, deltaY: Math.abs(y) < 0.25 ? 0 : y * 8, deltaMode: 0, bubbles: true, cancelable: true });
+    e.__vpad = true; cv.dispatchEvent(e);
+  }
+  // Add a controller section to the game's Controls screen when it opens.
+  function addHelp() {
+    var c = q('[data-screen="controls"] .mc-ctrl');
+    if (!c || c.querySelector('.vpad-help')) return;
+    var sec = document.createElement('section'); sec.className = 'vpad-help';
+    sec.innerHTML = '<h3>Xbox controller</h3><dl><dt>Left stick / D-pad</dt><dd>Move</dd><dt>A</dt><dd>Jump / interact</dd>' +
+      '<dt>X or RT</dt><dd>Attack</dd><dt>B or LT</dt><dd>Special ability</dd><dt>Right stick</dt><dd>Camera (Y recenters)</dd>' +
+      '<dt>Start</dt><dd>Pause / resume</dd><dt>Menus</dt><dd>D-pad + A, B back, LB/RB sliders</dd></dl>';
+    c.appendChild(sec);
+  }
+  try { new MutationObserver(addHelp).observe(document.getElementById('coc-ui') || document.body, { childList: true, subtree: true }); } catch (x) {}
+
+  VPad.init({
+    ui: {
+      selector: '#coc-ui .mc-screen button:not([disabled]):not([hidden]), #coc-ui .mc-screen input[type=range]',
+      when: function () { return !!scr(); },
+      back: 'Escape'
+    },
+    map: function (slot, ctx) {
+      camera(ctx.state);
+      return {
+        Up: 'ArrowUp', LUp: 'ArrowUp', Down: 'ArrowDown', LDown: 'ArrowDown',
+        Left: 'ArrowLeft', LLeft: 'ArrowLeft', Right: 'ArrowRight', LRight: 'ArrowRight',
+        A: 'Space', X: 'KeyF', RT: 'KeyF', B: 'ShiftLeft', LT: 'ShiftLeft',
+        Y: 'KeyC', RS: 'KeyC', Back: 'KeyM',
+        LB: { fn: function () { nudge(-1); } }, RB: { fn: function () { nudge(1); } },
+        Start: { fn: start }
+      };
+    }
+  });
+})();
+</script>
+<!--/vpad-->
 </body>
 </html>

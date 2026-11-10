@@ -4578,6 +4578,7 @@ function xbPoll(){
     if(XB.toasted!=null){
       XB.toasted=null;
       XB.prev=[];
+      xbToast("Controller disconnected");
       if(document.body.dataset.ph==="pad") xbSetMode(dn?"touch":"key");
     }
     Sn.padHeldDir=null;

@@ -23,6 +23,7 @@ canvas{display:block;position:fixed;inset:0;cursor:crosshair}
   var touch = { visible: false, el: null, stick: null, knob: null, stickId: null, sx: 0, sy: 0,
     dx: 0, dy: 0, fireIds: {}, abilityTap: false, pauseTap: false, screenTap: false, R: 56 };
   var navHold = { up: 0, down: 0, left: 0, right: 0 };
+  var seatWas = [false, false];        // which player seats had a pad last poll (to notice a drop)
   var nowS = function () { return performance.now() / 1000; };
 
   var Input = {
@@ -155,10 +156,16 @@ canvas{display:block;position:fixed;inset:0;cursor:crosshair}
     try { raw = navigator.getGamepads ? navigator.getGamepads() : []; } catch (e) { raw = []; }
     var byIdx = {}, i;
     for (i = 0; i < raw.length; i++) if (raw[i] && raw[i].connected !== false) byIdx[raw[i].index] = raw[i];
-    padOrder = padOrder.filter(function (ix) { return byIdx[ix]; });
-    for (i = 0; i < raw.length; i++) if (raw[i] && byIdx[raw[i].index] && padOrder.indexOf(raw[i].index) < 0) padOrder.push(raw[i].index);
-    return padOrder.map(function (ix) { return byIdx[ix]; });
+    // A dropped pad leaves its seat empty (so P2 never inherits P1's ship mid-game) and a pad that
+    // (re)connects, at any index, takes the first empty seat. Outside a 2-player game the seats close up.
+    for (i = 0; i < padOrder.length; i++) if (padOrder[i] != null && !byIdx[padOrder[i]]) padOrder[i] = null;
+    var twoP = !!Input.twoP;            // set by the game while a 2-player game is on
+    if (!twoP) padOrder = padOrder.filter(function (ix) { return ix != null; });
+    for (i = 0; i < raw.length; i++) if (raw[i] && byIdx[raw[i].index] && padOrder.indexOf(raw[i].index) < 0) seatPad(raw[i].index);
+    while (padOrder.length && padOrder[padOrder.length - 1] == null) padOrder.pop();
+    return padOrder.map(function (ix) { return ix == null ? null : byIdx[ix]; });
   }
+  function seatPad(ix) { var h = padOrder.indexOf(null); if (h < 0) padOrder.push(ix); else padOrder[h] = ix; }
   function btn(p, i) { var b = p && p.buttons[i]; return b ? (typeof b === 'object' ? (b.pressed || b.value > 0.5) : b > 0.5) : false; }
   function bval(p, i) { var b = p && p.buttons[i]; return b ? (typeof b === 'object' ? (b.pressed ? Math.max(b.value, 0.6) : b.value) : b) : 0; }
   function ax(p, i) { var v = p && p.axes[i]; return typeof v === 'number' ? v : 0; }
@@ -209,6 +216,8 @@ canvas{display:block;position:fixed;inset:0;cursor:crosshair}
   function poll(dt) {
     dt = (typeof dt === 'number' && dt > 0) ? Math.min(dt, 0.1) : 1 / 60;
     var pads = getPads(), g0 = padState(pads[0]), g1 = padState(pads[1]);
+    var seatsNow = [!!pads[0], !!pads[1]], padDrop = (seatWas[0] && !seatsNow[0]) || (seatWas[1] && !seatsNow[1]);
+    seatWas = seatsNow; Input.seats = seatsNow; if (seatsNow[0] || seatsNow[1]) Input.padSeen = true;
     if (padActive(pads[0]) || padActive(pads[1])) { Input.lastDevice = 'gamepad'; if (touch.visible) setTouchVisible(false); }
 
     // ---- Player 1 ----
@@ -260,7 +269,7 @@ canvas{display:block;position:fixed;inset:0;cursor:crosshair}
     };
 
     var state = { players: [P1, P2], pause: !!(kbPause || padPause || touch.pauseTap), mute: !!mute,
-      confirm: !!confirm, back: !!back, nav: nav, p2Join: !!p2Join };
+      confirm: !!confirm, back: !!back, nav: nav, p2Join: !!p2Join, padDrop: padDrop };
 
     // pointer
     Input.pointer.active = Input.lastDevice === 'mouse' && (nowS() - mouse.lastMove) < 2;
@@ -281,10 +290,10 @@ canvas{display:block;position:fixed;inset:0;cursor:crosshair}
     window.addEventListener('blur', onBlur);
     document.addEventListener('visibilitychange', function () { if (document.hidden) onBlur(); });
     window.addEventListener('gamepadconnected', function (e) {
-      if (e.gamepad && padOrder.indexOf(e.gamepad.index) < 0) padOrder.push(e.gamepad.index);
+      if (e.gamepad && padOrder.indexOf(e.gamepad.index) < 0) seatPad(e.gamepad.index);
     });
     window.addEventListener('gamepaddisconnected', function (e) {
-      if (e.gamepad) padOrder = padOrder.filter(function (ix) { return ix !== e.gamepad.index; });
+      if (e.gamepad) padOrder = padOrder.map(function (ix) { return ix === e.gamepad.index ? null : ix; });
     });
     if (canvas) {
       canvas.style.touchAction = 'none';
@@ -925,6 +934,7 @@ function killPlayer(p) {
 // ---------- update ----------
 let lastIn = null;
 function update(dt) {
+  if (window.Input) window.Input.twoP = G.twoP && G.scene !== 'title';
   const I = input().poll(dt);
   lastIn = I;
   G.t += dt;
@@ -957,7 +967,7 @@ function update(dt) {
     return;
   }
   // ---- play ----
-  if (I.pause) { G.scene = 'paused'; return; }
+  if (I.pause || I.padDrop) { G.scene = 'paused'; return; }
   if (G.twoP === false && I.p2Join) { // drop-in second player
     G.twoP = true; const p = newPlayer(1); p.lives = 3; G.players.push(p); G.msg = 'PLAYER 2 JOINS'; G.msgT = 1.5; sfx().play('menuSelect');
   }
@@ -1290,6 +1300,8 @@ function hud() {
     const touch = input().lastDevice === 'touch';
     if (blinkOn) neonText(touch ? 'TAP TO START' : 'PRESS A / ENTER TO START', W / 2, H * 0.55, 22 * sm, '#ffe66d');
     neonText('2nd Xbox controller: press A for 2-player co-op', W / 2, H * 0.55 + 34, 13 * sm, '#ffb347');
+    const seats = (input().seats || []);
+    if (seats[0] || seats[1]) neonText(seats[0] && seats[1] ? 'CONTROLLERS P1 + P2 CONNECTED' : 'CONTROLLER CONNECTED', W / 2, H * 0.55 + 60, 12 * sm, '#7dff6a');
     const lines = touch ? ['Left stick: steer + thrust   FIRE: shoot   BLINK: teleport-dash'] :
       ['Rotate ←/→ or A/D   Thrust ↑/W   Fire SPACE   Blink SHIFT   Pause P   Mute M',
        'Xbox: stick rotate, RT/up thrust, A fire, B blink, Start pause   •   Trackpad: point to aim, click fire'];
@@ -1322,6 +1334,8 @@ function hud() {
   if (G.scene === 'paused') {
     ctx.fillStyle = 'rgba(4,3,12,0.6)'; ctx.fillRect(0, 0, W, H);
     neonText('PAUSED', W / 2, H / 2 - 20, 48, '#38f6ff');
+    const st = input().seats || [];
+    if (input().padSeen && (!st[0] || (G.twoP && !st[1]))) neonText(!st[0] && !st[1] ? 'No controller: press any button on it to reconnect' : 'P' + (st[0] ? 2 : 1) + ' controller: press a button to reconnect', W / 2, H / 2 - 64, 12, '#ffb347');
     neonText('Start / P / tap to resume', W / 2, H / 2 + 30, 14, '#9fb7d8');
   }
   if (G.scene === 'upgrade') {

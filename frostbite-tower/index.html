@@ -5447,6 +5447,13 @@ window.PB = window.PB || {};
     dt = clamp(dt, 0, 0.25);
 
     readGamepads();
+    // 2 players on pads: pin player 2 to its pad, so a pad that drops and comes back (at any index)
+    // goes back to the seat that lost it instead of the two players swapping controllers.
+    if (nPlayers === 2 && p2Src !== 'kb' && padList.length >= 2 && padList.indexOf(p2Pad) < 0) {
+      var keepP1 = padList.indexOf(lastPad[0]) >= 0 ? lastPad[0] : padList[0];
+      for (var pz = 0; pz < padList.length; pz++) if (padList[pz] !== keepP1) { p2Pad = padList[pz]; break; }
+      p2Src = 'pad';
+    }
 
     // device records
     devs = {};
@@ -5835,6 +5842,14 @@ window.PB = window.PB || {};
   let run = null, S = null;
   let menuSel = 0, menuItems = [], menuRects = [], menuScroll = 0, lastPointerAct = 0;
   let banner = null;
+  let padNote = null;            // short "Controller connected / disconnected" note, any screen
+  function drawPadNote() {
+    if (!padNote) return;
+    const age = T - padNote.t0; if (age > 2.4) { padNote = null; return; }
+    ctx.save(); ctx.globalAlpha = Math.max(0, Math.min(1, age * 5, (2.4 - age) * 3));
+    panel(136, 8, 240, 30); txt(padNote.text, W / 2, 23, 12, padNote.color, 'center', 'body', 3);
+    ctx.restore();
+  }
 
   function stageList() { return PB.Stages || []; }
   function newRun(nPlayers, startIdx) {
@@ -7052,6 +7067,7 @@ window.PB = window.PB || {};
     }
     if (mode === 'play') prevMode = 'play';
     if (mode !== 'play') { drawMenus(); if (mode !== 'pause' && mode !== 'gameover') FX('draw', ctx); }
+    drawPadNote();
     ctx.restore();
   }
   function leaveBoot() {
@@ -7084,6 +7100,13 @@ window.PB = window.PB || {};
     window.addEventListener('orientationchange', () => setTimeout(resize, 200));
     try { PB.Art && PB.Art.init && PB.Art.init(); } catch (e) { console.error('art init', e); }
     try { PB.Input && PB.Input.init && PB.Input.init(canvas, document.getElementById('touch')); } catch (e) { console.error('input init', e); }
+    try {
+      PB.Input && PB.Input.onPadChange && PB.Input.onPadChange(ev => {
+        const on = ev.type === 'connect';
+        padNote = { text: on ? (ev.count > 1 ? ev.count + ' controllers connected' : 'Controller connected') : 'Controller disconnected', color: on ? '#9dffb0' : '#ffb0b0', t0: T };
+        if (!on && mode === 'play' && S && (S.phase === 'play' || S.phase === 'intro')) { mode = 'pause'; menuSel = 0; sfx('pause'); }
+      });
+    } catch (e) { }
     canvas.addEventListener('pointerdown', onPointer);
     const unlock = () => { try { PB.Audio && PB.Audio.unlock && PB.Audio.unlock(); } catch (e) { } };
     window.addEventListener('keydown', e => { unlock(); if (mode === 'boot') leaveBoot(); }, true);

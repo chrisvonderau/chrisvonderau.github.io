@@ -976,5 +976,6 @@
   updateHud();
   resetPlayer();
   draw();
+  window.orangutanKegClimbState = () => state; // read by the Xbox controller layer in index.html
   window.requestAnimationFrame(tick);
 })();

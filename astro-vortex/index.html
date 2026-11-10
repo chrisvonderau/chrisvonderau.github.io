@@ -1931,7 +1931,7 @@
       if ((menuOpen || gameOverOpen) && !state.running && (r.a || r.start) && !(prev.a || prev.start)) {
         startGame();
       } else if (state.running && state.paused) {
-        if (r.b && !prev.b) togglePause();
+        if ((r.b && !prev.b) || (r.start && !prev.start) || (r.a && !prev.a)) togglePause();
         if (r.back && !prev.back) {
           document.getElementById('pauseMenu').classList.add('hidden');
           document.getElementById('mainMenu').classList.remove('hidden');
