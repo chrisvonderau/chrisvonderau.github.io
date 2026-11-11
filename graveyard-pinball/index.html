@@ -15,9 +15,11 @@
   #wrap { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
     padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
   #cab { position: relative; display: flex; flex-direction: column; align-items: center; }
+  #top { display: flex; align-items: center; gap: 6px; }
   #dmd { display: block; background: #000; border-radius: 6px; box-shadow: 0 0 0 2px #1d1408, 0 0 18px rgba(255,140,30,.18); }
   #table { display: block; margin-top: 6px; border-radius: 10px; background: #061018; box-shadow: 0 0 0 2px #10202c, 0 10px 40px rgba(0,0,0,.6); }
-  #bar { position: absolute; top: 4px; right: 4px; display: flex; gap: 6px; z-index: 5; }
+  #bar { display: grid; grid-template-columns: 34px 34px; gap: 6px; z-index: 5; }
+  #fps { position: fixed; left: 6px; bottom: 6px; color: #7f8; font: 12px monospace; z-index: 30; }
   #bar button { width: 34px; height: 34px; border-radius: 17px; border: 1px solid #2a3a46; background: rgba(8,14,20,.75);
     color: var(--ink); font-size: 15px; line-height: 1; cursor: pointer; padding: 0; }
   #bar button:active { background: #1b2a36; }
@@ -39,14 +41,17 @@
 <body>
 <div id="wrap">
   <div id="cab">
+    <div id="top">
     <canvas id="dmd" width="512" height="128" aria-label="Score display"></canvas>
-    <canvas id="table" width="560" height="1100" aria-label="Pinball table"></canvas>
     <div id="bar" data-ui>
-      <button id="b2P" data-ui title="Add player 2" aria-label="Add player 2" style="display:none;width:auto;padding:0 10px;font-weight:700">+P2</button>
+      <button id="b2P" data-ui title="Add player 2" aria-label="Add player 2" style="visibility:hidden;font-weight:700;font-size:11px">+P2</button>
       <button id="bHelp" data-ui title="How to play" aria-label="How to play">?</button>
       <button id="bMute" data-ui title="Sound" aria-label="Sound">&#9834;</button>
       <button id="bPause" data-ui title="Pause" aria-label="Pause">&#10074;&#10074;</button>
     </div>
+    </div>
+    <canvas id="table" width="560" height="1100" aria-label="Pinball table"></canvas>
+
   </div>
 </div>
 <div class="side" id="sideL">
@@ -5427,15 +5432,16 @@
 (function () {
   var PB = window.PB, $ = function (id) { return document.getElementById(id); };
   var dmdC = $('dmd'), tabC = $('table');
-  var game = PB.Game.create({ table: tabC, dmd: dmdC, root: document.body, onFrame: function (G, inp) { var c2 = game.canAddPlayer(); if (c2 !== show2) { show2 = c2; $('b2P').style.display = c2 ? 'block' : 'none'; }  if (inp && inp.device && inp.device !== lastDev) { lastDev = inp.device; fillHelp(lastDev); } }, onPause: function (p) { $('bPause').innerHTML = p ? '&#9654;' : '&#10074;&#10074;'; } });
+  var game = PB.Game.create({ table: tabC, dmd: dmdC, root: document.body, onFrame: function (G, inp) { var c2 = game.canAddPlayer(); if (c2 !== show2) { show2 = c2; $('b2P').style.visibility = c2 ? 'visible' : 'hidden'; }  if (inp && inp.device && inp.device !== lastDev) { lastDev = inp.device; fillHelp(lastDev); } }, onPause: function (p) { $('bPause').innerHTML = p ? '&#9654;' : '&#10074;&#10074;'; } });
   function layout() {
     var vw = window.innerWidth, vh = window.innerHeight;
     var gap = 6, pad = 8;
     // total height = w*(1100/560) + w/4 + gap
-    var w = Math.min(vw - pad * 2, (vh - pad * 2 - gap) / (1100 / 560 + 0.25));
+    var w = Math.min(vw - pad * 2, (vh - pad * 2 - gap + 20) / (1100 / 560 + 0.25));
     w = Math.max(200, Math.floor(w));
+    while (w > 200 && w * 1100 / 560 + Math.max((w - 80) / 4, 74) + gap > vh - pad * 2) w -= 2;
     var th = Math.floor(w * 1100 / 560), dh = Math.floor(w / 4);
-    dmdC.style.width = w + 'px'; dmdC.style.height = dh + 'px';
+    var dw = w - 80; dh = Math.floor(dw / 4); dmdC.style.width = dw + 'px'; dmdC.style.height = dh + 'px';
     tabC.style.width = w + 'px'; tabC.style.height = th + 'px';
     var wide = vw - w > 560;
     ['sideL', 'sideR'].forEach(function (id) { $(id).style.display = wide ? 'block' : 'none'; });
@@ -5472,6 +5478,7 @@
   game.boot();
   layout(); muteIcon(); fillHelp('keyboard');
   $('sound').style.display = 'flex';
+  if (/fps/.test(location.hash)) { var fe = document.createElement('div'); fe.id = 'fps'; document.body.appendChild(fe); var fc = 0, ft = performance.now(); (function f() { fc++; var n = performance.now(); if (n - ft > 1000) { fe.textContent = Math.round(fc * 1000 / (n - ft)) + ' fps'; fc = 0; ft = n; } requestAnimationFrame(f); })(); }
   window.__goa = game;
 })();
 </script>
