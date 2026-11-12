@@ -1,136 +1,395 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#07080f">
 <title>Vonderau Games</title>
 <style>
-body{margin:0;background:#0b0d17;color:#eef;font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-main{max-width:900px;margin:0 auto;padding:24px 16px}
-h1{font-size:28px;margin:0 0 4px}
-.lead{color:#9aa3c7;margin:0 0 16px}
-nav{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 28px}
-nav a{color:#9aa3c7;text-decoration:none;font-size:13px;padding:6px 10px;border:1px solid #2a3060;border-radius:999px;background:#12162a}
-nav a:hover,nav a:focus{color:#fff;background:#232a52;outline:2px solid #5b6cff}
-section{margin:0 0 28px}
-h2{font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:#c5cbf0;margin:0 0 12px;padding:0 0 8px;border-bottom:1px solid #2a3060;display:flex;align-items:baseline;justify-content:space-between;gap:12px}
-h2 span{font-size:13px;letter-spacing:0;text-transform:none;color:#9aa3c7;font-weight:500}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
-.g{display:block;padding:14px;border-radius:10px;background:#171b31;color:#fff;text-decoration:none;border:1px solid #2a3060}
-.g:hover,.g:focus{background:#232a52;outline:2px solid #5b6cff}
-</style></head><body><main>
-<h1>Vonderau Games</h1>
-<p class="lead">71 games. Tap one to play.</p>
-<nav aria-label="Categories">
-  <a href="#action">Action &amp; Arcade</a>
-  <a href="#shooters">Shooters</a>
-  <a href="#adventure">Platformers &amp; Adventure</a>
-  <a href="#racing">Racing &amp; Driving</a>
-  <a href="#puzzles">Puzzles</a>
-  <a href="#strategy">Strategy, Board &amp; Tycoon</a>
-  <a href="#party">Word, Trivia &amp; Party</a>
+
+:root{
+  --bg:#07080f;
+  --text:#f3f5ff;
+  --muted:#b7bed8;
+  --card:#12131c;
+  --nav-bg:rgba(7,8,15,.88);
+  --action:#ff5b8a;
+  --shooters:#3ecbff;
+  --adventure:#3ee89a;
+  --racing:#ff6a3c;
+  --puzzles:#c084fc;
+  --strategy:#f0c14b;
+  --party:#ff7ad9;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;color-scheme:dark}
+html,body{margin:0;background:var(--bg);color:var(--text);
+  font:16px/1.45 "Segoe UI","Helvetica Neue",-apple-system,BlinkMacSystemFont,Roboto,sans-serif}
+body{min-height:100vh;overflow-x:hidden}
+.skip{position:absolute;left:-999px;top:8px;background:#fff;color:#000;padding:8px 12px;border-radius:8px;z-index:40}
+.skip:focus{left:8px}
+.bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.aurora{position:absolute;left:-15%;right:-15%;top:-20%;height:78vh;
+  background:
+    radial-gradient(ellipse 46% 42% at 18% 32%,rgba(255,60,140,.42),transparent 70%),
+    radial-gradient(ellipse 44% 40% at 82% 18%,rgba(60,180,255,.38),transparent 70%),
+    radial-gradient(ellipse 36% 34% at 52% 44%,rgba(170,80,255,.28),transparent 70%),
+    radial-gradient(ellipse 30% 28% at 70% 60%,rgba(255,200,80,.12),transparent 70%);
+  filter:blur(42px);animation:aurora 16s ease-in-out infinite alternate;transform-origin:center}
+.gridlines{position:absolute;inset:0;opacity:.18;background-image:
+  linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);
+  background-size:64px 64px;mask-image:linear-gradient(180deg,#000 0%,transparent 70%)}
+.stars-sm,.stars-lg{position:absolute;top:0;left:0;width:2px;height:2px;border-radius:50%;background:transparent;animation:drift 140s linear infinite}
+.stars-sm{box-shadow:663px 520px #fff,542px 158px #dff4ff,539px 88px #dff4ff,1049px 56px #dff4ff,1033px 24px #ffe9ff,936px 778px #dff4ff,715px 662px #dff4ff,75px 356px #fff,795px 663px #dff4ff,304px 329px #fff4d0,913px 99px #fff,511px 618px #dff4ff,319px 252px #ffe9ff,610px 592px #fff,514px 359px #dff4ff,804px 29px #fff,199px 255px #fff,605px 142px #fff4d0,978px 505px #ffe9ff,604px 97px #dff4ff,620px 636px #dff4ff,328px 589px #fff4d0,975px 559px #ffe9ff,533px 97px #ffe9ff,1439px 764px #fff,71px 865px #dff4ff,453px 483px #ffe9ff,1435px 860px #ffe9ff,499px 276px #dff4ff,109px 511px #fff4d0,488px 131px #fff,433px 640px #fff4d0,570px 841px #fff4d0,870px 886px #ffe9ff,638px 384px #ffe9ff,1276px 497px #fff4d0,12px 868px #fff4d0,442px 464px #ffe9ff,1320px 581px #ffe9ff,1402px 13px #fff,865px 435px #fff,661px 254px #ffe9ff,1224px 857px #dff4ff,915px 694px #ffe9ff,1214px 488px #fff,590px 390px #fff,1162px 547px #ffe9ff,629px 892px #ffe9ff,1472px 871px #fff,550px 386px #ffe9ff,836px 688px #ffe9ff,745px 589px #fff,1157px 460px #fff4d0,152px 762px #ffe9ff,1019px 166px #fff4d0,1523px 806px #fff4d0,808px 187px #fff4d0,1356px 510px #fff4d0,260px 629px #dff4ff,126px 581px #fff,1094px 757px #fff4d0,485px 149px #dff4ff,388px 464px #fff,740px 146px #fff,987px 717px #dff4ff,264px 740px #dff4ff,1319px 769px #fff,983px 515px #fff,56px 57px #ffe9ff,816px 110px #ffe9ff,1337px 886px #ffe9ff,1145px 334px #fff,1452px 263px #ffe9ff,571px 192px #fff4d0,596px 860px #fff,121px 876px #ffe9ff,790px 789px #ffe9ff,1570px 615px #fff,1167px 264px #dff4ff,695px 290px #fff4d0,656px 313px #dff4ff,681px 745px #fff4d0,1306px 69px #ffe9ff,488px 535px #fff4d0,435px 762px #fff4d0,1128px 328px #fff,1124px 298px #fff4d0,1165px 585px #ffe9ff,992px 561px #fff4d0,1471px 259px #ffe9ff}
+.stars-lg{width:3px;height:3px;box-shadow:1324px 758px #fff,332px 287px #b8e8ff,1237px 89px #fff,392px 551px #fff,489px 115px #b8e8ff,1541px 687px #fff,275px 673px #fff,1083px 799px #fff,373px 640px #ffd0f0,454px 628px #fff,402px 872px #b8e8ff,717px 216px #ffd0f0,991px 46px #ffd0f0,379px 396px #fff,1597px 412px #b8e8ff,464px 570px #ffd0f0,563px 251px #fff,937px 752px #ffd0f0,983px 588px #b8e8ff,200px 204px #b8e8ff,1340px 796px #fff,1206px 174px #fff,1391px 169px #ffd0f0,1428px 298px #fff,1123px 335px #b8e8ff,871px 862px #b8e8ff,1312px 521px #ffd0f0,1007px 75px #fff;animation-duration:200s;opacity:.9}
+#sky{position:absolute;inset:0;width:100%;height:100%}
+@keyframes aurora{0%{transform:translate3d(0,0,0) scale(1);opacity:1}
+  100%{transform:translate3d(3%,5%,0) scale(1.08);opacity:.82}}
+@keyframes drift{from{transform:translateY(0)}to{transform:translateY(-900px)}}
+@keyframes twinkle{0%,100%{opacity:.35}50%{opacity:1}}
+@keyframes shine{to{transform:translateX(120%)}}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+.wrap{position:relative;z-index:1}
+.hero{text-align:center;padding:64px 20px 36px;max-width:920px;margin:0 auto}
+.kicker{display:inline-flex;align-items:center;gap:8px;margin:0 0 14px;padding:5px 12px;
+  border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.06);
+  color:#dce3ff;font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:700}
+.kicker i{width:7px;height:7px;border-radius:50%;background:#5fffb3;box-shadow:0 0 10px #5fffb3;animation:pulse 1.6s ease-in-out infinite;display:inline-block}
+h1{margin:0 0 10px;font-size:clamp(44px,8vw,88px);line-height:.92;letter-spacing:-.045em;font-weight:800;
+  background:linear-gradient(180deg,#fff 12%,#c9d2ff 58%,#6ee7ff 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 28px rgba(110,231,255,.28))}
+.lead{margin:0 auto 22px;max-width:28em;color:var(--muted);font-size:18px}
+.random{appearance:none;cursor:pointer;border:0;border-radius:999px;padding:12px 22px;font:700 15px/1 inherit;color:#081018;
+  background:linear-gradient(180deg,#fff 0%,#c6f4ff 100%);box-shadow:0 0 0 1px rgba(255,255,255,.4),0 8px 28px rgba(80,200,255,.35);
+  display:inline-flex;align-items:center;gap:8px;transition:transform .2s ease,box-shadow .2s ease}
+.random:hover,.random:focus-visible{transform:translateY(-2px) scale(1.03);box-shadow:0 0 0 1px #fff,0 12px 36px rgba(80,200,255,.5);outline:none}
+.random svg{width:18px;height:18px}
+.jump{position:sticky;top:0;z-index:30;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;
+  padding:10px 14px;background:var(--nav-bg);backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);
+  border-bottom:1px solid rgba(255,255,255,.08)}
+.jump a,.jump button{color:var(--text);text-decoration:none;font-size:13px;font-weight:650;padding:7px 12px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;font-family:inherit;line-height:1.2}
+.jump a:hover,.jump a:focus-visible,.jump button:hover,.jump button:focus-visible{outline:none;color:#fff;background:rgba(255,255,255,.12)}
+.jump a.is-active{color:#081018;border-color:transparent}
+.jump a[href="#action"]{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--action) 55%,transparent)}
+.jump a[href="#shooters"]{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--shooters) 55%,transparent)}
+.jump a[href="#adventure"]{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--adventure) 55%,transparent)}
+.jump a[href="#racing"]{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--racing) 55%,transparent)}
+.jump a[href="#puzzles"]{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--puzzles) 55%,transparent)}
+.jump a[href="#strategy"]{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--strategy) 55%,transparent)}
+.jump a[href="#party"]{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--party) 55%,transparent)}
+.jump a[href="#action"].is-active{background:var(--action)}
+.jump a[href="#shooters"].is-active{background:var(--shooters)}
+.jump a[href="#adventure"].is-active{background:var(--adventure)}
+.jump a[href="#racing"].is-active{background:var(--racing)}
+.jump a[href="#puzzles"].is-active{background:var(--puzzles)}
+.jump a[href="#strategy"].is-active{background:var(--strategy)}
+.jump a[href="#party"].is-active{background:var(--party)}
+.jump .nav-random{background:linear-gradient(180deg,#fff,#d7f6ff);color:#081018;border:0;font-weight:800}
+main{max-width:1120px;margin:0 auto;padding:28px 18px 80px}
+section{margin:0 0 48px;scroll-margin-top:76px}
+.banner{display:flex;align-items:center;gap:16px;padding:22px 22px;border-radius:22px;margin:0 0 16px;position:relative;overflow:hidden;
+  color:#fff;isolation:isolate;min-height:108px;
+  box-shadow:0 18px 40px rgba(0,0,0,.28),inset 0 0 0 1px rgba(255,255,255,.12)}
+.banner::before{content:"";position:absolute;inset:0;z-index:-1;opacity:.55;
+  background:radial-gradient(circle at 88% 20%,rgba(255,255,255,.28),transparent 36%),
+    repeating-linear-gradient(-28deg,rgba(255,255,255,.07) 0 10px,transparent 10px 20px)}
+.banner::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(0,0,0,.45),rgba(0,0,0,.12) 55%,transparent)}
+.icon-badge{flex:0 0 auto;width:68px;height:68px;border-radius:20px;display:grid;place-items:center;position:relative;
+  background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.28);box-shadow:0 0 24px rgba(255,255,255,.12);backdrop-filter:blur(8px)}
+.icon-badge .emo{font-size:30px;line-height:1;position:absolute;opacity:.95}
+.icon-badge svg{width:34px;height:34px;opacity:0;position:absolute}
+.banner h2{margin:0;font-size:clamp(22px,3vw,32px);letter-spacing:-.03em;font-weight:800;text-shadow:0 2px 12px rgba(0,0,0,.35)}
+.tagline{margin:4px 0 0;color:rgba(255,255,255,.88);font-size:15px;font-weight:500}
+.banner .copy{flex:1;min-width:0;position:relative}
+.count{flex:0 0 auto;position:relative;min-width:64px;height:64px;border-radius:18px;display:grid;place-items:center;
+  background:rgba(0,0,0,.32);border:1px solid rgba(255,255,255,.22);font-size:26px;font-weight:800;letter-spacing:-.04em}
+.count small{display:block;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.75;margin-top:-2px}
+.cat-action .banner{background:linear-gradient(125deg,#3a0a1c 0%,#9b183f 48%,#ff6a3c 100%)}
+.cat-shooters .banner{background:linear-gradient(125deg,#061428 0%,#0a4a7a 48%,#2ee0ff 100%)}
+.cat-adventure .banner{background:linear-gradient(125deg,#052416 0%,#0b6a40 48%,#b6e34a 100%)}
+.cat-racing .banner{background:linear-gradient(125deg,#2a0a08 0%,#9a2010 48%,#ffb020 100%)}
+.cat-puzzles .banner{background:linear-gradient(125deg,#1a0a32 0%,#5b1ea8 48%,#7aa0ff 100%)}
+.cat-strategy .banner{background:linear-gradient(125deg,#1a1608 0%,#6a5410 45%,#2dd4bf 100%)}
+.cat-party .banner{background:linear-gradient(125deg,#2a0a24 0%,#9a1868 48%,#ffd34d 100%)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.g{display:flex;flex-direction:column;border-radius:16px;overflow:hidden;text-decoration:none;color:var(--text);
+  background:var(--card);border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 8px 18px rgba(0,0,0,.22);transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.g:hover,.g:focus-visible{transform:translateY(-8px);outline:none;z-index:2}
+.art{position:relative;height:102px;display:grid;place-items:center;font-size:46px;font-weight:800;letter-spacing:-.05em;
+  color:#fff;text-shadow:0 6px 18px rgba(0,0,0,.35);overflow:hidden;isolation:isolate}
+.art::before{content:"";position:absolute;inset:-30%;z-index:-1;opacity:.55;
+  background:repeating-linear-gradient(-45deg,rgba(255,255,255,.1) 0 8px,transparent 8px 16px)}
+.art::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.28) 50%,transparent 65%);
+  transform:translateX(-130%);pointer-events:none}
+.g:hover .art::after,.g:focus-visible .art::after{animation:shine .7s ease}
+.g:nth-child(3n+2) .art::before{background:radial-gradient(circle at 28% 28%,rgba(255,255,255,.28),transparent 42%),
+  radial-gradient(circle at 82% 72%,rgba(255,255,255,.16),transparent 40%);opacity:.85;inset:0}
+.g:nth-child(3n+3) .art::before{background:repeating-linear-gradient(90deg,rgba(255,255,255,.1) 0 3px,transparent 3px 14px);inset:0}
+.name{display:block;padding:12px 14px 14px;font-weight:700;font-size:14.5px;line-height:1.3;letter-spacing:-.01em}
+.cat-action .g:hover,.cat-action .g:focus-visible{border-color:var(--action);box-shadow:0 16px 36px rgba(255,91,138,.32),0 0 0 1px var(--action)}
+.cat-shooters .g:hover,.cat-shooters .g:focus-visible{border-color:var(--shooters);box-shadow:0 16px 36px rgba(62,203,255,.32),0 0 0 1px var(--shooters)}
+.cat-adventure .g:hover,.cat-adventure .g:focus-visible{border-color:var(--adventure);box-shadow:0 16px 36px rgba(62,232,154,.3),0 0 0 1px var(--adventure)}
+.cat-racing .g:hover,.cat-racing .g:focus-visible{border-color:var(--racing);box-shadow:0 16px 36px rgba(255,106,60,.34),0 0 0 1px var(--racing)}
+.cat-puzzles .g:hover,.cat-puzzles .g:focus-visible{border-color:var(--puzzles);box-shadow:0 16px 36px rgba(192,132,252,.34),0 0 0 1px var(--puzzles)}
+.cat-strategy .g:hover,.cat-strategy .g:focus-visible{border-color:var(--strategy);box-shadow:0 16px 36px rgba(240,193,75,.3),0 0 0 1px var(--strategy)}
+.cat-party .g:hover,.cat-party .g:focus-visible{border-color:var(--party);box-shadow:0 16px 36px rgba(255,122,217,.32),0 0 0 1px var(--party)}
+/* per-category card art palettes, with three variants */
+.cat-action .g:nth-child(3n+1) .art{background:linear-gradient(145deg,#ff2d6a,#ff8a3d)}
+.cat-action .g:nth-child(3n+2) .art{background:linear-gradient(165deg,#ff7aa0,#c41e5c 60%,#ff9a4d)}
+.cat-action .g:nth-child(3n+3) .art{background:linear-gradient(200deg,#ff9a4d,#ff2d6a 70%,#6a1030)}
+.cat-shooters .g:nth-child(3n+1) .art{background:linear-gradient(145deg,#00c8ff,#4d6bff)}
+.cat-shooters .g:nth-child(3n+2) .art{background:linear-gradient(165deg,#7af0ff,#0a5ad4 60%,#9b5cff)}
+.cat-shooters .g:nth-child(3n+3) .art{background:linear-gradient(200deg,#4d6bff,#00a8e0 70%,#062448)}
+.cat-adventure .g:nth-child(3n+1) .art{background:linear-gradient(145deg,#16d68a,#c8e04a)}
+.cat-adventure .g:nth-child(3n+2) .art{background:linear-gradient(165deg,#7dffc2,#0b7a48 60%,#e8f06a)}
+.cat-adventure .g:nth-child(3n+3) .art{background:linear-gradient(200deg,#c8e04a,#129a64 70%,#063222)}
+.cat-racing .g:nth-child(3n+1) .art{background:linear-gradient(145deg,#ff3b3b,#ffb020)}
+.cat-racing .g:nth-child(3n+2) .art{background:linear-gradient(165deg,#ff8a5c,#c01414 60%,#ffd060)}
+.cat-racing .g:nth-child(3n+3) .art{background:linear-gradient(200deg,#ffb020,#e02020 70%,#4a0c0c)}
+.cat-puzzles .g:nth-child(3n+1) .art{background:linear-gradient(145deg,#a855ff,#5b8cff)}
+.cat-puzzles .g:nth-child(3n+2) .art{background:linear-gradient(165deg,#e2b0ff,#5b1ea8 60%,#7aa0ff)}
+.cat-puzzles .g:nth-child(3n+3) .art{background:linear-gradient(200deg,#5b8cff,#7a2adf 70%,#1a0a32)}
+.cat-strategy .g:nth-child(3n+1) .art{background:linear-gradient(145deg,#f5c542,#2dd4bf)}
+.cat-strategy .g:nth-child(3n+2) .art{background:linear-gradient(165deg,#ffe08a,#8a6a10 60%,#3ee0c8)}
+.cat-strategy .g:nth-child(3n+3) .art{background:linear-gradient(200deg,#2dd4bf,#d4a020 70%,#1a1608)}
+.cat-party .g:nth-child(3n+1) .art{background:linear-gradient(145deg,#ff4ecd,#ffd34d)}
+.cat-party .g:nth-child(3n+2) .art{background:linear-gradient(165deg,#ff9ae0,#c01478 60%,#ffe08a)}
+.cat-party .g:nth-child(3n+3) .art{background:linear-gradient(200deg,#ffd34d,#ff4ecd 70%,#4a0a32)}
+@media (max-width:720px){
+  .hero{padding:44px 16px 28px}
+  .banner{padding:16px;gap:12px;min-height:92px;border-radius:18px}
+  .icon-badge,.count{width:56px;height:56px;border-radius:16px}
+  .icon-badge .emo{font-size:24px}
+  .count{font-size:22px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+  .art{height:86px;font-size:38px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .aurora,.stars-sm,.stars-lg,.kicker i{animation:none!important}
+  .g,.g .art,.g .art::after,.random,.jump a,.jump button{transition:none!important}
+  .g:hover,.g:focus-visible,.random:hover,.random:focus-visible{transform:none}
+  .g:hover .art::after,.g:focus-visible .art::after{animation:none;transform:none}
+  #sky{display:none}
+}
+
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true">
+  <canvas id="sky"></canvas>
+  <div class="aurora"></div>
+  <div class="gridlines"></div>
+  <div class="stars-sm"></div>
+  <div class="stars-lg"></div>
+</div>
+<a class="skip" href="#main">Skip to games</a>
+<div class="wrap">
+<header class="hero">
+  <p class="kicker"><i></i> Press start</p>
+  <h1>Vonderau Games</h1>
+  <p class="lead">71 games. Tap one to play.</p>
+  <button type="button" class="random" data-random>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M5 3h6l2 3h6a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm3 6a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm8 6a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-8 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg>
+    Random game
+  </button>
+</header>
+<nav class="jump" aria-label="Categories">
+  <a href="#action">Action &amp; Arcade</a><a href="#shooters">Shooters</a><a href="#adventure">Platformers &amp; Adventure</a><a href="#racing">Racing &amp; Driving</a><a href="#puzzles">Puzzles</a><a href="#strategy">Strategy, Board &amp; Tycoon</a><a href="#party">Word, Trivia &amp; Party</a>
+  <button type="button" class="nav-random" data-random>Random</button>
 </nav>
-<section id="action">
-<h2>Action &amp; Arcade <span>17</span></h2>
+<main id="main">
+<section id="action" class="cat cat-action">
+<header class="banner">
+<div class="icon-badge" aria-hidden="true"><span class="emo">⚡</span><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="currentColor" d="M28.5 3 10 26.2h11.2L16.8 45 38 21.6H26.6L28.5 3z"/></svg></div>
+<div class="copy"><h2>Action &amp; Arcade</h2><p class="tagline">High scores, higher heart rates.</p></div>
+<div class="count" aria-label="17 games">17<small>games</small></div>
+</header>
 <div class="grid">
-<a class="g" href="graveyard-pinball/">Graveyard of the Atlantic (pinball)</a>
-<a class="g" href="protocol-nova/">Protocol Nova</a>
-<a class="g" href="far-ridge/">Far Ridge</a>
-<a class="g" href="frostbite-tower/">Frostbite Tower</a>
-<a class="g" href="neon-wake/">Neon Wake</a>
-<a class="g" href="ragnarok-rising/">Ragnarök Rising</a>
-<a class="g" href="pharaohs-descent/">Pharaoh&#x27;s Descent</a>
-<a class="g" href="lumen-drift/">Lumen Drift</a>
-<a class="g" href="little-apocalypse/">Little Apocalypse</a>
-<a class="g" href="pong-hyperdrive/">Pong: Hyperdrive</a>
-<a class="g" href="unicorn-joust/">Unicorn Joust</a>
-<a class="g" href="mime-high-rise/">Mime High-Rise</a>
-<a class="g" href="orangutan-keg-climb/">Orangutan Keg Climb</a>
-<a class="g" href="https://chrisvonderau.github.io/polar-ascent/">Polar Ascent</a>
-<a class="g" href="https://chrisvonderau.github.io/sparkwell/">Sparkwell</a>
-<a class="g" href="https://chrisvonderau.github.io/bubble-rescue/">Bubble Rescue</a>
-<a class="g" href="https://chrisvonderau.github.io/long-hop/">Long Hop: Red Centre Run</a>
+<a class="g" href="graveyard-pinball/"><span class="art" aria-hidden="true">G</span><span class="name">Graveyard of the Atlantic (pinball)</span></a>
+<a class="g" href="protocol-nova/"><span class="art" aria-hidden="true">P</span><span class="name">Protocol Nova</span></a>
+<a class="g" href="far-ridge/"><span class="art" aria-hidden="true">F</span><span class="name">Far Ridge</span></a>
+<a class="g" href="frostbite-tower/"><span class="art" aria-hidden="true">F</span><span class="name">Frostbite Tower</span></a>
+<a class="g" href="neon-wake/"><span class="art" aria-hidden="true">N</span><span class="name">Neon Wake</span></a>
+<a class="g" href="ragnarok-rising/"><span class="art" aria-hidden="true">R</span><span class="name">Ragnarök Rising</span></a>
+<a class="g" href="pharaohs-descent/"><span class="art" aria-hidden="true">P</span><span class="name">Pharaoh&#x27;s Descent</span></a>
+<a class="g" href="lumen-drift/"><span class="art" aria-hidden="true">L</span><span class="name">Lumen Drift</span></a>
+<a class="g" href="little-apocalypse/"><span class="art" aria-hidden="true">L</span><span class="name">Little Apocalypse</span></a>
+<a class="g" href="pong-hyperdrive/"><span class="art" aria-hidden="true">P</span><span class="name">Pong: Hyperdrive</span></a>
+<a class="g" href="unicorn-joust/"><span class="art" aria-hidden="true">U</span><span class="name">Unicorn Joust</span></a>
+<a class="g" href="mime-high-rise/"><span class="art" aria-hidden="true">M</span><span class="name">Mime High-Rise</span></a>
+<a class="g" href="orangutan-keg-climb/"><span class="art" aria-hidden="true">O</span><span class="name">Orangutan Keg Climb</span></a>
+<a class="g" href="https://chrisvonderau.github.io/polar-ascent/"><span class="art" aria-hidden="true">P</span><span class="name">Polar Ascent</span></a>
+<a class="g" href="https://chrisvonderau.github.io/sparkwell/"><span class="art" aria-hidden="true">S</span><span class="name">Sparkwell</span></a>
+<a class="g" href="https://chrisvonderau.github.io/bubble-rescue/"><span class="art" aria-hidden="true">B</span><span class="name">Bubble Rescue</span></a>
+<a class="g" href="https://chrisvonderau.github.io/long-hop/"><span class="art" aria-hidden="true">L</span><span class="name">Long Hop: Red Centre Run</span></a>
+</div>
+</section><section id="shooters" class="cat cat-shooters">
+<header class="banner">
+<div class="icon-badge" aria-hidden="true"><span class="emo">🎯</span><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="8" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="24" cy="24" r="3" fill="currentColor"/><path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" d="M24 4v10M24 34v10M4 24h10M34 24h10"/></svg></div>
+<div class="copy"><h2>Shooters</h2><p class="tagline">Lock on. Let loose.</p></div>
+<div class="count" aria-label="16 games">16<small>games</small></div>
+</header>
+<div class="grid">
+<a class="g" href="astro-vortex/"><span class="art" aria-hidden="true">A</span><span class="name">ASTRO-VORTEX &#x27;84</span></a>
+<a class="g" href="shatterfield/"><span class="art" aria-hidden="true">S</span><span class="name">Shatterfield</span></a>
+<a class="g" href="chromahive/"><span class="art" aria-hidden="true">C</span><span class="name">CHROMAHIVE</span></a>
+<a class="g" href="fort-fisher/"><span class="art" aria-hidden="true">F</span><span class="name">Fort Fisher</span></a>
+<a class="g" href="dead-mans-gulch/"><span class="art" aria-hidden="true">D</span><span class="name">Dead Man&#x27;s Gulch</span></a>
+<a class="g" href="soul-trigger/"><span class="art" aria-hidden="true">S</span><span class="name">Soul Trigger</span></a>
+<a class="g" href="time-cop-1986/"><span class="art" aria-hidden="true">T</span><span class="name">TIME COP 1986</span></a>
+<a class="g" href="star-swarm-defender/"><span class="art" aria-hidden="true">S</span><span class="name">Star Swarm Defender</span></a>
+<a class="g" href="get-off-my-lawn/"><span class="art" aria-hidden="true">G</span><span class="name">Get Off My Lawn</span></a>
+<a class="g" href="blackout/"><span class="art" aria-hidden="true">B</span><span class="name">BLACKOUT</span></a>
+<a class="g" href="starbreak/"><span class="art" aria-hidden="true">S</span><span class="name">STARBREAK</span></a>
+<a class="g" href="https://chrisvonderau.github.io/six-gun-showdown/Six-Gun%20Sundown.html"><span class="art" aria-hidden="true">S</span><span class="name">Six-Gun Sundown</span></a>
+<a class="g" href="https://chrisvonderau.github.io/chrono-spark/"><span class="art" aria-hidden="true">C</span><span class="name">Chrono Spark</span></a>
+<a class="g" href="https://chrisvonderau.github.io/hollow-light/"><span class="art" aria-hidden="true">H</span><span class="name">Hollow Light</span></a>
+<a class="g" href="https://chrisvonderau.github.io/kill-switch/"><span class="art" aria-hidden="true">K</span><span class="name">Kill Switch</span></a>
+<a class="g" href="https://chrisvonderau.github.io/supernova/"><span class="art" aria-hidden="true">S</span><span class="name">Supernova</span></a>
+</div>
+</section><section id="adventure" class="cat cat-adventure">
+<header class="banner">
+<div class="icon-badge" aria-hidden="true"><span class="emo">🗺️</span><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="currentColor" d="m8 38 10.5-16 5.2 8 3.3-5.2L40 38H8zm16.8-20.5 3.4-5.3 2.2 3.4 3.1-2.2 6.5 10.4-3.8-.1-4.6-6.2-1.6 2.5-5.2-2.5z"/></svg></div>
+<div class="copy"><h2>Platformers &amp; Adventure</h2><p class="tagline">Leap first. Look later.</p></div>
+<div class="count" aria-label="9 games">9<small>games</small></div>
+</header>
+<div class="grid">
+<a class="g" href="clockwork-heist/"><span class="art" aria-hidden="true">C</span><span class="name">Clockwork Heist</span></a>
+<a class="g" href="tender-titan/"><span class="art" aria-hidden="true">T</span><span class="name">Tender Titan</span></a>
+<a class="g" href="tinderhelm/"><span class="art" aria-hidden="true">T</span><span class="name">Tinderhelm</span></a>
+<a class="g" href="tock/"><span class="art" aria-hidden="true">T</span><span class="name">Tock</span></a>
+<a class="g" href="the-idol-wakes/"><span class="art" aria-hidden="true">T</span><span class="name">The Idol Wakes</span></a>
+<a class="g" href="castle-of-chaos/"><span class="art" aria-hidden="true">C</span><span class="name">Castle of Chaos: The Midnight Curse</span></a>
+<a class="g" href="gemini-platformer/"><span class="art" aria-hidden="true">A</span><span class="name">Aether Prism 3D</span></a>
+<a class="g" href="https://chrisvonderau.github.io/brasswind/"><span class="art" aria-hidden="true">B</span><span class="name">Brasswind: The Stolen Sky</span></a>
+<a class="g" href="https://chrisvonderau.github.io/horizon-wake-up/"><span class="art" aria-hidden="true">H</span><span class="name">Horizon: Wake Up</span></a>
+</div>
+</section><section id="racing" class="cat cat-racing">
+<header class="banner">
+<div class="icon-badge" aria-hidden="true"><span class="emo">🏁</span><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="currentColor" d="m18 10 16 14H24l8 14L14 24h11L18 10z"/></svg></div>
+<div class="copy"><h2>Racing &amp; Driving</h2><p class="tagline">Pedal down. Lights out.</p></div>
+<div class="count" aria-label="4 games">4<small>games</small></div>
+</header>
+<div class="grid">
+<a class="g" href="redline-and-rust/"><span class="art" aria-hidden="true">R</span><span class="name">Redline and Rust</span></a>
+<a class="g" href="https://chrisvonderau.github.io/midnight-break/"><span class="art" aria-hidden="true">M</span><span class="name">Midnight Break: Neon Gambit</span></a>
+<a class="g" href="https://chrisvonderau.github.io/the-last-ten-seconds/"><span class="art" aria-hidden="true">T</span><span class="name">The Last Ten Seconds</span></a>
+<a class="g" href="https://chrisvonderau.github.io/redline-afterimage/"><span class="art" aria-hidden="true">R</span><span class="name">REDLINE: Afterimage</span></a>
+</div>
+</section><section id="puzzles" class="cat cat-puzzles">
+<header class="banner">
+<div class="icon-badge" aria-hidden="true"><span class="emo">🧩</span><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" d="m24 6 16 9v18L24 42 8 33V15z"/><path fill="none" stroke="currentColor" stroke-width="3" d="M24 6v36M8 15l16 9 16-9"/></svg></div>
+<div class="copy"><h2>Puzzles</h2><p class="tagline">Twists, turns, and a-ha moments.</p></div>
+<div class="count" aria-label="6 games">6<small>games</small></div>
+</header>
+<div class="grid">
+<a class="g" href="event-horizon/"><span class="art" aria-hidden="true">E</span><span class="name">Event Horizon: Chrono-Drift</span></a>
+<a class="g" href="chroma-resonance/"><span class="art" aria-hidden="true">C</span><span class="name">Chroma Resonance</span></a>
+<a class="g" href="bioluminescent-abyss/"><span class="art" aria-hidden="true">B</span><span class="name">Bioluminescent Abyss</span></a>
+<a class="g" href="prism-hop/"><span class="art" aria-hidden="true">P</span><span class="name">Prism Hop</span></a>
+<a class="g" href="https://chrisvonderau.github.io/tilt-maze/"><span class="art" aria-hidden="true">T</span><span class="name">Tilt Maze</span></a>
+<a class="g" href="https://chrisvonderau.github.io/clockwork-kinetics/"><span class="art" aria-hidden="true">C</span><span class="name">Clockwork Kinetics</span></a>
+</div>
+</section><section id="strategy" class="cat cat-strategy">
+<header class="banner">
+<div class="icon-badge" aria-hidden="true"><span class="emo">♟️</span><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="currentColor" d="M34 40H12v-4h22v4zm-1.5-8H15c-1 0-2.2-1.5-1.6-3.3 1.4-4.2 3.2-7.4 3.2-12.2 0-2.4.4-4.8 3.1-6.4 0-2.2 1.8-4.1 4-4.1 1 0 1.8.3 2.5.9l.3-1.7h3.4l-1.2 6.4c1.6 1.2 3.3 3.3 3.8 6.4.2 1.3-.4 2.2-1.3 2.6l2.8 1.3c.7.3 1.1 1 .9 1.7l-1.4 5.2c-.2.8-1 1.2-1.8 1.2h.1z"/></svg></div>
+<div class="copy"><h2>Strategy, Board &amp; Tycoon</h2><p class="tagline">Outthink, outbuild, outlast.</p></div>
+<div class="count" aria-label="9 games">9<small>games</small></div>
+</header>
+<div class="grid">
+<a class="g" href="port-city-tycoon/"><span class="art" aria-hidden="true">P</span><span class="name">Port City Tycoon</span></a>
+<a class="g" href="jade-star-checkers/"><span class="art" aria-hidden="true">J</span><span class="name">Jade Star Checkers</span></a>
+<a class="g" href="marble-mayhem/"><span class="art" aria-hidden="true">M</span><span class="name">Marble Mayhem</span></a>
+<a class="g" href="knight-shift/"><span class="art" aria-hidden="true">K</span><span class="name">Knight Shift</span></a>
+<a class="g" href="tide-table/"><span class="art" aria-hidden="true">T</span><span class="name">Tide Table</span></a>
+<a class="g" href="https://chrisvonderau.github.io/bathtub-admirals/"><span class="art" aria-hidden="true">B</span><span class="name">Bathtub Admirals</span></a>
+<a class="g" href="https://chrisvonderau.github.io/lively-chess/"><span class="art" aria-hidden="true">L</span><span class="name">Lively Chess</span></a>
+<a class="g" href="https://chrisvonderau.github.io/capital-tycoon/"><span class="art" aria-hidden="true">C</span><span class="name">Capital Tycoon</span></a>
+<a class="g" href="https://chrisvonderau.github.io/world-domination/"><span class="art" aria-hidden="true">W</span><span class="name">World Domination: Grand Conquest</span></a>
+</div>
+</section><section id="party" class="cat cat-party">
+<header class="banner">
+<div class="icon-badge" aria-hidden="true"><span class="emo">🎉</span><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="currentColor" d="m24 4 3.2 12.3L38.8 9.2l-6.4 11.1L44 24l-11.6 3.7 6.4 11.1-11.6-7.1L24 44l-3.2-12.3-11.6 7.1 6.4-11.1L4 24l11.6-3.7-6.4-11.1 11.6 7.1z"/></svg></div>
+<div class="copy"><h2>Word, Trivia &amp; Party</h2><p class="tagline">Bring friends. Bring answers.</p></div>
+<div class="count" aria-label="10 games">10<small>games</small></div>
+</header>
+<div class="grid">
+<a class="g" href="docket-dojo/"><span class="art" aria-hidden="true">D</span><span class="name">Docket Dojo</span></a>
+<a class="g" href="neon-wheel/"><span class="art" aria-hidden="true">W</span><span class="name">Wheel of Fortune: Neon Edition</span></a>
+<a class="g" href="legal-jeopardy/"><span class="art" aria-hidden="true">L</span><span class="name">Legal Jeopardy</span></a>
+<a class="g" href="truth-factory/"><span class="art" aria-hidden="true">T</span><span class="name">The Truth Factory</span></a>
+<a class="g" href="lexfury/"><span class="art" aria-hidden="true">L</span><span class="name">LEXFURY</span></a>
+<a class="g" href="https://chrisvonderau.github.io/Sketch-showdown/"><span class="art" aria-hidden="true">S</span><span class="name">Sketch Showdown</span></a>
+<a class="g" href="https://chrisvonderau.github.io/hung-jury/"><span class="art" aria-hidden="true">H</span><span class="name">Hung Jury</span></a>
+<a class="g" href="https://chrisvonderau.github.io/wordstorm/"><span class="art" aria-hidden="true">W</span><span class="name">WORDSTORM</span></a>
+<a class="g" href="https://chrisvonderau.github.io/million-dollar-vault/"><span class="art" aria-hidden="true">T</span><span class="name">The Million-Dollar Vault</span></a>
+<a class="g" href="https://chrisvonderau.github.io/whisperchain/"><span class="art" aria-hidden="true">W</span><span class="name">Whisperchain</span></a>
 </div>
 </section>
-<section id="shooters">
-<h2>Shooters <span>16</span></h2>
-<div class="grid">
-<a class="g" href="astro-vortex/">ASTRO-VORTEX &#x27;84</a>
-<a class="g" href="shatterfield/">Shatterfield</a>
-<a class="g" href="chromahive/">CHROMAHIVE</a>
-<a class="g" href="fort-fisher/">Fort Fisher</a>
-<a class="g" href="dead-mans-gulch/">Dead Man&#x27;s Gulch</a>
-<a class="g" href="soul-trigger/">Soul Trigger</a>
-<a class="g" href="time-cop-1986/">TIME COP 1986</a>
-<a class="g" href="star-swarm-defender/">Star Swarm Defender</a>
-<a class="g" href="get-off-my-lawn/">Get Off My Lawn</a>
-<a class="g" href="blackout/">BLACKOUT</a>
-<a class="g" href="starbreak/">STARBREAK</a>
-<a class="g" href="https://chrisvonderau.github.io/six-gun-showdown/Six-Gun%20Sundown.html">Six-Gun Sundown</a>
-<a class="g" href="https://chrisvonderau.github.io/chrono-spark/">Chrono Spark</a>
-<a class="g" href="https://chrisvonderau.github.io/hollow-light/">Hollow Light</a>
-<a class="g" href="https://chrisvonderau.github.io/kill-switch/">Kill Switch</a>
-<a class="g" href="https://chrisvonderau.github.io/supernova/">Supernova</a>
+</main>
 </div>
-</section>
-<section id="adventure">
-<h2>Platformers &amp; Adventure <span>9</span></h2>
-<div class="grid">
-<a class="g" href="clockwork-heist/">Clockwork Heist</a>
-<a class="g" href="tender-titan/">Tender Titan</a>
-<a class="g" href="tinderhelm/">Tinderhelm</a>
-<a class="g" href="tock/">Tock</a>
-<a class="g" href="the-idol-wakes/">The Idol Wakes</a>
-<a class="g" href="castle-of-chaos/">Castle of Chaos: The Midnight Curse</a>
-<a class="g" href="gemini-platformer/">Aether Prism 3D</a>
-<a class="g" href="https://chrisvonderau.github.io/brasswind/">Brasswind: The Stolen Sky</a>
-<a class="g" href="https://chrisvonderau.github.io/horizon-wake-up/">Horizon: Wake Up</a>
-</div>
-</section>
-<section id="racing">
-<h2>Racing &amp; Driving <span>4</span></h2>
-<div class="grid">
-<a class="g" href="redline-and-rust/">Redline and Rust</a>
-<a class="g" href="https://chrisvonderau.github.io/midnight-break/">Midnight Break: Neon Gambit</a>
-<a class="g" href="https://chrisvonderau.github.io/the-last-ten-seconds/">The Last Ten Seconds</a>
-<a class="g" href="https://chrisvonderau.github.io/redline-afterimage/">REDLINE: Afterimage</a>
-</div>
-</section>
-<section id="puzzles">
-<h2>Puzzles <span>6</span></h2>
-<div class="grid">
-<a class="g" href="event-horizon/">Event Horizon: Chrono-Drift</a>
-<a class="g" href="chroma-resonance/">Chroma Resonance</a>
-<a class="g" href="bioluminescent-abyss/">Bioluminescent Abyss</a>
-<a class="g" href="prism-hop/">Prism Hop</a>
-<a class="g" href="https://chrisvonderau.github.io/tilt-maze/">Tilt Maze</a>
-<a class="g" href="https://chrisvonderau.github.io/clockwork-kinetics/">Clockwork Kinetics</a>
-</div>
-</section>
-<section id="strategy">
-<h2>Strategy, Board &amp; Tycoon <span>9</span></h2>
-<div class="grid">
-<a class="g" href="port-city-tycoon/">Port City Tycoon</a>
-<a class="g" href="jade-star-checkers/">Jade Star Checkers</a>
-<a class="g" href="marble-mayhem/">Marble Mayhem</a>
-<a class="g" href="knight-shift/">Knight Shift</a>
-<a class="g" href="tide-table/">Tide Table</a>
-<a class="g" href="https://chrisvonderau.github.io/bathtub-admirals/">Bathtub Admirals</a>
-<a class="g" href="https://chrisvonderau.github.io/lively-chess/">Lively Chess</a>
-<a class="g" href="https://chrisvonderau.github.io/capital-tycoon/">Capital Tycoon</a>
-<a class="g" href="https://chrisvonderau.github.io/world-domination/">World Domination: Grand Conquest</a>
-</div>
-</section>
-<section id="party">
-<h2>Word, Trivia &amp; Party <span>10</span></h2>
-<div class="grid">
-<a class="g" href="docket-dojo/">Docket Dojo</a>
-<a class="g" href="neon-wheel/">Wheel of Fortune: Neon Edition</a>
-<a class="g" href="legal-jeopardy/">Legal Jeopardy</a>
-<a class="g" href="truth-factory/">The Truth Factory</a>
-<a class="g" href="lexfury/">LEXFURY</a>
-<a class="g" href="https://chrisvonderau.github.io/Sketch-showdown/">Sketch Showdown</a>
-<a class="g" href="https://chrisvonderau.github.io/hung-jury/">Hung Jury</a>
-<a class="g" href="https://chrisvonderau.github.io/wordstorm/">WORDSTORM</a>
-<a class="g" href="https://chrisvonderau.github.io/million-dollar-vault/">The Million-Dollar Vault</a>
-<a class="g" href="https://chrisvonderau.github.io/whisperchain/">Whisperchain</a>
-</div>
-</section>
-</main></body></html>
+<script>
+
+(function(){
+  var games = Array.prototype.slice.call(document.querySelectorAll("a.g"));
+  function pickRandom(){
+    if(!games.length) return;
+    var g = games[Math.floor(Math.random()*games.length)];
+    location.href = g.href;
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("[data-random]"), function(btn){
+    btn.addEventListener("click", pickRandom);
+  });
+  var links = Array.prototype.slice.call(document.querySelectorAll("nav.jump a[href^='#']"));
+  var sections = links.map(function(a){ return document.querySelector(a.getAttribute("href")); }).filter(Boolean);
+  if("IntersectionObserver" in window && sections.length){
+    var io = new IntersectionObserver(function(entries){
+      var vis = entries.filter(function(e){ return e.isIntersecting; })
+        .sort(function(a,b){ return b.intersectionRatio - a.intersectionRatio; })[0];
+      if(!vis) return;
+      links.forEach(function(a){ a.classList.toggle("is-active", a.getAttribute("href") === "#"+vis.target.id); });
+    }, { rootMargin: "-18% 0px -62% 0px", threshold: [0, .15, .4, .75] });
+    sections.forEach(function(s){ io.observe(s); });
+  }
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var canvas = document.getElementById("sky");
+  if(!reduce && canvas && canvas.getContext){
+    var ctx = canvas.getContext("2d");
+    var stars = [];
+    function resize(){
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      stars = [];
+      var n = Math.min(120, Math.floor(canvas.width * canvas.height / 14000));
+      for(var i=0;i<n;i++){
+        stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.4+.2,s:Math.random()*0.8+.2,p:Math.random()*Math.PI*2});
+      }
+    }
+    resize();
+    window.addEventListener("resize", resize);
+    var t0 = performance.now();
+    function tick(now){
+      var t = (now - t0)/1000;
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      for(var i=0;i<stars.length;i++){
+        var s = stars[i];
+        var a = 0.35 + 0.65 * Math.abs(Math.sin(t * s.s + s.p));
+        ctx.fillStyle = "rgba(255,255,255,"+a+")";
+        ctx.beginPath();
+        ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+        ctx.fill();
+      }
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+})();
+
+</script>
+</body>
+</html>
