@@ -99,8 +99,8 @@ section{margin:0 0 48px;scroll-margin-top:76px}
 .banner::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(0,0,0,.45),rgba(0,0,0,.12) 55%,transparent)}
 .icon-badge{flex:0 0 auto;width:68px;height:68px;border-radius:20px;display:grid;place-items:center;position:relative;
   background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.28);box-shadow:0 0 24px rgba(255,255,255,.12);backdrop-filter:blur(8px)}
-.icon-badge .emo{font-size:30px;line-height:1;position:absolute;opacity:.95}
-.icon-badge svg{width:34px;height:34px;opacity:0;position:absolute}
+.icon-badge .emo{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.icon-badge svg{width:36px;height:36px;position:relative;display:block}
 .banner h2{margin:0;font-size:clamp(22px,3vw,32px);letter-spacing:-.03em;font-weight:800;text-shadow:0 2px 12px rgba(0,0,0,.35)}
 .tagline{margin:4px 0 0;color:rgba(255,255,255,.88);font-size:15px;font-weight:500}
 .banner .copy{flex:1;min-width:0;position:relative}
@@ -118,9 +118,13 @@ section{margin:0 0 48px;scroll-margin-top:76px}
 .g{display:flex;flex-direction:column;border-radius:16px;overflow:hidden;text-decoration:none;color:var(--text);
   background:var(--card);border:1px solid rgba(255,255,255,.08);
   box-shadow:0 8px 18px rgba(0,0,0,.22);transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
-.g:hover,.g:focus-visible{transform:translateY(-8px);outline:none;z-index:2}
-.art{position:relative;height:102px;display:grid;place-items:center;font-size:46px;font-weight:800;letter-spacing:-.05em;
-  color:#fff;text-shadow:0 6px 18px rgba(0,0,0,.35);overflow:hidden;isolation:isolate}
+.g:hover,.g:focus-visible{transform:translateY(-8px);outline:3px solid #fff;outline-offset:3px;z-index:2}
+.art{position:relative;height:132px;display:grid;place-items:center;color:#fff;overflow:hidden;isolation:isolate}
+.art svg{width:78px;height:78px;padding:15px;box-sizing:border-box;color:#fff;
+  background:rgba(7,8,16,.66);border:1.5px solid rgba(255,255,255,.72);border-radius:22px;
+  box-shadow:0 10px 22px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.35);
+  transition:transform .22s ease}
+.g:hover .art svg,.g:focus-visible .art svg{transform:translateY(-3px) scale(1.06)}
 .art::before{content:"";position:absolute;inset:-30%;z-index:-1;opacity:.55;
   background:repeating-linear-gradient(-45deg,rgba(255,255,255,.1) 0 8px,transparent 8px 16px)}
 .art::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.28) 50%,transparent 65%);
@@ -129,7 +133,15 @@ section{margin:0 0 48px;scroll-margin-top:76px}
 .g:nth-child(3n+2) .art::before{background:radial-gradient(circle at 28% 28%,rgba(255,255,255,.28),transparent 42%),
   radial-gradient(circle at 82% 72%,rgba(255,255,255,.16),transparent 40%);opacity:.85;inset:0}
 .g:nth-child(3n+3) .art::before{background:repeating-linear-gradient(90deg,rgba(255,255,255,.1) 0 3px,transparent 3px 14px);inset:0}
-.name{display:block;padding:12px 14px 14px;font-weight:700;font-size:14.5px;line-height:1.3;letter-spacing:-.01em}
+.name{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:12px 12px 14px 14px;font-weight:700;font-size:14.5px;line-height:1.25;letter-spacing:-.015em}
+.name::after{content:"";flex:0 0 22px;width:22px;height:22px;border-radius:50%;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.45);
+  background-color:rgba(255,255,255,.14);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 14'%3E%3Cpath fill='white' d='M2 1.2 11 7 2 12.8z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:center;background-size:8px 10px}
+.g:hover .name::after,.g:focus-visible .name::after{background-color:#fff;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 14'%3E%3Cpath fill='%23081018' d='M2 1.2 11 7 2 12.8z'/%3E%3C/svg%3E")}
 .cat-action .g:hover,.cat-action .g:focus-visible{border-color:var(--action);box-shadow:0 16px 36px rgba(255,91,138,.32),0 0 0 1px var(--action)}
 .cat-shooters .g:hover,.cat-shooters .g:focus-visible{border-color:var(--shooters);box-shadow:0 16px 36px rgba(62,203,255,.32),0 0 0 1px var(--shooters)}
 .cat-adventure .g:hover,.cat-adventure .g:focus-visible{border-color:var(--adventure);box-shadow:0 16px 36px rgba(62,232,154,.3),0 0 0 1px var(--adventure)}
@@ -159,6 +171,14 @@ section{margin:0 0 48px;scroll-margin-top:76px}
 .cat-party .g:nth-child(3n+1) .art{background:linear-gradient(145deg,#ff4ecd,#ffd34d)}
 .cat-party .g:nth-child(3n+2) .art{background:linear-gradient(165deg,#ff9ae0,#c01478 60%,#ffe08a)}
 .cat-party .g:nth-child(3n+3) .art{background:linear-gradient(200deg,#ffd34d,#ff4ecd 70%,#4a0a32)}
+.cat-action .art svg{background:rgba(42,8,20,.72)}
+.cat-shooters .art svg{background:rgba(6,18,40,.74)}
+.cat-adventure .art svg{background:rgba(6,32,22,.72)}
+.cat-racing .art svg{background:rgba(42,12,8,.72)}
+.cat-puzzles .art svg{background:rgba(24,8,42,.74)}
+.cat-strategy .art svg{background:rgba(28,24,8,.74)}
+.cat-party .art svg{background:rgba(42,8,32,.72)}
+
 @media (max-width:720px){
   .hero{padding:44px 16px 28px}
   .banner{padding:16px;gap:12px;min-height:92px;border-radius:18px}
@@ -166,13 +186,15 @@ section{margin:0 0 48px;scroll-margin-top:76px}
   .icon-badge .emo{font-size:24px}
   .count{font-size:22px}
   .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
-  .art{height:86px;font-size:38px}
+  .art{height:112px}
+  .art svg{width:68px;height:68px;padding:13px;border-radius:18px}
 }
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   .aurora,.stars-sm,.stars-lg,.kicker i{animation:none!important}
-  .g,.g .art,.g .art::after,.random,.jump a,.jump button{transition:none!important}
+  .g,.g .art,.g .art::after,.art svg,.random,.jump a,.jump button{transition:none!important}
   .g:hover,.g:focus-visible,.random:hover,.random:focus-visible{transform:none}
+  .g:hover .art svg,.g:focus-visible .art svg{transform:none}
   .g:hover .art::after,.g:focus-visible .art::after{animation:none;transform:none}
   #sky{display:none}
 }
@@ -210,23 +232,23 @@ section{margin:0 0 48px;scroll-margin-top:76px}
 <div class="count" aria-label="17 games">17<small>games</small></div>
 </header>
 <div class="grid">
-<a class="g" href="graveyard-pinball/"><span class="art" aria-hidden="true">G</span><span class="name">Graveyard of the Atlantic (pinball)</span></a>
-<a class="g" href="protocol-nova/"><span class="art" aria-hidden="true">P</span><span class="name">Protocol Nova</span></a>
-<a class="g" href="far-ridge/"><span class="art" aria-hidden="true">F</span><span class="name">Far Ridge</span></a>
-<a class="g" href="frostbite-tower/"><span class="art" aria-hidden="true">F</span><span class="name">Frostbite Tower</span></a>
-<a class="g" href="neon-wake/"><span class="art" aria-hidden="true">N</span><span class="name">Neon Wake</span></a>
-<a class="g" href="ragnarok-rising/"><span class="art" aria-hidden="true">R</span><span class="name">Ragnarök Rising</span></a>
-<a class="g" href="pharaohs-descent/"><span class="art" aria-hidden="true">P</span><span class="name">Pharaoh&#x27;s Descent</span></a>
-<a class="g" href="lumen-drift/"><span class="art" aria-hidden="true">L</span><span class="name">Lumen Drift</span></a>
-<a class="g" href="little-apocalypse/"><span class="art" aria-hidden="true">L</span><span class="name">Little Apocalypse</span></a>
-<a class="g" href="pong-hyperdrive/"><span class="art" aria-hidden="true">P</span><span class="name">Pong: Hyperdrive</span></a>
-<a class="g" href="unicorn-joust/"><span class="art" aria-hidden="true">U</span><span class="name">Unicorn Joust</span></a>
-<a class="g" href="mime-high-rise/"><span class="art" aria-hidden="true">M</span><span class="name">Mime High-Rise</span></a>
-<a class="g" href="orangutan-keg-climb/"><span class="art" aria-hidden="true">O</span><span class="name">Orangutan Keg Climb</span></a>
-<a class="g" href="https://chrisvonderau.github.io/polar-ascent/"><span class="art" aria-hidden="true">P</span><span class="name">Polar Ascent</span></a>
-<a class="g" href="https://chrisvonderau.github.io/sparkwell/"><span class="art" aria-hidden="true">S</span><span class="name">Sparkwell</span></a>
-<a class="g" href="https://chrisvonderau.github.io/bubble-rescue/"><span class="art" aria-hidden="true">B</span><span class="name">Bubble Rescue</span></a>
-<a class="g" href="https://chrisvonderau.github.io/long-hop/"><span class="art" aria-hidden="true">L</span><span class="name">Long Hop: Red Centre Run</span></a>
+<a class="g" href="graveyard-pinball/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Pinball table" focusable="false"><circle fill="currentColor" cx="32" cy="16" r="8"/><rect fill="currentColor" x="6" y="42" width="24" height="8" rx="4" transform="rotate(-32 18 46)"/><rect fill="currentColor" x="34" y="42" width="24" height="8" rx="4" transform="rotate(32 46 46)"/></svg></span><span class="name">Graveyard of the Atlantic (pinball)</span></a>
+<a class="g" href="protocol-nova/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Nova badge" focusable="false" fill="currentColor"><rect x="10" y="10" width="44" height="44" rx="12" fill="none" stroke="currentColor" stroke-width="4"/><path fill="currentColor" d="M32 20.5 34.6 28h7.8l-6.3 4.6 2.4 7.4L32 35.4l-6.5 4.6 2.4-7.4L21.6 28h7.8z"/></svg></span><span class="name">Protocol Nova</span></a>
+<a class="g" href="far-ridge/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Mountain ridge" focusable="false" fill="currentColor"><path fill="currentColor" d="M4 54 22 18l12 16 7-10 19 30z"/><circle fill="currentColor" cx="48" cy="16" r="5"/></svg></span><span class="name">Far Ridge</span></a>
+<a class="g" href="frostbite-tower/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Ice tower" focusable="false"><path fill="currentColor" d="M8 34c8-16 40-16 48 0z"/><path fill="currentColor" fill-rule="evenodd" d="M18 32h28v26H18zm10 14h8v12h-8z"/></svg></span><span class="name">Frostbite Tower</span></a>
+<a class="g" href="neon-wake/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Light trail" focusable="false" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="32" cy="36" rx="20" ry="12"/><circle cx="50" cy="30" r="3.4" fill="currentColor" stroke="none"/><path d="M14 30c4-12 16-16 26-10"/></svg></span><span class="name">Neon Wake</span></a>
+<a class="g" href="ragnarok-rising/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="War hammer" focusable="false" fill="currentColor"><path fill="currentColor" d="M8 16h34a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H8V16zm14 18h8v24h-8z"/><path fill="currentColor" d="M46 18h8l-3 8 3 8h-8v-6h-4v-4h4z"/></svg></span><span class="name">Ragnarök Rising</span></a>
+<a class="g" href="pharaohs-descent/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Pyramid" focusable="false" fill="currentColor"><path fill="currentColor" fill-rule="evenodd" d="M32 6 58 54H6L32 6zm0 20 12 22H20l12-22z"/><circle fill="currentColor" cx="50" cy="16" r="4.5"/></svg></span><span class="name">Pharaoh&#x27;s Descent</span></a>
+<a class="g" href="lumen-drift/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Comet" focusable="false"><path fill="currentColor" d="M38 28 4 56h22L40 34z"/><circle fill="currentColor" cx="46" cy="18" r="11"/></svg></span><span class="name">Lumen Drift</span></a>
+<a class="g" href="little-apocalypse/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Small airplane" focusable="false" fill="currentColor"><path fill="currentColor" d="M29 8h6l5 20 17 7v6l-21-4-1 9 8 4v4l-11-2-11 2v-4l8-4-1-9-21 4v-6l17-7z"/></svg></span><span class="name">Little Apocalypse</span></a>
+<a class="g" href="pong-hyperdrive/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Pong paddles and ball" focusable="false"><rect fill="currentColor" x="8" y="10" width="8" height="20" rx="3"/><rect fill="currentColor" x="48" y="34" width="8" height="20" rx="3"/><circle fill="currentColor" cx="30" cy="26" r="5.5"/></svg></span><span class="name">Pong: Hyperdrive</span></a>
+<a class="g" href="unicorn-joust/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Unicorn" focusable="false"><path fill="currentColor" d="M32 2 40 24H24z"/><path fill="currentColor" d="M18 28 6 12l16 8z"/><path fill="currentColor" d="M46 28 58 12 42 20z"/><path fill="currentColor" fill-rule="evenodd" d="M32 24a15 15 0 1 0 .01 0zM25 36a3 3 0 1 0 .01 0zM38 36a3 3 0 1 0 .01 0z"/></svg></span><span class="name">Unicorn Joust</span></a>
+<a class="g" href="mime-high-rise/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Skyscraper in a bowler hat" focusable="false" fill="currentColor"><ellipse fill="currentColor" cx="32" cy="11" rx="13" ry="5"/><rect fill="currentColor" x="23" y="11" width="18" height="5" rx="1"/><path fill="currentColor" fill-rule="evenodd" d="M18 18h28v40H18V18zm5 6h6v7h-6zm12 0h6v7h-6zm-12 12h6v7h-6zm12 0h6v7h-6zm-12 12h6v7h-6zm12 0h6v7h-6z"/></svg></span><span class="name">Mime High-Rise</span></a>
+<a class="g" href="orangutan-keg-climb/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Wooden keg" focusable="false"><ellipse fill="currentColor" cx="32" cy="14" rx="16" ry="6"/><path fill="currentColor" fill-rule="evenodd" d="M16 16h32v28c0 7-7 12-16 12s-16-5-16-12V16zm0 8h32v4H16zm0 12h32v4H16z"/></svg></span><span class="name">Orangutan Keg Climb</span></a>
+<a class="g" href="https://chrisvonderau.github.io/polar-ascent/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Snowy peak with a flag" focusable="false" fill="currentColor"><path fill="currentColor" d="M6 56 30 16l9 14 6-8 17 34z"/><path fill="currentColor" d="M30 16V6h16l-5 5 5 5H34"/></svg></span><span class="name">Polar Ascent</span></a>
+<a class="g" href="https://chrisvonderau.github.io/sparkwell/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Spark over a well" focusable="false" fill="currentColor"><path fill="currentColor" d="M46 4l2.4 7.2L56 14l-7.6 2.4L46 24l-2.4-7.6L36 14l7.6-2.4z"/><ellipse cx="30" cy="46" rx="16" ry="7" fill="none" stroke="currentColor" stroke-width="4"/><path fill="none" stroke="currentColor" stroke-width="4" d="M14 46V34m32 12V34M18 34h24"/></svg></span><span class="name">Sparkwell</span></a>
+<a class="g" href="https://chrisvonderau.github.io/bubble-rescue/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Bubbles" focusable="false" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="20" cy="42" r="12"/><circle cx="46" cy="18" r="9"/><circle cx="46" cy="46" r="6"/><path d="M14 36c3-4 6-5 9-3"/></svg></span><span class="name">Bubble Rescue</span></a>
+<a class="g" href="https://chrisvonderau.github.io/long-hop/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Kangaroo" focusable="false"><rect fill="currentColor" x="24" y="6" width="6" height="16" rx="3"/><rect fill="currentColor" x="34" y="6" width="6" height="16" rx="3"/><circle fill="currentColor" cx="32" cy="26" r="8"/><ellipse fill="currentColor" cx="34" cy="42" rx="12" ry="9"/><path fill="currentColor" d="M22 44C8 46 4 58 14 60c8-2 10-10 8-16z"/><ellipse fill="currentColor" cx="46" cy="50" rx="12" ry="5"/></svg></span><span class="name">Long Hop: Red Centre Run</span></a>
 </div>
 </section><section id="shooters" class="cat cat-shooters">
 <header class="banner">
@@ -235,51 +257,51 @@ section{margin:0 0 48px;scroll-margin-top:76px}
 <div class="count" aria-label="16 games">16<small>games</small></div>
 </header>
 <div class="grid">
-<a class="g" href="astro-vortex/"><span class="art" aria-hidden="true">A</span><span class="name">ASTRO-VORTEX &#x27;84</span></a>
-<a class="g" href="shatterfield/"><span class="art" aria-hidden="true">S</span><span class="name">Shatterfield</span></a>
-<a class="g" href="chromahive/"><span class="art" aria-hidden="true">C</span><span class="name">CHROMAHIVE</span></a>
-<a class="g" href="fort-fisher/"><span class="art" aria-hidden="true">F</span><span class="name">Fort Fisher</span></a>
-<a class="g" href="dead-mans-gulch/"><span class="art" aria-hidden="true">D</span><span class="name">Dead Man&#x27;s Gulch</span></a>
-<a class="g" href="soul-trigger/"><span class="art" aria-hidden="true">S</span><span class="name">Soul Trigger</span></a>
-<a class="g" href="time-cop-1986/"><span class="art" aria-hidden="true">T</span><span class="name">TIME COP 1986</span></a>
-<a class="g" href="star-swarm-defender/"><span class="art" aria-hidden="true">S</span><span class="name">Star Swarm Defender</span></a>
-<a class="g" href="get-off-my-lawn/"><span class="art" aria-hidden="true">G</span><span class="name">Get Off My Lawn</span></a>
-<a class="g" href="blackout/"><span class="art" aria-hidden="true">B</span><span class="name">BLACKOUT</span></a>
-<a class="g" href="starbreak/"><span class="art" aria-hidden="true">S</span><span class="name">STARBREAK</span></a>
-<a class="g" href="https://chrisvonderau.github.io/six-gun-showdown/Six-Gun%20Sundown.html"><span class="art" aria-hidden="true">S</span><span class="name">Six-Gun Sundown</span></a>
-<a class="g" href="https://chrisvonderau.github.io/chrono-spark/"><span class="art" aria-hidden="true">C</span><span class="name">Chrono Spark</span></a>
-<a class="g" href="https://chrisvonderau.github.io/hollow-light/"><span class="art" aria-hidden="true">H</span><span class="name">Hollow Light</span></a>
-<a class="g" href="https://chrisvonderau.github.io/kill-switch/"><span class="art" aria-hidden="true">K</span><span class="name">Kill Switch</span></a>
-<a class="g" href="https://chrisvonderau.github.io/supernova/"><span class="art" aria-hidden="true">S</span><span class="name">Supernova</span></a>
+<a class="g" href="astro-vortex/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Spaceship vortex" focusable="false"><path fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" d="M8 46c8-16 16-22 28-20"/><path fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" d="M12 54c10-14 18-16 30-12"/><path fill="currentColor" d="M36 12 52 40H28z"/><path fill="currentColor" d="M28 32 16 44h14zM44 34l12 10H40z"/></svg></span><span class="name">ASTRO-VORTEX &#x27;84</span></a>
+<a class="g" href="shatterfield/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Shattered crystal" focusable="false" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M32 8 54 20v16L32 56 10 36V20z"/><path d="M32 18 24 34l9 5 9-12-4 16"/></svg></span><span class="name">Shatterfield</span></a>
+<a class="g" href="chromahive/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Hex hive" focusable="false" stroke-width="4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M32 8 50 18v16L32 54 14 34V18z"/><path d="M32 22 42 28v10l-10 6-10-6V28z"/></svg></span><span class="name">CHROMAHIVE</span></a>
+<a class="g" href="fort-fisher/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Fort wall" focusable="false" fill="currentColor"><path fill="currentColor" fill-rule="evenodd" d="M6 28h8V16h8v12h8V16h8v12h8V16h8v12h6v26H6V28zm22 10h8v8h-8z"/></svg></span><span class="name">Fort Fisher</span></a>
+<a class="g" href="dead-mans-gulch/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Cowboy hat" focusable="false"><ellipse fill="currentColor" cx="32" cy="44" rx="26" ry="8"/><path fill="currentColor" d="M20 42c1-16 5-24 12-24s11 8 12 24c-3-3-7-4-12-4s-9 1-12 4z"/></svg></span><span class="name">Dead Man&#x27;s Gulch</span></a>
+<a class="g" href="soul-trigger/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Spirit" focusable="false" fill="currentColor"><path fill="currentColor" fill-rule="evenodd" d="M14 30c0-12 8-20 18-20s18 8 18 20v22l-6-6-6 6-6-6-6 6-6-6-6 6V30zm9 1.5a3.2 3.2 0 1 0 6.4 0 3.2 3.2 0 0 0-6.4 0zm13.2 0a3.2 3.2 0 1 0 6.4 0 3.2 3.2 0 0 0-6.4 0z"/></svg></span><span class="name">Soul Trigger</span></a>
+<a class="g" href="time-cop-1986/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Clock" focusable="false" stroke-width="4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="36" r="16"/><path d="M32 26v12l8 5"/><path d="M28 12h8M32 12v6" stroke-width="4"/></svg></span><span class="name">TIME COP 1986</span></a>
+<a class="g" href="star-swarm-defender/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Spaceship" focusable="false" fill="currentColor"><path fill="currentColor" d="M32 4 39 26h13L38 34l6 20-12-10-12 10 6-20L12 26h13z"/></svg></span><span class="name">Star Swarm Defender</span></a>
+<a class="g" href="get-off-my-lawn/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="House on a lawn" focusable="false" fill="currentColor"><path fill="currentColor" fill-rule="evenodd" d="M6 32 32 10l26 22v20H6V32zm22 10h8v12h-8V42z"/><path fill="currentColor" d="M4 52c4-6 8-6 12 0s8 6 12 0 8 6 12 0 8 6 12 0 8 6 8 0v6H4v-6z"/></svg></span><span class="name">Get Off My Lawn</span></a>
+<a class="g" href="blackout/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Power symbol" focusable="false" stroke-width="5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M32 8v16"/><path d="M20 20a16 16 0 1 0 24 0"/></svg></span><span class="name">BLACKOUT</span></a>
+<a class="g" href="starbreak/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Broken star" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M32 4l7.2 18H58l-15 11 6 19L32 41 15 52l6-19L6 22h18.8zM30 20l14 8-8 2 2 12-8-8-6 6 2-10-8-4z"/></svg></span><span class="name">STARBREAK</span></a>
+<a class="g" href="https://chrisvonderau.github.io/six-gun-showdown/Six-Gun%20Sundown.html"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Setting sun" focusable="false"><path fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" d="M32 8v8M16 16l6 6M48 16l-6 6"/><path fill="currentColor" d="M12 46a20 20 0 0 1 40 0z"/><path fill="currentColor" d="M4 44h56v6H4zm6 10h44v5H10z"/></svg></span><span class="name">Six-Gun Sundown</span></a>
+<a class="g" href="https://chrisvonderau.github.io/chrono-spark/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Sparking clock" focusable="false" fill="currentColor"><circle cx="28" cy="38" r="15" fill="none" stroke="currentColor" stroke-width="4.5"/><path fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" d="M28 28v12l7 4"/><path fill="currentColor" d="M46 6 40 18h7l-5 12 12-16h-7z"/></svg></span><span class="name">Chrono Spark</span></a>
+<a class="g" href="https://chrisvonderau.github.io/hollow-light/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Lantern" focusable="false" fill="currentColor"><rect fill="currentColor" x="28" y="5" width="8" height="6" rx="1"/><rect fill="currentColor" x="23" y="11" width="18" height="5" rx="1.5"/><path fill="currentColor" fill-rule="evenodd" d="M18 18h28l4 8v14c0 8-7 16-18 16S14 48 14 40V26l4-8zm10 8h8v14h-8V26z"/></svg></span><span class="name">Hollow Light</span></a>
+<a class="g" href="https://chrisvonderau.github.io/kill-switch/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Toggle switch" focusable="false" fill="currentColor"><rect x="8" y="18" width="48" height="28" rx="14" fill="none" stroke="currentColor" stroke-width="4.5"/><circle fill="currentColor" cx="44" cy="32" r="8"/></svg></span><span class="name">Kill Switch</span></a>
+<a class="g" href="https://chrisvonderau.github.io/supernova/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Supernova" focusable="false" fill="currentColor"><path fill="currentColor" d="M32 2 36 18l14-12-6 16 18 2-16 6 8 16-16-8-6 16-4-18-14 10 6-16L4 24l16-2-8-14 14 12z"/></svg></span><span class="name">Supernova</span></a>
 </div>
 </section><section id="adventure" class="cat cat-adventure">
 <header class="banner">
-<div class="icon-badge" aria-hidden="true"><span class="emo">🗺️</span><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="currentColor" d="m8 38 10.5-16 5.2 8 3.3-5.2L40 38H8zm16.8-20.5 3.4-5.3 2.2 3.4 3.1-2.2 6.5 10.4-3.8-.1-4.6-6.2-1.6 2.5-5.2-2.5z"/></svg></div>
+<div class="icon-badge" aria-hidden="true"><span class="emo">Map</span><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="15" fill="none" stroke="currentColor" stroke-width="3.5"/><path fill="currentColor" d="M24 8l5 14-5-2-5 2z"/><path fill="currentColor" opacity=".55" d="M24 40l-5-14 5 2 5-2z"/></svg></div>
 <div class="copy"><h2>Platformers &amp; Adventure</h2><p class="tagline">Leap first. Look later.</p></div>
 <div class="count" aria-label="9 games">9<small>games</small></div>
 </header>
 <div class="grid">
-<a class="g" href="clockwork-heist/"><span class="art" aria-hidden="true">C</span><span class="name">Clockwork Heist</span></a>
-<a class="g" href="tender-titan/"><span class="art" aria-hidden="true">T</span><span class="name">Tender Titan</span></a>
-<a class="g" href="tinderhelm/"><span class="art" aria-hidden="true">T</span><span class="name">Tinderhelm</span></a>
-<a class="g" href="tock/"><span class="art" aria-hidden="true">T</span><span class="name">Tock</span></a>
-<a class="g" href="the-idol-wakes/"><span class="art" aria-hidden="true">T</span><span class="name">The Idol Wakes</span></a>
-<a class="g" href="castle-of-chaos/"><span class="art" aria-hidden="true">C</span><span class="name">Castle of Chaos: The Midnight Curse</span></a>
-<a class="g" href="gemini-platformer/"><span class="art" aria-hidden="true">A</span><span class="name">Aether Prism 3D</span></a>
-<a class="g" href="https://chrisvonderau.github.io/brasswind/"><span class="art" aria-hidden="true">B</span><span class="name">Brasswind: The Stolen Sky</span></a>
-<a class="g" href="https://chrisvonderau.github.io/horizon-wake-up/"><span class="art" aria-hidden="true">H</span><span class="name">Horizon: Wake Up</span></a>
+<a class="g" href="clockwork-heist/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Masquerade mask" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M10 26h44c1 0 2 3 1 8-1 6-6 10-12 7-3-2-6-2-10 0-6 3-11-1-12-7-1-5 0-8 1-8zm8 3a5 5 0 1 0 10.01 0A5 5 0 0 0 18 29zm18 0a5 5 0 1 0 10.01 0A5 5 0 0 0 36 29z"/><path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" d="M10 32 2 28M54 32l8-4"/></svg></span><span class="name">Clockwork Heist</span></a>
+<a class="g" href="tender-titan/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Giant and a tiny person" focusable="false" fill="currentColor"><circle fill="currentColor" cx="26" cy="14" r="8"/><path fill="currentColor" d="M12 26h28l6 28H8z"/><circle fill="currentColor" cx="50" cy="42" r="3.2"/><path fill="currentColor" d="M46 46h8l1 10h-10z"/></svg></span><span class="name">Tender Titan</span></a>
+<a class="g" href="tinderhelm/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Horned helm" focusable="false"><path fill="currentColor" d="M16 28C8 22 6 8 16 8c2 8 4 14 0 20z"/><path fill="currentColor" d="M48 28c8-6 10-20 0-20-2 8-4 14 0 20z"/><path fill="currentColor" d="M18 26a14 14 0 0 1 28 0v14H18z"/><rect fill="currentColor" x="12" y="38" width="40" height="7" rx="3"/></svg></span><span class="name">Tinderhelm</span></a>
+<a class="g" href="tock/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Alarm clock" focusable="false"><circle fill="currentColor" cx="20" cy="14" r="6"/><circle fill="currentColor" cx="44" cy="14" r="6"/><circle cx="32" cy="36" r="15" fill="none" stroke="currentColor" stroke-width="4.5"/><path fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" d="M32 28v10l6 4"/><path fill="currentColor" d="M22 50h6v8h-6zm14 0h6v8h-6z"/></svg></span><span class="name">Tock</span></a>
+<a class="g" href="the-idol-wakes/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Stone idol" focusable="false" stroke-width="4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="26" r="14"/><circle cx="32" cy="26" r="4" fill="currentColor" stroke="none"/></svg></span><span class="name">The Idol Wakes</span></a>
+<a class="g" href="castle-of-chaos/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Castle" focusable="false" fill="currentColor"><path fill="currentColor" fill-rule="evenodd" d="M8 54V30h8V16h8v14h8V12h8v18h8V16h8v14h8v24H8zm24 0V40h8v14h-8z"/></svg></span><span class="name">Castle of Chaos: The Midnight Curse</span></a>
+<a class="g" href="gemini-platformer/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Prism" focusable="false" fill="currentColor"><path fill="currentColor" d="M32 6 56 32 32 58 8 32z"/><path fill="currentColor" opacity=".45" d="M32 6 56 32 32 34z"/></svg></span><span class="name">Aether Prism 3D</span></a>
+<a class="g" href="https://chrisvonderau.github.io/brasswind/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Airship" focusable="false"><ellipse fill="currentColor" cx="30" cy="26" rx="22" ry="11"/><path fill="currentColor" d="M48 18h12l-2 14H50z"/><path fill="none" stroke="currentColor" stroke-width="2.5" d="M24 36v6M36 36v6"/><rect fill="currentColor" x="20" y="40" width="20" height="8" rx="2"/></svg></span><span class="name">Brasswind: The Stolen Sky</span></a>
+<a class="g" href="https://chrisvonderau.github.io/horizon-wake-up/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Sunrise" focusable="false" fill="currentColor"><path fill="currentColor" d="M14 40a18 18 0 0 1 36 0z"/><path fill="currentColor" d="M6 42h52v5H6z"/><path fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" d="M32 8v8M16 18l6 6M48 18l-6 6M10 34h8M46 34h8"/></svg></span><span class="name">Horizon: Wake Up</span></a>
 </div>
 </section><section id="racing" class="cat cat-racing">
 <header class="banner">
-<div class="icon-badge" aria-hidden="true"><span class="emo">🏁</span><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="currentColor" d="m18 10 16 14H24l8 14L14 24h11L18 10z"/></svg></div>
+<div class="icon-badge" aria-hidden="true"><span class="emo">Flag</span><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M12 6h6v36h-6V6zm6 4h22l-4 7 4 7H18V10zm4 3v6h4v-3h4v3h4v-3h4v-3h-4V10h-4v3h-4v-3h-4z"/></svg></div>
 <div class="copy"><h2>Racing &amp; Driving</h2><p class="tagline">Pedal down. Lights out.</p></div>
 <div class="count" aria-label="4 games">4<small>games</small></div>
 </header>
 <div class="grid">
-<a class="g" href="redline-and-rust/"><span class="art" aria-hidden="true">R</span><span class="name">Redline and Rust</span></a>
-<a class="g" href="https://chrisvonderau.github.io/midnight-break/"><span class="art" aria-hidden="true">M</span><span class="name">Midnight Break: Neon Gambit</span></a>
-<a class="g" href="https://chrisvonderau.github.io/the-last-ten-seconds/"><span class="art" aria-hidden="true">T</span><span class="name">The Last Ten Seconds</span></a>
-<a class="g" href="https://chrisvonderau.github.io/redline-afterimage/"><span class="art" aria-hidden="true">R</span><span class="name">REDLINE: Afterimage</span></a>
+<a class="g" href="redline-and-rust/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Race car" focusable="false" fill="currentColor"><path fill="currentColor" d="M8 36h8l6-12h18l8 12h8a4 4 0 0 1 4 4v6H6v-6a4 4 0 0 1 2-4z"/><circle fill="currentColor" cx="18" cy="48" r="6"/><circle fill="currentColor" cx="46" cy="48" r="6"/><path fill="currentColor" fill-rule="evenodd" d="M18 48m-6 0a6 6 0 1 0 12 0a6 6 0 1 0-12 0M46 48m-6 0a6 6 0 1 0 12 0a6 6 0 1 0-12 0"/></svg></span><span class="name">Redline and Rust</span></a>
+<a class="g" href="https://chrisvonderau.github.io/midnight-break/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Car seen from the front" focusable="false" fill="currentColor"><path fill="currentColor" fill-rule="evenodd" d="M12 26h40l6 12v16H6V38l6-12zm6 12h10v7H18zm18 0h10v7H36z"/><path fill="currentColor" d="M8 54h48v4H8z"/></svg></span><span class="name">Midnight Break: Neon Gambit</span></a>
+<a class="g" href="https://chrisvonderau.github.io/the-last-ten-seconds/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Stopwatch" focusable="false" stroke-width="4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="36" r="16"/><path d="M32 36V24"/><path d="M26 12h12"/><path d="M44 16l6-6"/></svg></span><span class="name">The Last Ten Seconds</span></a>
+<a class="g" href="https://chrisvonderau.github.io/redline-afterimage/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Speed chevrons" focusable="false"><path fill="currentColor" opacity=".35" d="M6 16 24 32 6 48z"/><path fill="currentColor" opacity=".7" d="M22 16 40 32 22 48z"/><path fill="currentColor" d="M38 16 56 32 38 48z"/></svg></span><span class="name">REDLINE: Afterimage</span></a>
 </div>
 </section><section id="puzzles" class="cat cat-puzzles">
 <header class="banner">
@@ -288,12 +310,12 @@ section{margin:0 0 48px;scroll-margin-top:76px}
 <div class="count" aria-label="6 games">6<small>games</small></div>
 </header>
 <div class="grid">
-<a class="g" href="event-horizon/"><span class="art" aria-hidden="true">E</span><span class="name">Event Horizon: Chrono-Drift</span></a>
-<a class="g" href="chroma-resonance/"><span class="art" aria-hidden="true">C</span><span class="name">Chroma Resonance</span></a>
-<a class="g" href="bioluminescent-abyss/"><span class="art" aria-hidden="true">B</span><span class="name">Bioluminescent Abyss</span></a>
-<a class="g" href="prism-hop/"><span class="art" aria-hidden="true">P</span><span class="name">Prism Hop</span></a>
-<a class="g" href="https://chrisvonderau.github.io/tilt-maze/"><span class="art" aria-hidden="true">T</span><span class="name">Tilt Maze</span></a>
-<a class="g" href="https://chrisvonderau.github.io/clockwork-kinetics/"><span class="art" aria-hidden="true">C</span><span class="name">Clockwork Kinetics</span></a>
+<a class="g" href="event-horizon/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Black hole" focusable="false"><ellipse cx="32" cy="32" rx="24" ry="9" fill="none" stroke="currentColor" stroke-width="4" transform="rotate(-32 32 32)"/><circle fill="currentColor" cx="32" cy="32" r="7"/></svg></span><span class="name">Event Horizon: Chrono-Drift</span></a>
+<a class="g" href="chroma-resonance/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Overlapping color rings" focusable="false" fill="currentColor"><circle cx="24" cy="28" r="13" fill="currentColor"/><circle cx="42" cy="28" r="13" fill="currentColor" opacity=".62"/><circle cx="33" cy="42" r="13" fill="currentColor" opacity=".4"/></svg></span><span class="name">Chroma Resonance</span></a>
+<a class="g" href="bioluminescent-abyss/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Jellyfish" focusable="false" fill="currentColor"><path fill="currentColor" d="M14 30c0-12 8-20 18-20s18 8 18 20c-5 3-10 4-18 4s-13-1-18-4z"/><path fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" d="M22 36c-2 8 2 14 0 20M32 38v20M42 36c2 8-2 14 0 20"/></svg></span><span class="name">Bioluminescent Abyss</span></a>
+<a class="g" href="prism-hop/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Hopping prism" focusable="false"><path fill="currentColor" d="M32 20 50 40 32 58 14 40z"/><path fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" d="M40 8c12 2 16 12 10 18"/><path fill="currentColor" d="M48 22 58 26 50 32z"/></svg></span><span class="name">Prism Hop</span></a>
+<a class="g" href="https://chrisvonderau.github.io/tilt-maze/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Maze" focusable="false" stroke-width="4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M10 10h44v44H10z"/><path d="M10 24h30M22 24v22M22 36h22M36 36v18"/></svg></span><span class="name">Tilt Maze</span></a>
+<a class="g" href="https://chrisvonderau.github.io/clockwork-kinetics/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Gear" focusable="false" fill="currentColor"><path fill="currentColor" fill-rule="evenodd" d="M28 4h8l1.5 8.5 7.2-4.6 5.6 5.6-4.6 7.2L54 22v8l-8.3 1.7 4.6 7.2-5.6 5.6-7.2-4.6L36 48h-8l-1.5-8.1-7.2 4.6-5.6-5.6 4.6-7.2L10 30v-8l8.3-1.7-4.6-7.2 5.6-5.6 7.2 4.6zM26 26h12v12H26z"/></svg></span><span class="name">Clockwork Kinetics</span></a>
 </div>
 </section><section id="strategy" class="cat cat-strategy">
 <header class="banner">
@@ -302,33 +324,33 @@ section{margin:0 0 48px;scroll-margin-top:76px}
 <div class="count" aria-label="9 games">9<small>games</small></div>
 </header>
 <div class="grid">
-<a class="g" href="port-city-tycoon/"><span class="art" aria-hidden="true">P</span><span class="name">Port City Tycoon</span></a>
-<a class="g" href="jade-star-checkers/"><span class="art" aria-hidden="true">J</span><span class="name">Jade Star Checkers</span></a>
-<a class="g" href="marble-mayhem/"><span class="art" aria-hidden="true">M</span><span class="name">Marble Mayhem</span></a>
-<a class="g" href="knight-shift/"><span class="art" aria-hidden="true">K</span><span class="name">Knight Shift</span></a>
-<a class="g" href="tide-table/"><span class="art" aria-hidden="true">T</span><span class="name">Tide Table</span></a>
-<a class="g" href="https://chrisvonderau.github.io/bathtub-admirals/"><span class="art" aria-hidden="true">B</span><span class="name">Bathtub Admirals</span></a>
-<a class="g" href="https://chrisvonderau.github.io/lively-chess/"><span class="art" aria-hidden="true">L</span><span class="name">Lively Chess</span></a>
-<a class="g" href="https://chrisvonderau.github.io/capital-tycoon/"><span class="art" aria-hidden="true">C</span><span class="name">Capital Tycoon</span></a>
-<a class="g" href="https://chrisvonderau.github.io/world-domination/"><span class="art" aria-hidden="true">W</span><span class="name">World Domination: Grand Conquest</span></a>
+<a class="g" href="port-city-tycoon/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Harbor crane" focusable="false" fill="currentColor"><path fill="currentColor" d="M12 52h40v6H12zM18 52V16h7v36zM25 16h26v6H25z"/><path fill="none" stroke="currentColor" stroke-width="3.5" d="M46 22v12"/><path fill="currentColor" d="M40 34h12l-2 8H42z"/></svg></span><span class="name">Port City Tycoon</span></a>
+<a class="g" href="jade-star-checkers/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Checkerboard" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M8 8h48v48H8zm12 0h12v12H20zm24 0h12v12H44zM8 20h12v12H8zm24 0h12v12H32zM20 32h12v12H20zm24 0h12v12H44zM8 44h12v12H8zm24 0h12v12H32z"/></svg></span><span class="name">Jade Star Checkers</span></a>
+<a class="g" href="marble-mayhem/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Marbles" focusable="false" fill="currentColor"><circle fill="currentColor" cx="24" cy="36" r="13"/><circle fill="currentColor" cx="42" cy="28" r="11" opacity=".7"/><circle fill="currentColor" cx="36" cy="48" r="8" opacity=".45"/></svg></span><span class="name">Marble Mayhem</span></a>
+<a class="g" href="knight-shift/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Chess knight" focusable="false"><path fill="currentColor" d="M12 56h40v-7H12z"/><path fill="currentColor" d="M22 49v-6h-6c1-12 8-18 14-22-4-4-2-12 4-14 6-1 10 4 10 9 0 2-2 3-1 5 6 1 9 6 9 12 0 5-1 8-1 12v4H22z"/><path fill="currentColor" d="M42 16h14l-6 8h-8z"/></svg></span><span class="name">Knight Shift</span></a>
+<a class="g" href="tide-table/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Ocean waves" focusable="false" stroke-width="4.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M8 26c4 0 6 8 12 8s8-8 12-8 6 8 12 8 8-8 12-8"/><path d="M8 42c4 0 6 8 12 8s8-8 12-8 6 8 12 8 8-8 12-8"/></svg></span><span class="name">Tide Table</span></a>
+<a class="g" href="https://chrisvonderau.github.io/bathtub-admirals/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Bathtub" focusable="false"><path fill="currentColor" d="M6 30h52v6H6z"/><path fill="currentColor" d="M10 36h44v8c0 8-8 12-22 12S10 52 10 44z"/><path fill="currentColor" d="M16 14h6v16h-6z"/><path fill="currentColor" d="M16 14h18v6H16z"/></svg></span><span class="name">Bathtub Admirals</span></a>
+<a class="g" href="https://chrisvonderau.github.io/lively-chess/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Chess king" focusable="false" fill="currentColor"><path fill="currentColor" d="M30 6h4v6h6v4h-6v6h-4v-6h-6v-4h6z"/><path fill="currentColor" d="M18 28h28l-2 6H20zm2 8h24l-4 14H24z"/><path fill="currentColor" d="M16 50h32v6H16z"/></svg></span><span class="name">Lively Chess</span></a>
+<a class="g" href="https://chrisvonderau.github.io/capital-tycoon/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Capitol dome" focusable="false" fill="currentColor"><circle fill="currentColor" cx="32" cy="12" r="3.5"/><path fill="currentColor" d="M16 30h32v-4C40 16 24 16 16 26z"/><path fill="currentColor" d="M14 30h36v5H14zM18 35h5v14h-5zm9 0h5v14h-5zm9 0h5v14h-5zm9 0h5v14h-5z"/><path fill="currentColor" d="M10 49h44v7H10z"/></svg></span><span class="name">Capital Tycoon</span></a>
+<a class="g" href="https://chrisvonderau.github.io/world-domination/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Globe" focusable="false" stroke-width="4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="32" r="18"/><path d="M14 32h36"/><path d="M32 14c6 6 9 12 9 18s-3 12-9 18c-6-6-9-12-9-18s3-12 9-18"/></svg></span><span class="name">World Domination: Grand Conquest</span></a>
 </div>
 </section><section id="party" class="cat cat-party">
 <header class="banner">
-<div class="icon-badge" aria-hidden="true"><span class="emo">🎉</span><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="currentColor" d="m24 4 3.2 12.3L38.8 9.2l-6.4 11.1L44 24l-11.6 3.7 6.4 11.1-11.6-7.1L24 44l-3.2-12.3-11.6 7.1 6.4-11.1L4 24l11.6-3.7-6.4-11.1 11.6 7.1z"/></svg></div>
+<div class="icon-badge" aria-hidden="true"><span class="emo">Party</span><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="currentColor" d="M8 42 30 12l6 4L16 44z"/><circle cx="36" cy="10" r="3" fill="currentColor"/><circle cx="44" cy="18" r="2.4" fill="currentColor"/><circle cx="34" cy="22" r="2" fill="currentColor"/><circle cx="44" cy="8" r="1.7" fill="currentColor"/></svg></div>
 <div class="copy"><h2>Word, Trivia &amp; Party</h2><p class="tagline">Bring friends. Bring answers.</p></div>
 <div class="count" aria-label="10 games">10<small>games</small></div>
 </header>
 <div class="grid">
-<a class="g" href="docket-dojo/"><span class="art" aria-hidden="true">D</span><span class="name">Docket Dojo</span></a>
-<a class="g" href="neon-wheel/"><span class="art" aria-hidden="true">W</span><span class="name">Wheel of Fortune: Neon Edition</span></a>
-<a class="g" href="legal-jeopardy/"><span class="art" aria-hidden="true">L</span><span class="name">Legal Jeopardy</span></a>
-<a class="g" href="truth-factory/"><span class="art" aria-hidden="true">T</span><span class="name">The Truth Factory</span></a>
-<a class="g" href="lexfury/"><span class="art" aria-hidden="true">L</span><span class="name">LEXFURY</span></a>
-<a class="g" href="https://chrisvonderau.github.io/Sketch-showdown/"><span class="art" aria-hidden="true">S</span><span class="name">Sketch Showdown</span></a>
-<a class="g" href="https://chrisvonderau.github.io/hung-jury/"><span class="art" aria-hidden="true">H</span><span class="name">Hung Jury</span></a>
-<a class="g" href="https://chrisvonderau.github.io/wordstorm/"><span class="art" aria-hidden="true">W</span><span class="name">WORDSTORM</span></a>
-<a class="g" href="https://chrisvonderau.github.io/million-dollar-vault/"><span class="art" aria-hidden="true">T</span><span class="name">The Million-Dollar Vault</span></a>
-<a class="g" href="https://chrisvonderau.github.io/whisperchain/"><span class="art" aria-hidden="true">W</span><span class="name">Whisperchain</span></a>
+<a class="g" href="docket-dojo/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Gavel" focusable="false" fill="currentColor"><path fill="currentColor" d="M12 20 26 6l10 10L22 30z"/><path fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" d="M22 30 42 50"/><path fill="currentColor" d="M36 50h18v6H36z"/></svg></span><span class="name">Docket Dojo</span></a>
+<a class="g" href="neon-wheel/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Prize wheel" focusable="false" stroke-width="3.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="34" r="18"/><path d="M32 16v36M16 34h32M20 22l24 24M44 22 20 46"/><circle cx="32" cy="34" r="3.5" fill="currentColor" stroke="none"/></svg></span><span class="name">Wheel of Fortune: Neon Edition</span></a>
+<a class="g" href="legal-jeopardy/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Scales of justice" focusable="false" fill="currentColor"><path fill="currentColor" d="M30 8h4v36h-4zM16 50h32v6H16zM12 16h40v4H12z"/><path fill="currentColor" d="M12 20 6 34h14zM52 20l-6 14h14z"/></svg></span><span class="name">Legal Jeopardy</span></a>
+<a class="g" href="truth-factory/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Factory" focusable="false" fill="currentColor"><path fill="currentColor" d="M16 20h8v10h-8z"/><path fill="currentColor" fill-rule="evenodd" d="M6 54V32l12-8v8l12-8v8l12-8v8h10v22H6zm8-16h8v8h-8zm14 0h8v8h-8zm14 0h8v8h-8z"/></svg></span><span class="name">The Truth Factory</span></a>
+<a class="g" href="lexfury/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Letter tiles" focusable="false" fill="currentColor"><rect fill="currentColor" x="8" y="16" width="24" height="24" rx="4"/><rect fill="currentColor" x="32" y="28" width="24" height="24" rx="4" opacity=".72"/><path fill="currentColor" d="M44 6 39 16h7l-6 12 11-14h-7z"/></svg></span><span class="name">LEXFURY</span></a>
+<a class="g" href="https://chrisvonderau.github.io/Sketch-showdown/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Pencil" focusable="false" fill="currentColor"><path fill="currentColor" d="M40 8 54 22 24 52l-14 4 4-14z"/><path fill="currentColor" opacity=".55" d="M14 46 18 42 22 50z"/></svg></span><span class="name">Sketch Showdown</span></a>
+<a class="g" href="https://chrisvonderau.github.io/hung-jury/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Ballot box" focusable="false"><path fill="currentColor" d="M26 4h12v16H26z"/><path fill="currentColor" fill-rule="evenodd" d="M10 18h44v34H10zM20 24h24v6H20z"/></svg></span><span class="name">Hung Jury</span></a>
+<a class="g" href="https://chrisvonderau.github.io/wordstorm/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Storm cloud" focusable="false" fill="currentColor"><path fill="currentColor" d="M18 40c-7 0-12-5-11-11 1-5 6-8 11-7 1-7 8-12 15-10 5 1 8 5 9 10 6 0 11 4 11 10s-5 10-11 10H18z"/><path fill="currentColor" d="M28 46h6l-4 10h-4zm10-2h5l-3 12h-5z"/></svg></span><span class="name">WORDSTORM</span></a>
+<a class="g" href="https://chrisvonderau.github.io/million-dollar-vault/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Vault door" focusable="false" fill="currentColor"><path fill="currentColor" fill-rule="evenodd" d="M12 10h40a4 4 0 0 1 4 4v36a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4V14a4 4 0 0 1 4-4zm20 10a12 12 0 1 0 .1 0z"/><circle fill="currentColor" cx="32" cy="32" r="3.4"/><path fill="currentColor" d="M32 20v5M32 39v5M20 32h5M39 32h5"/></svg></span><span class="name">The Million-Dollar Vault</span></a>
+<a class="g" href="https://chrisvonderau.github.io/whisperchain/"><span class="art"><svg viewBox="0 0 64 64" role="img" aria-label="Two speech bubbles" focusable="false" fill="currentColor"><path fill="currentColor" d="M8 12h24a6 6 0 0 1 6 6v10a6 6 0 0 1-6 6H20l-8 8v-8a6 6 0 0 1-4-6V18a6 6 0 0 1 6-6z"/><path fill="currentColor" opacity=".72" d="M28 28h24a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6H50l6 7v-7H36a6 6 0 0 1-6-6v-8a6 6 0 0 1 6-6z"/></svg></span><span class="name">Whisperchain</span></a>
 </div>
 </section>
 </main>
