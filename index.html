@@ -3,83 +3,92 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#07080f">
+<meta name="theme-color" content="#06070d">
 <title>Vonderau Games</title>
 <style>
-
 :root{
-  --bg:#07080f;
-  --text:#f3f5ff;
-  --muted:#b7bed8;
-  --card:#12131c;
-  --nav-bg:rgba(7,8,15,.88);
-  --action:#ff5b8a;
-  --shooters:#3ecbff;
-  --adventure:#3ee89a;
-  --racing:#ff6a3c;
-  --puzzles:#c084fc;
-  --strategy:#f0c14b;
-  --party:#ff7ad9;
+  --bg:#06070d;--text:#f4f6ff;--muted:#b8bfd8;--card:#101218;
+  --nav-bg:rgba(6,7,13,.9);
+  --action:#ff5b8a;--shooters:#3ecbff;--adventure:#3ee89a;--racing:#ff6a3c;
+  --puzzles:#c084fc;--strategy:#f0c14b;--party:#ff7ad9;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;color-scheme:dark}
 html,body{margin:0;background:var(--bg);color:var(--text);
   font:16px/1.45 "Segoe UI","Helvetica Neue",-apple-system,BlinkMacSystemFont,Roboto,sans-serif}
 body{min-height:100vh;overflow-x:hidden}
-.skip{position:absolute;left:-999px;top:8px;background:#fff;color:#000;padding:8px 12px;border-radius:8px;z-index:40}
+.skip{position:absolute;left:-999px;top:8px;background:#fff;color:#000;padding:8px 12px;border-radius:8px;z-index:50}
 .skip:focus{left:8px}
 .bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-.aurora{position:absolute;left:-15%;right:-15%;top:-20%;height:78vh;
+.aurora{position:absolute;left:-15%;right:-15%;top:-22%;height:85vh;
   background:
-    radial-gradient(ellipse 46% 42% at 18% 32%,rgba(255,60,140,.42),transparent 70%),
-    radial-gradient(ellipse 44% 40% at 82% 18%,rgba(60,180,255,.38),transparent 70%),
-    radial-gradient(ellipse 36% 34% at 52% 44%,rgba(170,80,255,.28),transparent 70%),
-    radial-gradient(ellipse 30% 28% at 70% 60%,rgba(255,200,80,.12),transparent 70%);
-  filter:blur(42px);animation:aurora 16s ease-in-out infinite alternate;transform-origin:center}
-.gridlines{position:absolute;inset:0;opacity:.18;background-image:
-  linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),
-  linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);
-  background-size:64px 64px;mask-image:linear-gradient(180deg,#000 0%,transparent 70%)}
+    radial-gradient(ellipse 48% 44% at 16% 30%,rgba(255,50,140,.48),transparent 70%),
+    radial-gradient(ellipse 46% 42% at 84% 16%,rgba(50,180,255,.42),transparent 70%),
+    radial-gradient(ellipse 38% 36% at 50% 42%,rgba(170,70,255,.32),transparent 70%),
+    radial-gradient(ellipse 28% 26% at 72% 58%,rgba(255,200,70,.16),transparent 70%);
+  filter:blur(44px);animation:aurora 16s ease-in-out infinite alternate}
+.beams{position:absolute;inset:0;background:
+  conic-gradient(from 200deg at 50% -10%,transparent 0 8%,rgba(255,255,255,.06) 10%,transparent 12% 28%,rgba(130,220,255,.07) 30%,transparent 32% 100%);
+  animation:beams 28s linear infinite;mix-blend-mode:screen;opacity:.7;mask-image:linear-gradient(#000 0 40%,transparent 75%)}
+.gridlines{position:absolute;inset:0;opacity:.16;background-image:
+  linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);
+  background-size:72px 72px;mask-image:linear-gradient(180deg,#000,transparent 68%)}
 .stars-sm,.stars-lg{position:absolute;top:0;left:0;width:2px;height:2px;border-radius:50%;background:transparent;animation:drift 140s linear infinite}
-.stars-sm{box-shadow:663px 520px #fff,542px 158px #dff4ff,539px 88px #dff4ff,1049px 56px #dff4ff,1033px 24px #ffe9ff,936px 778px #dff4ff,715px 662px #dff4ff,75px 356px #fff,795px 663px #dff4ff,304px 329px #fff4d0,913px 99px #fff,511px 618px #dff4ff,319px 252px #ffe9ff,610px 592px #fff,514px 359px #dff4ff,804px 29px #fff,199px 255px #fff,605px 142px #fff4d0,978px 505px #ffe9ff,604px 97px #dff4ff,620px 636px #dff4ff,328px 589px #fff4d0,975px 559px #ffe9ff,533px 97px #ffe9ff,1439px 764px #fff,71px 865px #dff4ff,453px 483px #ffe9ff,1435px 860px #ffe9ff,499px 276px #dff4ff,109px 511px #fff4d0,488px 131px #fff,433px 640px #fff4d0,570px 841px #fff4d0,870px 886px #ffe9ff,638px 384px #ffe9ff,1276px 497px #fff4d0,12px 868px #fff4d0,442px 464px #ffe9ff,1320px 581px #ffe9ff,1402px 13px #fff,865px 435px #fff,661px 254px #ffe9ff,1224px 857px #dff4ff,915px 694px #ffe9ff,1214px 488px #fff,590px 390px #fff,1162px 547px #ffe9ff,629px 892px #ffe9ff,1472px 871px #fff,550px 386px #ffe9ff,836px 688px #ffe9ff,745px 589px #fff,1157px 460px #fff4d0,152px 762px #ffe9ff,1019px 166px #fff4d0,1523px 806px #fff4d0,808px 187px #fff4d0,1356px 510px #fff4d0,260px 629px #dff4ff,126px 581px #fff,1094px 757px #fff4d0,485px 149px #dff4ff,388px 464px #fff,740px 146px #fff,987px 717px #dff4ff,264px 740px #dff4ff,1319px 769px #fff,983px 515px #fff,56px 57px #ffe9ff,816px 110px #ffe9ff,1337px 886px #ffe9ff,1145px 334px #fff,1452px 263px #ffe9ff,571px 192px #fff4d0,596px 860px #fff,121px 876px #ffe9ff,790px 789px #ffe9ff,1570px 615px #fff,1167px 264px #dff4ff,695px 290px #fff4d0,656px 313px #dff4ff,681px 745px #fff4d0,1306px 69px #ffe9ff,488px 535px #fff4d0,435px 762px #fff4d0,1128px 328px #fff,1124px 298px #fff4d0,1165px 585px #ffe9ff,992px 561px #fff4d0,1471px 259px #ffe9ff}
-.stars-lg{width:3px;height:3px;box-shadow:1324px 758px #fff,332px 287px #b8e8ff,1237px 89px #fff,392px 551px #fff,489px 115px #b8e8ff,1541px 687px #fff,275px 673px #fff,1083px 799px #fff,373px 640px #ffd0f0,454px 628px #fff,402px 872px #b8e8ff,717px 216px #ffd0f0,991px 46px #ffd0f0,379px 396px #fff,1597px 412px #b8e8ff,464px 570px #ffd0f0,563px 251px #fff,937px 752px #ffd0f0,983px 588px #b8e8ff,200px 204px #b8e8ff,1340px 796px #fff,1206px 174px #fff,1391px 169px #ffd0f0,1428px 298px #fff,1123px 335px #b8e8ff,871px 862px #b8e8ff,1312px 521px #ffd0f0,1007px 75px #fff;animation-duration:200s;opacity:.9}
+.stars-lg{width:3px;height:3px;animation-duration:200s;box-shadow:1324px 758px #fff,332px 287px #b8e8ff,1237px 89px #fff,392px 551px #fff,489px 115px #b8e8ff,1541px 687px #fff,275px 673px #fff,1083px 799px #fff,373px 640px #ffd0f0,454px 628px #fff,402px 872px #b8e8ff,717px 216px #ffd0f0,991px 46px #ffd0f0,379px 396px #fff,1597px 412px #b8e8ff,464px 570px #ffd0f0,563px 251px #fff,937px 752px #ffd0f0,983px 588px #b8e8ff,200px 204px #b8e8ff,1340px 796px #fff,1206px 174px #fff,1391px 169px #ffd0f0,1428px 298px #fff,1123px 335px #b8e8ff,871px 862px #b8e8ff,1312px 521px #ffd0f0,1007px 75px #fff}
 #sky{position:absolute;inset:0;width:100%;height:100%}
-@keyframes aurora{0%{transform:translate3d(0,0,0) scale(1);opacity:1}
-  100%{transform:translate3d(3%,5%,0) scale(1.08);opacity:.82}}
-@keyframes drift{from{transform:translateY(0)}to{transform:translateY(-900px)}}
-@keyframes twinkle{0%,100%{opacity:.35}50%{opacity:1}}
-@keyframes shine{to{transform:translateX(120%)}}
-@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+@keyframes aurora{to{transform:translate3d(3%,6%,0) scale(1.08);opacity:.8}}
+@keyframes beams{to{transform:rotate(20deg) scale(1.15)}}
+@keyframes drift{to{transform:translateY(-900px)}}
+@keyframes shine{to{transform:translateX(130%)}}
+@keyframes pulse{0%,100%{opacity:.45}50%{opacity:1}}
+@keyframes ticker{to{transform:translateX(-50%)}}
+@keyframes chase{to{background-position:18px 0}}
+@keyframes shimmer{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+@keyframes flicker{0%,92%,100%{opacity:1}94%{opacity:.7}96%{opacity:1}97%{opacity:.55}}
 .wrap{position:relative;z-index:1}
-.hero{text-align:center;padding:64px 20px 36px;max-width:920px;margin:0 auto}
-.kicker{display:inline-flex;align-items:center;gap:8px;margin:0 0 14px;padding:5px 12px;
-  border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.06);
-  color:#dce3ff;font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:700}
-.kicker i{width:7px;height:7px;border-radius:50%;background:#5fffb3;box-shadow:0 0 10px #5fffb3;animation:pulse 1.6s ease-in-out infinite;display:inline-block}
-h1{margin:0 0 10px;font-size:clamp(44px,8vw,88px);line-height:.92;letter-spacing:-.045em;font-weight:800;
-  background:linear-gradient(180deg,#fff 12%,#c9d2ff 58%,#6ee7ff 100%);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  filter:drop-shadow(0 0 28px rgba(110,231,255,.28))}
-.lead{margin:0 auto 22px;max-width:28em;color:var(--muted);font-size:18px}
-.random{appearance:none;cursor:pointer;border:0;border-radius:999px;padding:12px 22px;font:700 15px/1 inherit;color:#081018;
-  background:linear-gradient(180deg,#fff 0%,#c6f4ff 100%);box-shadow:0 0 0 1px rgba(255,255,255,.4),0 8px 28px rgba(80,200,255,.35);
+.ticker{overflow:hidden;border-block:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.45);
+  mask-image:linear-gradient(90deg,transparent, #000 6%, #000 94%, transparent)}
+.ticker-track{display:flex;gap:0;width:max-content;animation:ticker 70s linear infinite;will-change:transform}
+.ticker.reverse .ticker-track{animation-duration:95s;animation-direction:reverse}
+.ticker-track span{display:inline-flex;align-items:center;gap:.7em;padding:8px 0 8px 2.2em;
+  font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#d5dcff;white-space:nowrap}
+.ticker-track span::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor;flex:none}
+.hero{text-align:center;padding:52px 20px 22px;max-width:980px;margin:0 auto;position:relative}
+.kicker{display:inline-flex;align-items:center;gap:8px;margin:0 0 16px;padding:6px 14px;
+  border:1px solid rgba(255,255,255,.2);border-radius:999px;background:rgba(255,255,255,.06);
+  color:#e4e9ff;font-size:11px;letter-spacing:.22em;text-transform:uppercase;font-weight:800}
+.kicker i{width:8px;height:8px;border-radius:50%;background:#5fffb3;box-shadow:0 0 12px #5fffb3;animation:pulse 1.6s ease-in-out infinite;display:inline-block}
+h1{margin:0 0 12px;font-size:clamp(48px,9vw,96px);line-height:.9;letter-spacing:-.05em;font-weight:800;
+  background:linear-gradient(90deg,#fff 0%,#c9d2ff 25%,#6ee7ff 50%,#ff9ad8 75%,#fff 100%);
+  background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 32px rgba(110,231,255,.35));animation:shimmer 8s linear infinite,flicker 7s ease-in-out infinite}
+.lead{margin:0 auto 24px;max-width:28em;color:var(--muted);font-size:19px}
+.random{appearance:none;cursor:pointer;border:0;border-radius:999px;padding:13px 24px;font:800 15px/1 inherit;color:#081018;
+  background:linear-gradient(180deg,#fff,#c6f4ff);box-shadow:0 0 0 1px rgba(255,255,255,.4),0 10px 32px rgba(80,200,255,.4);
   display:inline-flex;align-items:center;gap:8px;transition:transform .2s ease,box-shadow .2s ease}
-.random:hover,.random:focus-visible{transform:translateY(-2px) scale(1.03);box-shadow:0 0 0 1px #fff,0 12px 36px rgba(80,200,255,.5);outline:none}
+.random:hover,.random:focus-visible{transform:translateY(-3px) scale(1.04);box-shadow:0 0 0 1px #fff,0 14px 40px rgba(80,200,255,.55);outline:none}
 .random svg{width:18px;height:18px}
+.reel-wrap{overflow:hidden;padding:8px 0 22px;mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+.reel{display:flex;width:max-content;gap:14px;animation:ticker 55s linear infinite;will-change:transform;padding:6px 0 10px}
+.reel-card{flex:none;width:176px;height:132px;border-radius:14px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.14);box-shadow:0 14px 32px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.04);
+  background:#000}
+.reel-card svg{width:100%;height:100%;display:block}
 .jump{position:sticky;top:0;z-index:30;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;
-  padding:10px 14px;background:var(--nav-bg);backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);
-  border-bottom:1px solid rgba(255,255,255,.08)}
-.jump a,.jump button{color:var(--text);text-decoration:none;font-size:13px;font-weight:650;padding:7px 12px;border-radius:999px;
+  padding:10px 14px;background:var(--nav-bg);backdrop-filter:blur(16px) saturate(1.25);-webkit-backdrop-filter:blur(16px) saturate(1.25);
+  border-bottom:1px solid rgba(255,255,255,.1)}
+.jump a,.jump button{color:var(--text);text-decoration:none;font-size:13px;font-weight:700;padding:7px 12px;border-radius:999px;
   border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;font-family:inherit;line-height:1.2}
-.jump a:hover,.jump a:focus-visible,.jump button:hover,.jump button:focus-visible{outline:none;color:#fff;background:rgba(255,255,255,.12)}
+.jump a:hover,.jump a:focus-visible,.jump button:hover,.jump button:focus-visible{outline:none;color:#fff;background:rgba(255,255,255,.14)}
 .jump a.is-active{color:#081018;border-color:transparent}
-.jump a[href="#action"]{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--action) 55%,transparent)}
-.jump a[href="#shooters"]{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--shooters) 55%,transparent)}
-.jump a[href="#adventure"]{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--adventure) 55%,transparent)}
-.jump a[href="#racing"]{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--racing) 55%,transparent)}
-.jump a[href="#puzzles"]{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--puzzles) 55%,transparent)}
-.jump a[href="#strategy"]{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--strategy) 55%,transparent)}
-.jump a[href="#party"]{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--party) 55%,transparent)}
+.jump a[href="#action"]{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--action) 60%,transparent)}
+.jump a[href="#shooters"]{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--shooters) 60%,transparent)}
+.jump a[href="#adventure"]{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--adventure) 60%,transparent)}
+.jump a[href="#racing"]{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--racing) 60%,transparent)}
+.jump a[href="#puzzles"]{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--puzzles) 60%,transparent)}
+.jump a[href="#strategy"]{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--strategy) 60%,transparent)}
+.jump a[href="#party"]{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--party) 60%,transparent)}
 .jump a[href="#action"].is-active{background:var(--action)}
 .jump a[href="#shooters"].is-active{background:var(--shooters)}
 .jump a[href="#adventure"].is-active{background:var(--adventure)}
@@ -88,91 +97,68 @@ h1{margin:0 0 10px;font-size:clamp(44px,8vw,88px);line-height:.92;letter-spacing
 .jump a[href="#strategy"].is-active{background:var(--strategy)}
 .jump a[href="#party"].is-active{background:var(--party)}
 .jump .nav-random{background:linear-gradient(180deg,#fff,#d7f6ff);color:#081018;border:0;font-weight:800}
-main{max-width:1120px;margin:0 auto;padding:28px 18px 80px}
-section{margin:0 0 48px;scroll-margin-top:76px}
-.banner{display:flex;align-items:center;gap:16px;padding:22px 22px;border-radius:22px;margin:0 0 16px;position:relative;overflow:hidden;
-  color:#fff;isolation:isolate;min-height:108px;
-  box-shadow:0 18px 40px rgba(0,0,0,.28),inset 0 0 0 1px rgba(255,255,255,.12)}
-.banner::before{content:"";position:absolute;inset:0;z-index:-1;opacity:.55;
-  background:radial-gradient(circle at 88% 20%,rgba(255,255,255,.28),transparent 36%),
-    repeating-linear-gradient(-28deg,rgba(255,255,255,.07) 0 10px,transparent 10px 20px)}
-.banner::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(0,0,0,.45),rgba(0,0,0,.12) 55%,transparent)}
-.icon-badge{flex:0 0 auto;width:68px;height:68px;border-radius:20px;display:grid;place-items:center;position:relative;
-  background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.28);box-shadow:0 0 24px rgba(255,255,255,.12);backdrop-filter:blur(8px)}
-.icon-badge .emo{font-size:30px;line-height:1;position:absolute;opacity:.95}
-.icon-badge svg{width:34px;height:34px;opacity:0;position:absolute}
-.banner h2{margin:0;font-size:clamp(22px,3vw,32px);letter-spacing:-.03em;font-weight:800;text-shadow:0 2px 12px rgba(0,0,0,.35)}
-.tagline{margin:4px 0 0;color:rgba(255,255,255,.88);font-size:15px;font-weight:500}
+main{max-width:1180px;margin:0 auto;padding:30px 18px 88px}
+section{margin:0 0 56px;scroll-margin-top:76px}
+.banner{padding:7px;border-radius:24px;margin:0 0 18px;position:relative;color:#fff;
+  box-shadow:0 20px 44px rgba(0,0,0,.35)}
+.lights{height:8px;border-radius:8px;background-image:radial-gradient(circle closest-side,#ffe27a 0 55%,#c97a10 60%,transparent 70%);
+  background-size:18px 8px;background-repeat:repeat-x;animation:chase .55s linear infinite}
+.lights.bot{margin-top:0}
+.banner-inner{display:flex;align-items:center;gap:16px;padding:18px 20px;border-radius:16px;position:relative;overflow:hidden;min-height:104px;isolation:isolate}
+.banner-inner::before{content:"";position:absolute;inset:0;z-index:-1;opacity:.5;
+  background:radial-gradient(circle at 90% 0,rgba(255,255,255,.28),transparent 36%),
+    repeating-linear-gradient(-28deg,rgba(255,255,255,.08) 0 10px,transparent 10px 20px)}
+.banner-inner::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(0,0,0,.5),rgba(0,0,0,.12) 55%,transparent)}
+.icon-badge{flex:none;width:68px;height:68px;border-radius:20px;display:grid;place-items:center;
+  background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.3);box-shadow:0 0 28px rgba(255,255,255,.14);font-size:30px}
+.banner h2{margin:0;font-size:clamp(22px,3vw,34px);letter-spacing:-.03em;font-weight:800;text-shadow:0 2px 14px rgba(0,0,0,.4)}
+.tagline{margin:4px 0 0;color:rgba(255,255,255,.9);font-size:15px;font-weight:550}
 .banner .copy{flex:1;min-width:0;position:relative}
-.count{flex:0 0 auto;position:relative;min-width:64px;height:64px;border-radius:18px;display:grid;place-items:center;
-  background:rgba(0,0,0,.32);border:1px solid rgba(255,255,255,.22);font-size:26px;font-weight:800;letter-spacing:-.04em}
+.count{flex:none;position:relative;min-width:68px;height:68px;border-radius:18px;display:grid;place-items:center;
+  background:rgba(0,0,0,.34);border:1px solid rgba(255,255,255,.25);font-size:26px;font-weight:800}
 .count small{display:block;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.75;margin-top:-2px}
-.cat-action .banner{background:linear-gradient(125deg,#3a0a1c 0%,#9b183f 48%,#ff6a3c 100%)}
-.cat-shooters .banner{background:linear-gradient(125deg,#061428 0%,#0a4a7a 48%,#2ee0ff 100%)}
-.cat-adventure .banner{background:linear-gradient(125deg,#052416 0%,#0b6a40 48%,#b6e34a 100%)}
-.cat-racing .banner{background:linear-gradient(125deg,#2a0a08 0%,#9a2010 48%,#ffb020 100%)}
-.cat-puzzles .banner{background:linear-gradient(125deg,#1a0a32 0%,#5b1ea8 48%,#7aa0ff 100%)}
-.cat-strategy .banner{background:linear-gradient(125deg,#1a1608 0%,#6a5410 45%,#2dd4bf 100%)}
-.cat-party .banner{background:linear-gradient(125deg,#2a0a24 0%,#9a1868 48%,#ffd34d 100%)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.cat-action .banner{background:#14080c}.cat-action .banner-inner{background:linear-gradient(125deg,#3a0a1c,#9b183f 48%,#ff6a3c)}
+.cat-shooters .banner{background:#061018}.cat-shooters .banner-inner{background:linear-gradient(125deg,#061428,#0a4a7a 48%,#2ee0ff)}
+.cat-adventure .banner{background:#06140c}.cat-adventure .banner-inner{background:linear-gradient(125deg,#052416,#0b6a40 48%,#b6e34a)}
+.cat-racing .banner{background:#140806}.cat-racing .banner-inner{background:linear-gradient(125deg,#2a0a08,#9a2010 48%,#ffb020)}
+.cat-puzzles .banner{background:#10081a}.cat-puzzles .banner-inner{background:linear-gradient(125deg,#1a0a32,#5b1ea8 48%,#7aa0ff)}
+.cat-strategy .banner{background:#121008}.cat-strategy .banner-inner{background:linear-gradient(125deg,#1a1608,#6a5410 45%,#2dd4bf)}
+.cat-party .banner{background:#140810}.cat-party .banner-inner{background:linear-gradient(125deg,#2a0a24,#9a1868 48%,#ffd34d)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;perspective:900px}
 .g{display:flex;flex-direction:column;border-radius:16px;overflow:hidden;text-decoration:none;color:var(--text);
-  background:var(--card);border:1px solid rgba(255,255,255,.08);
-  box-shadow:0 8px 18px rgba(0,0,0,.22);transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
-.g:hover,.g:focus-visible{transform:translateY(-8px);outline:none;z-index:2}
-.art{position:relative;height:102px;display:grid;place-items:center;font-size:46px;font-weight:800;letter-spacing:-.05em;
-  color:#fff;text-shadow:0 6px 18px rgba(0,0,0,.35);overflow:hidden;isolation:isolate}
-.art::before{content:"";position:absolute;inset:-30%;z-index:-1;opacity:.55;
-  background:repeating-linear-gradient(-45deg,rgba(255,255,255,.1) 0 8px,transparent 8px 16px)}
+  background:var(--card);border:1px solid rgba(255,255,255,.1);
+  box-shadow:0 10px 22px rgba(0,0,0,.28);transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
+.g:hover,.g:focus-visible{transform:translateY(-10px) rotateX(4deg) scale(1.03);outline:none;z-index:2}
+.art{position:relative;aspect-ratio:4/3;overflow:hidden;background:#000;isolation:isolate}
+.art svg{width:100%;height:100%;display:block;transition:transform .5s ease}
+.g:hover .art svg,.g:focus-visible .art svg{transform:scale(1.08)}
 .art::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.28) 50%,transparent 65%);
-  transform:translateX(-130%);pointer-events:none}
+  transform:translateX(-140%);pointer-events:none;mix-blend-mode:screen}
 .g:hover .art::after,.g:focus-visible .art::after{animation:shine .7s ease}
-.g:nth-child(3n+2) .art::before{background:radial-gradient(circle at 28% 28%,rgba(255,255,255,.28),transparent 42%),
-  radial-gradient(circle at 82% 72%,rgba(255,255,255,.16),transparent 40%);opacity:.85;inset:0}
-.g:nth-child(3n+3) .art::before{background:repeating-linear-gradient(90deg,rgba(255,255,255,.1) 0 3px,transparent 3px 14px);inset:0}
-.name{display:block;padding:12px 14px 14px;font-weight:700;font-size:14.5px;line-height:1.3;letter-spacing:-.01em}
-.cat-action .g:hover,.cat-action .g:focus-visible{border-color:var(--action);box-shadow:0 16px 36px rgba(255,91,138,.32),0 0 0 1px var(--action)}
-.cat-shooters .g:hover,.cat-shooters .g:focus-visible{border-color:var(--shooters);box-shadow:0 16px 36px rgba(62,203,255,.32),0 0 0 1px var(--shooters)}
-.cat-adventure .g:hover,.cat-adventure .g:focus-visible{border-color:var(--adventure);box-shadow:0 16px 36px rgba(62,232,154,.3),0 0 0 1px var(--adventure)}
-.cat-racing .g:hover,.cat-racing .g:focus-visible{border-color:var(--racing);box-shadow:0 16px 36px rgba(255,106,60,.34),0 0 0 1px var(--racing)}
-.cat-puzzles .g:hover,.cat-puzzles .g:focus-visible{border-color:var(--puzzles);box-shadow:0 16px 36px rgba(192,132,252,.34),0 0 0 1px var(--puzzles)}
-.cat-strategy .g:hover,.cat-strategy .g:focus-visible{border-color:var(--strategy);box-shadow:0 16px 36px rgba(240,193,75,.3),0 0 0 1px var(--strategy)}
-.cat-party .g:hover,.cat-party .g:focus-visible{border-color:var(--party);box-shadow:0 16px 36px rgba(255,122,217,.32),0 0 0 1px var(--party)}
-/* per-category card art palettes, with three variants */
-.cat-action .g:nth-child(3n+1) .art{background:linear-gradient(145deg,#ff2d6a,#ff8a3d)}
-.cat-action .g:nth-child(3n+2) .art{background:linear-gradient(165deg,#ff7aa0,#c41e5c 60%,#ff9a4d)}
-.cat-action .g:nth-child(3n+3) .art{background:linear-gradient(200deg,#ff9a4d,#ff2d6a 70%,#6a1030)}
-.cat-shooters .g:nth-child(3n+1) .art{background:linear-gradient(145deg,#00c8ff,#4d6bff)}
-.cat-shooters .g:nth-child(3n+2) .art{background:linear-gradient(165deg,#7af0ff,#0a5ad4 60%,#9b5cff)}
-.cat-shooters .g:nth-child(3n+3) .art{background:linear-gradient(200deg,#4d6bff,#00a8e0 70%,#062448)}
-.cat-adventure .g:nth-child(3n+1) .art{background:linear-gradient(145deg,#16d68a,#c8e04a)}
-.cat-adventure .g:nth-child(3n+2) .art{background:linear-gradient(165deg,#7dffc2,#0b7a48 60%,#e8f06a)}
-.cat-adventure .g:nth-child(3n+3) .art{background:linear-gradient(200deg,#c8e04a,#129a64 70%,#063222)}
-.cat-racing .g:nth-child(3n+1) .art{background:linear-gradient(145deg,#ff3b3b,#ffb020)}
-.cat-racing .g:nth-child(3n+2) .art{background:linear-gradient(165deg,#ff8a5c,#c01414 60%,#ffd060)}
-.cat-racing .g:nth-child(3n+3) .art{background:linear-gradient(200deg,#ffb020,#e02020 70%,#4a0c0c)}
-.cat-puzzles .g:nth-child(3n+1) .art{background:linear-gradient(145deg,#a855ff,#5b8cff)}
-.cat-puzzles .g:nth-child(3n+2) .art{background:linear-gradient(165deg,#e2b0ff,#5b1ea8 60%,#7aa0ff)}
-.cat-puzzles .g:nth-child(3n+3) .art{background:linear-gradient(200deg,#5b8cff,#7a2adf 70%,#1a0a32)}
-.cat-strategy .g:nth-child(3n+1) .art{background:linear-gradient(145deg,#f5c542,#2dd4bf)}
-.cat-strategy .g:nth-child(3n+2) .art{background:linear-gradient(165deg,#ffe08a,#8a6a10 60%,#3ee0c8)}
-.cat-strategy .g:nth-child(3n+3) .art{background:linear-gradient(200deg,#2dd4bf,#d4a020 70%,#1a1608)}
-.cat-party .g:nth-child(3n+1) .art{background:linear-gradient(145deg,#ff4ecd,#ffd34d)}
-.cat-party .g:nth-child(3n+2) .art{background:linear-gradient(165deg,#ff9ae0,#c01478 60%,#ffe08a)}
-.cat-party .g:nth-child(3n+3) .art{background:linear-gradient(200deg,#ffd34d,#ff4ecd 70%,#4a0a32)}
+.name{display:block;padding:12px 14px 14px;font-weight:750;font-size:14.5px;line-height:1.3;letter-spacing:-.01em;
+  background:linear-gradient(180deg,#161822,#101218)}
+.cat-action .g:hover,.cat-action .g:focus-visible{border-color:var(--action);box-shadow:0 18px 40px rgba(255,91,138,.38),0 0 0 1px var(--action)}
+.cat-shooters .g:hover,.cat-shooters .g:focus-visible{border-color:var(--shooters);box-shadow:0 18px 40px rgba(62,203,255,.36),0 0 0 1px var(--shooters)}
+.cat-adventure .g:hover,.cat-adventure .g:focus-visible{border-color:var(--adventure);box-shadow:0 18px 40px rgba(62,232,154,.34),0 0 0 1px var(--adventure)}
+.cat-racing .g:hover,.cat-racing .g:focus-visible{border-color:var(--racing);box-shadow:0 18px 40px rgba(255,106,60,.38),0 0 0 1px var(--racing)}
+.cat-puzzles .g:hover,.cat-puzzles .g:focus-visible{border-color:var(--puzzles);box-shadow:0 18px 40px rgba(192,132,252,.38),0 0 0 1px var(--puzzles)}
+.cat-strategy .g:hover,.cat-strategy .g:focus-visible{border-color:var(--strategy);box-shadow:0 18px 40px rgba(240,193,75,.34),0 0 0 1px var(--strategy)}
+.cat-party .g:hover,.cat-party .g:focus-visible{border-color:var(--party);box-shadow:0 18px 40px rgba(255,122,217,.36),0 0 0 1px var(--party)}
 @media (max-width:720px){
-  .hero{padding:44px 16px 28px}
-  .banner{padding:16px;gap:12px;min-height:92px;border-radius:18px}
-  .icon-badge,.count{width:56px;height:56px;border-radius:16px}
-  .icon-badge .emo{font-size:24px}
+  .hero{padding:36px 16px 16px}
+  .banner-inner{padding:14px;gap:12px;min-height:88px}
+  .icon-badge,.count{width:54px;height:54px;border-radius:16px}
+  .icon-badge{font-size:24px}
   .count{font-size:22px}
-  .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
-  .art{height:86px;font-size:38px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+  .reel-card{width:140px;height:105px}
 }
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
-  .aurora,.stars-sm,.stars-lg,.kicker i{animation:none!important}
-  .g,.g .art,.g .art::after,.random,.jump a,.jump button{transition:none!important}
+  .aurora,.beams,.stars-sm,.stars-lg,.kicker i,h1,.ticker-track,.reel,.lights{animation:none!important}
+  .g,.g .art,.g .art svg,.g .art::after,.random,.jump a,.jump button{transition:none!important}
   .g:hover,.g:focus-visible,.random:hover,.random:focus-visible{transform:none}
+  .g:hover .art svg,.g:focus-visible .art svg{transform:none}
   .g:hover .art::after,.g:focus-visible .art::after{animation:none;transform:none}
   #sky{display:none}
 }
@@ -183,21 +169,412 @@ section{margin:0 0 48px;scroll-margin-top:76px}
 <div class="bg" aria-hidden="true">
   <canvas id="sky"></canvas>
   <div class="aurora"></div>
+  <div class="beams"></div>
   <div class="gridlines"></div>
   <div class="stars-sm"></div>
   <div class="stars-lg"></div>
 </div>
 <a class="skip" href="#main">Skip to games</a>
 <div class="wrap">
+<div class="ticker" aria-hidden="true"><div class="ticker-track"><span>Graveyard of the Atlantic (pinball)</span><span>Protocol Nova</span><span>Far Ridge</span><span>Frostbite Tower</span><span>Neon Wake</span><span>Ragnarök Rising</span><span>Pharaoh&#x27;s Descent</span><span>Lumen Drift</span><span>Little Apocalypse</span><span>Pong: Hyperdrive</span><span>Unicorn Joust</span><span>Mime High-Rise</span><span>Orangutan Keg Climb</span><span>Polar Ascent</span><span>Sparkwell</span><span>Bubble Rescue</span><span>Long Hop: Red Centre Run</span><span>ASTRO-VORTEX &#x27;84</span><span>Shatterfield</span><span>CHROMAHIVE</span><span>Fort Fisher</span><span>Dead Man&#x27;s Gulch</span><span>Soul Trigger</span><span>TIME COP 1986</span><span>Star Swarm Defender</span><span>Get Off My Lawn</span><span>BLACKOUT</span><span>STARBREAK</span><span>Six-Gun Sundown</span><span>Chrono Spark</span><span>Hollow Light</span><span>Kill Switch</span><span>Supernova</span><span>Clockwork Heist</span><span>Tender Titan</span><span>Tinderhelm</span><span>Tock</span><span>The Idol Wakes</span><span>Castle of Chaos: The Midnight Curse</span><span>Aether Prism 3D</span><span>Brasswind: The Stolen Sky</span><span>Horizon: Wake Up</span><span>Redline and Rust</span><span>Midnight Break: Neon Gambit</span><span>The Last Ten Seconds</span><span>REDLINE: Afterimage</span><span>Event Horizon: Chrono-Drift</span><span>Chroma Resonance</span><span>Bioluminescent Abyss</span><span>Prism Hop</span><span>Tilt Maze</span><span>Clockwork Kinetics</span><span>Port City Tycoon</span><span>Jade Star Checkers</span><span>Marble Mayhem</span><span>Knight Shift</span><span>Tide Table</span><span>Bathtub Admirals</span><span>Lively Chess</span><span>Capital Tycoon</span><span>World Domination: Grand Conquest</span><span>Docket Dojo</span><span>Wheel of Fortune: Neon Edition</span><span>Legal Jeopardy</span><span>The Truth Factory</span><span>LEXFURY</span><span>Sketch Showdown</span><span>Hung Jury</span><span>WORDSTORM</span><span>The Million-Dollar Vault</span><span>Whisperchain</span><span>Graveyard of the Atlantic (pinball)</span><span>Protocol Nova</span><span>Far Ridge</span><span>Frostbite Tower</span><span>Neon Wake</span><span>Ragnarök Rising</span><span>Pharaoh&#x27;s Descent</span><span>Lumen Drift</span><span>Little Apocalypse</span><span>Pong: Hyperdrive</span><span>Unicorn Joust</span><span>Mime High-Rise</span><span>Orangutan Keg Climb</span><span>Polar Ascent</span><span>Sparkwell</span><span>Bubble Rescue</span><span>Long Hop: Red Centre Run</span><span>ASTRO-VORTEX &#x27;84</span><span>Shatterfield</span><span>CHROMAHIVE</span><span>Fort Fisher</span><span>Dead Man&#x27;s Gulch</span><span>Soul Trigger</span><span>TIME COP 1986</span><span>Star Swarm Defender</span><span>Get Off My Lawn</span><span>BLACKOUT</span><span>STARBREAK</span><span>Six-Gun Sundown</span><span>Chrono Spark</span><span>Hollow Light</span><span>Kill Switch</span><span>Supernova</span><span>Clockwork Heist</span><span>Tender Titan</span><span>Tinderhelm</span><span>Tock</span><span>The Idol Wakes</span><span>Castle of Chaos: The Midnight Curse</span><span>Aether Prism 3D</span><span>Brasswind: The Stolen Sky</span><span>Horizon: Wake Up</span><span>Redline and Rust</span><span>Midnight Break: Neon Gambit</span><span>The Last Ten Seconds</span><span>REDLINE: Afterimage</span><span>Event Horizon: Chrono-Drift</span><span>Chroma Resonance</span><span>Bioluminescent Abyss</span><span>Prism Hop</span><span>Tilt Maze</span><span>Clockwork Kinetics</span><span>Port City Tycoon</span><span>Jade Star Checkers</span><span>Marble Mayhem</span><span>Knight Shift</span><span>Tide Table</span><span>Bathtub Admirals</span><span>Lively Chess</span><span>Capital Tycoon</span><span>World Domination: Grand Conquest</span><span>Docket Dojo</span><span>Wheel of Fortune: Neon Edition</span><span>Legal Jeopardy</span><span>The Truth Factory</span><span>LEXFURY</span><span>Sketch Showdown</span><span>Hung Jury</span><span>WORDSTORM</span><span>The Million-Dollar Vault</span><span>Whisperchain</span></div></div>
 <header class="hero">
   <p class="kicker"><i></i> Press start</p>
   <h1>Vonderau Games</h1>
   <p class="lead">71 games. Tap one to play.</p>
-  <button type="button" class="random" data-random>
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M5 3h6l2 3h6a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm3 6a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm8 6a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-8 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg>
-    Random game
-  </button>
+  <button type="button" class="random" data-random><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.4" fill="currentColor"/><circle cx="16" cy="8" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="8" cy="16" r="1.4" fill="currentColor"/><circle cx="16" cy="16" r="1.4" fill="currentColor"/></svg> Random game</button>
 </header>
+<div class="reel-wrap" aria-hidden="true"><div class="reel"><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="gp-a-i1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#07141c"/><stop offset="1" stop-color="#0a2e2a"/></linearGradient><radialGradient id="gp-b-i1" cx="70%" cy="22%" r="45%"><stop offset="0" stop-color="#f4ff8a"/><stop offset="1" stop-color="#3a8010"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#gp-a-i1)"/>
+<circle cx="178" cy="36" r="28" fill="url(#gp-b-i1)"/>
+<path d="M0 128c28-18 48-8 70-16 22-8 40-26 66-22 24 4 36 22 64 18 18-3 28-14 40-12v84H0z" fill="#0a1c18"/>
+<path d="M18 148l14-44 16 8 12-36 18 16 10-22 20 78z" fill="#163830"/>
+<rect x="38" y="118" width="22" height="28" rx="2" fill="#1c2c28"/><path d="M38 118h22v-8c0-10-22-10-22 0z" fill="#2a3c38"/>
+<rect x="70" y="124" width="16" height="22" rx="2" fill="#1c2c28"/><path d="M70 124h16v-6c0-8-16-8-16 0z" fill="#2a3c38"/>
+<path d="M20 86c40 8 70-30 120-18 20 5 40 4 80-8" fill="none" stroke="#6fd0c0" stroke-width="3"/>
+<circle cx="168" cy="92" r="6" fill="#f4ff8a"/>
+<path d="M200 150 168 70l-10 8 22 72z" fill="#8aa4a0" opacity=".7"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="pn-a-i2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#120018"/><stop offset="1" stop-color="#2a0050"/></linearGradient><radialGradient id="pn-b-i2" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff5c8"/><stop offset="1" stop-color="#3a00ff"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#pn-a-i2)"/>
+<circle cx="120" cy="86" r="70" fill="none" stroke="#ff4cf0" stroke-width="2" opacity=".45"/>
+<circle cx="120" cy="86" r="50" fill="none" stroke="#7af0ff" stroke-width="2"/>
+<circle cx="120" cy="86" r="32" fill="none" stroke="#fff" stroke-width="1.5" opacity=".5"/>
+<circle cx="120" cy="86" r="22" fill="url(#pn-b-i2)"/>
+<path d="M120 16v28M120 128v28M24 86h28M188 86h28M48 28l18 18M174 28l-18 18M48 144l18-18M174 144l-18-18" stroke="#7af0ff" stroke-width="2" stroke-linecap="round"/>
+<rect x="108" y="74" width="24" height="24" rx="3" fill="#120018" stroke="#7af0ff"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="nw-a-i3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a0520"/><stop offset="1" stop-color="#120830"/></linearGradient><linearGradient id="nw-b-i3" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ff3da0"/><stop offset="1" stop-color="#00f0ff"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#nw-a-i3)"/>
+<path d="M-10 80c40 8 50-30 90-20 30 8 40 40 80 28 28-8 40-36 80-24" fill="none" stroke="#00f0ff" stroke-width="6"/>
+<path d="M-10 96c40 8 50-30 90-20 30 8 40 40 80 28 28-8 40-36 80-24" fill="none" stroke="#ff3da0" stroke-width="4"/>
+<path d="M-10 112c44 6 52-22 92-14 32 6 42 30 82 20 30-8 42-28 80-18" fill="none" stroke="#fff" stroke-width="1.5" opacity=".5"/>
+<ellipse cx="120" cy="150" rx="90" ry="14" fill="#00f0ff" opacity=".15"/>
+<path d="M112 70l16 8-6 14-16-6z" fill="url(#nw-b-i3)"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="rr-a-i4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a0508"/><stop offset="1" stop-color="#1a0508"/></linearGradient><radialGradient id="rr-b-i4" cx="50%" cy="40%" r="50%"><stop offset="0" stop-color="#ffdd66"/><stop offset="1" stop-color="#4a0000"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#rr-a-i4)"/>
+<circle cx="120" cy="78" r="40" fill="url(#rr-b-i4)"/>
+<path d="M70 78c8-40 30-54 50-54 8 0 14 4 20 10-28 4-40 28-36 54-16 0-28-4-34-10z" fill="#3a0508"/>
+<path d="M20 160c30-40 40-70 58-86 10 20 8 40 0 62 20-30 50-50 84-54-10 24-6 50 8 78 24-34 50-40 70-38-16 20-20 44-16 58z" fill="#0e0202"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="pd-a-i5" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0d48a"/><stop offset="1" stop-color="#3a1c08"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#pd-a-i5)"/>
+<path d="M120 18 210 150H30z" fill="#e6b85a"/><path d="M120 18 120 150 30 150z" fill="#c4923a"/>
+<path d="M120 18 168 90 72 90z" fill="#f4e2a8"/>
+<rect x="108" y="108" width="24" height="28" fill="#5a3010"/><path d="M108 108h24l-12-10z" fill="#3a1c08"/>
+<circle cx="120" cy="70" r="10" fill="#7a2010" stroke="#f4e2a8" stroke-width="2"/>
+<path d="M120 62v16M112 70h16" stroke="#f4e2a8" stroke-width="1.5"/>
+<path d="M40 158h160" stroke="#8a4a10" stroke-width="6"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="uj-a-i6" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a0a50"/><stop offset="1" stop-color="#f0a0c8"/></linearGradient><linearGradient id="uj-b-i6" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#e0d0ff"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#uj-a-i6)"/>
+<circle cx="40" cy="36" r="3" fill="#fff"/><circle cx="200" cy="50" r="2" fill="#ffe9a0"/>
+<path d="M70 130c10-40 18-70 36-86 8-6 20-8 28-2 14-28 22-36 26-36 2 8-2 22-12 38 14 8 20 22 18 40-20-6-36 4-50 22-6 8-18 20-46 24z" fill="url(#uj-b-i6)"/>
+<path d="M130 44 176 8l-8 20 22 4z" fill="#ffe08a"/>
+<circle cx="108" cy="70" r="4" fill="#2a1030"/>
+<path d="M20 158h200" stroke="#f0a0c8" stroke-width="4"/>
+<path d="M160 120l50 8" stroke="#ffe08a" stroke-width="4" stroke-linecap="round"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="sw-a-i7" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1020"/><stop offset="1" stop-color="#3a1810"/></linearGradient><radialGradient id="sw-b-i7" cx="50%" cy="70%" r="60%"><stop offset="0" stop-color="#fff4b0"/><stop offset="1" stop-color="#6a2008"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#sw-a-i7)"/>
+<ellipse cx="120" cy="150" rx="70" ry="18" fill="#2a1810"/>
+<ellipse cx="120" cy="148" rx="50" ry="12" fill="url(#sw-b-i7)"/>
+<path d="M120 148 70 40M120 148 90 20M120 148 120 16M120 148 150 22M120 148 174 44M120 148 200 70M120 148 40 70" stroke="#ffd060" stroke-width="2" stroke-linecap="round"/>
+<circle cx="70" cy="40" r="5" fill="#fff4b0"/><circle cx="90" cy="20" r="4" fill="#ff9a20"/>
+<circle cx="120" cy="16" r="6" fill="#fff"/><circle cx="150" cy="22" r="4" fill="#ffd060"/>
+<circle cx="174" cy="44" r="5" fill="#ff9a20"/><circle cx="200" cy="70" r="4" fill="#fff4b0"/><circle cx="40" cy="70" r="4" fill="#ffd060"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="lh-a-i8" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0c060"/><stop offset="1" stop-color="#8a2010"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#lh-a-i8)"/>
+<circle cx="186" cy="40" r="22" fill="#ffe08a"/>
+<path d="M0 130c40-10 80 10 120 0 40-10 80 8 120 0v50H0z" fill="#c44a1a"/>
+<path d="M70 130c8-28 20-50 40-58 8 16 6 30-2 46 16-10 40-8 54 4-20 4-36 2-50 12-8-14-24-16-42-4z" fill="#5a2a10"/>
+<circle cx="108" cy="78" r="12" fill="#5a2a10"/><circle cx="112" cy="76" r="2.5" fill="#ffe08a"/>
+<path d="M118 74l16-8" stroke="#5a2a10" stroke-width="3" stroke-linecap="round"/>
+<path d="M60 128c-16 4-28 16-30 22" stroke="#5a2a10" stroke-width="4" fill="none" stroke-linecap="round"/>
+<path d="M150 122c18-8 34-4 44 6" stroke="#5a2a10" stroke-width="4" fill="none" stroke-linecap="round"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="av-a-i9" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#120028"/><stop offset="1" stop-color="#0a1020"/></linearGradient><radialGradient id="av-b-i9" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#c0ff6a"/><stop offset="1" stop-color="#101028"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#av-a-i9)"/>
+<path d="M0 140h240M0 120h240M0 100h240" stroke="#3a2060" stroke-width="1"/>
+<path d="M20 160l40-80 40 40 40-80 40 50 40-30 20 100" fill="none" stroke="#5a3080"/>
+<circle cx="120" cy="80" r="36" fill="none" stroke="#c0ff6a" stroke-width="3"/>
+<circle cx="120" cy="80" r="22" fill="none" stroke="#7af0ff" stroke-width="2"/>
+<circle cx="120" cy="80" r="10" fill="url(#av-b-i9)"/>
+<path d="M120 150l-8-22h16z" fill="#c0ff6a"/>
+<text x="16" y="22" fill="#c0ff6a" font-size="11" font-family="monospace">1984</text></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ch-a-i10" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#140820"/><stop offset="1" stop-color="#201030"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ch-a-i10)"/>
+<g transform="translate(120 90)">
+  <polygon points="0,-28 24,-14 24,14 0,28 -24,14 -24,-14" fill="#ff4d8d"/>
+  <polygon points="-40,-8 -16,-22 -16,6 -40,20 -64,6 -64,-22" fill="#ffd34d"/>
+  <polygon points="40,-8 64,-22 64,6 40,20 16,6 16,-22" fill="#3ecbff"/>
+  <polygon points="-20,40 4,26 4,54 -20,68 -44,54 -44,26" fill="#3ee89a"/>
+  <polygon points="20,40 44,26 44,54 20,68 -4,54 -4,26" fill="#c084fc"/>
+  <polygon points="-20,-48 4,-62 4,-34 -20,-20 -44,-34 -44,-62" fill="#ff7a3c"/>
+  <polygon points="20,-48 44,-62 44,-34 20,-20 -4,-34 -4,-62" fill="#7af0ff"/>
+</g></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="sg-a-i11" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0a030"/><stop offset="1" stop-color="#1a0808"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#sg-a-i11)"/>
+<circle cx="120" cy="50" r="24" fill="#ffe08a"/>
+<path d="M0 110c40-10 80 8 120-6 40-14 80 4 120-8v84H0z" fill="#2a1008"/>
+<path d="M40 120h50c4 0 6 4 6 8v6H50l-16 16H22l6-16h12z" fill="#c0b8a8"/><circle cx="48" cy="138" r="10" fill="#8a8070"/>
+<path d="M200 120h-50c-4 0-6 4-6 8v6h46l16 16h12l-6-16h-12z" fill="#c0b8a8"/><circle cx="192" cy="138" r="10" fill="#8a8070"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="sn-a-i12" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#140020"/><stop offset="1" stop-color="#200810"/></linearGradient><radialGradient id="sn-b-i12" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#4a00a0"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#sn-a-i12)"/>
+<circle cx="120" cy="90" r="70" fill="url(#sn-b-i12)"/><circle cx="120" cy="90" r="24" fill="#fff"/>
+<path d="M120 20v20M120 140v20M40 90h20M180 90h20M58 36l14 14M168 36l-14 14M58 144l14-14M168 144l-14-14" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ss-a-i13" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#040814"/><stop offset="1" stop-color="#0a1840"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ss-a-i13)"/>
+<g fill="#9ad4ff"><circle cx="30" cy="30" r="1.5"/><circle cx="60" cy="50" r="1"/><circle cx="90" cy="24" r="1.4"/><circle cx="140" cy="36" r="1"/><circle cx="180" cy="22" r="1.6"/><circle cx="210" cy="48" r="1"/><circle cx="40" cy="80" r="1"/><circle cx="200" cy="90" r="1.2"/><circle cx="20" cy="120" r="1"/><circle cx="70" cy="140" r="1.3"/><circle cx="170" cy="130" r="1"/><circle cx="220" cy="150" r="1.4"/></g>
+<g fill="#ff6a7a"><polygon points="40,44 44,54 34,48 46,48 36,54"/><polygon points="200,60 204,70 194,64 206,64 196,70"/><polygon points="70,70 74,80 64,74 76,74 66,80"/><polygon points="160,50 164,60 154,54 166,54 156,60"/><polygon points="50,110 54,120 44,114 56,114 46,120"/><polygon points="190,110 194,120 184,114 196,114 186,120"/><polygon points="100,40 104,50 94,44 106,44 96,50"/><polygon points="130,28 134,38 124,32 136,32 126,38"/></g>
+<path d="M120 150l-16-28h10l6-16 6 16h10z" fill="#7af0ff"/><path d="M104 150h32l-4 10h-24z" fill="#3ecbff"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="cc-a-i14" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1030"/><stop offset="1" stop-color="#0a0818"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#cc-a-i14)"/>
+<circle cx="180" cy="40" r="22" fill="#e8d8ff"/>
+<path d="M40 150V80h16v-24h16V40h16v16h16V56h16v24h16v20h16V80h20v70z" fill="#1a1028"/>
+<path d="M56 80V56h16V40h16v16h16v24h16V80h16v20h16V80h20v70H40V80h16z" fill="#2a1848" opacity=".0"/>
+<rect x="110" y="120" width="20" height="30" fill="#0a0810"/>
+<path d="M20 150h200" stroke="#4a2080" stroke-width="6"/>
+<path d="M0 160c40-20 80 0 120-16 40-16 80 6 120-10v30H0z" fill="#2a1060" opacity=".7"/>
+<rect x="70" y="90" width="10" height="14" fill="#c084fc" opacity=".7"/><rect x="160" y="90" width="10" height="14" fill="#c084fc" opacity=".7"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="bw-a-i15" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a80c0"/><stop offset="1" stop-color="#c07020"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#bw-a-i15)"/>
+<ellipse cx="80" cy="90" rx="36" ry="28" fill="none" stroke="#d4a020" stroke-width="10"/>
+<path d="M110 90h70c8 0 16 10 16 20s-6 16-16 16H150" fill="none" stroke="#d4a020" stroke-width="10" stroke-linecap="round"/>
+<circle cx="150" cy="126" r="10" fill="#f4d060"/>
+<path d="M0 70c40-20 70-8 110-18 30-8 50-24 90-16-20 20-50 16-80 28-40 16-70 4-120 20z" fill="#fff" opacity=".75"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="cw-a-i16" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a1a08"/><stop offset="1" stop-color="#5a3a10"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#cw-a-i16)"/>
+<circle cx="90" cy="90" r="44" fill="#c8922a" stroke="#f4d070" stroke-width="4"/><circle cx="90" cy="90" r="10" fill="#3a2408"/>
+<path d="M90 52h8v16h-8zM90 112h8v16h-8zM52 86h16v8H52zM112 86h16v8h-16z" fill="#f4d070"/>
+<circle cx="160" cy="110" r="32" fill="#d8a040" stroke="#f4d070" stroke-width="3"/><circle cx="160" cy="110" r="8" fill="#3a2408"/>
+<path d="M160 84h6v14h-6zM160 122h6v14h-6zM134 107h14v6h-14zM172 107h14v6h-14z" fill="#f4d070"/>
+<circle cx="150" cy="50" r="16" fill="#1a1008" stroke="#f4d070" stroke-width="3"/><circle cx="150" cy="50" r="6" fill="#000"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="mb-a-i17" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a0528"/><stop offset="1" stop-color="#1a0a40"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#mb-a-i17)"/>
+<path d="M0 70h40v80H0zM50 50h24v100H50zM90 30h20v120H90zM130 44h28v106h-28zM180 20h30v130h-30z" fill="#1a1048"/>
+<rect x="96" y="50" width="8" height="8" fill="#ff4cff"/><rect x="188" y="36" width="8" height="8" fill="#00f0ff"/><rect x="58" y="70" width="8" height="8" fill="#ffe060"/>
+<path d="M0 150h240" stroke="#ff4cff" stroke-width="4"/><path d="M0 158h240" stroke="#00f0ff" stroke-width="2"/>
+<path d="M70 134h50l10 8H80z" fill="#00f0ff"/>
+<circle cx="84" cy="146" r="6" fill="#222"/><circle cx="120" cy="146" r="6" fill="#222"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ra-a-i18" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#140810"/><stop offset="1" stop-color="#2a0810"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ra-a-i18)"/>
+<path d="M0 90h240" stroke="#3a1020" stroke-width="40"/>
+<path d="M20 90h80" stroke="#ff2040" stroke-width="6" opacity=".3"/>
+<path d="M40 90h80" stroke="#ff2040" stroke-width="6" opacity=".5"/>
+<path d="M70 90h80" stroke="#ff4060" stroke-width="6" opacity=".7"/>
+<path d="M110 70h90c8 0 16 8 18 16l8 4v12H126l-8-10h-8z" fill="#ff2a3a"/>
+<circle cx="140" cy="108" r="8" fill="#1a1a1a" stroke="#ddd" stroke-width="2"/>
+<circle cx="196" cy="108" r="8" fill="#1a1a1a" stroke="#ddd" stroke-width="2"/>
+<path d="M126 80h30v10h-30z" fill="#ff90a0"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ba-a-i19" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#020818"/><stop offset="1" stop-color="#031820"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ba-a-i19)"/>
+<ellipse cx="120" cy="80" rx="28" ry="36" fill="#0a4a50"/><ellipse cx="120" cy="80" rx="18" ry="26" fill="#1a8078"/>
+<path d="M120 116c0 20 8 36 0 44" stroke="#3ee0d0" stroke-width="3" fill="none"/>
+<path d="M100 50c-16-10-20-4-16 10M140 50c16-10 20-4 16 10" fill="#1a8078"/>
+<circle cx="110" cy="76" r="4" fill="#7afff0"/><circle cx="130" cy="76" r="4" fill="#7afff0"/>
+<circle cx="40" cy="130" r="8" fill="#3ee0d0" opacity=".7"/><circle cx="50" cy="40" r="5" fill="#7affb0" opacity=".6"/>
+<circle cx="200" cy="60" r="10" fill="#40c8ff" opacity=".55"/><circle cx="180" cy="140" r="6" fill="#7afff0" opacity=".7"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="eh-a-i20" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a0618"/><stop offset="1" stop-color="#1a0a20"/></linearGradient><radialGradient id="eh-b-i20" cx="50%" cy="50%" r="70%"><stop offset="0" stop-color="#000000"/><stop offset="1" stop-color="#ffb060"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#eh-a-i20)"/>
+<circle cx="120" cy="90" r="64" fill="url(#eh-b-i20)"/>
+<circle cx="120" cy="90" r="22" fill="#000"/>
+<ellipse cx="120" cy="90" rx="70" ry="18" fill="none" stroke="#ffb060" stroke-width="4" opacity=".8"/>
+<g fill="#ffd080" font-family="serif" font-size="12"><text x="40" y="40">12</text><text x="190" y="60">3</text><text x="30" y="130">9</text><text x="170" y="150">6</text></g></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="wd-a-i21" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a1a30"/><stop offset="1" stop-color="#081018"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#wd-a-i21)"/>
+<circle cx="120" cy="90" r="62" fill="#1a4a78"/><circle cx="120" cy="90" r="62" fill="none" stroke="#d8a020" stroke-width="4"/>
+<path d="M90 70c10-20 30-24 44-10 8 8 4 20-4 24-16 4-16 16-8 28-16 4-30-8-32-24-8-4-8-12 0-18z" fill="#3a8a50"/>
+<path d="M140 100c16-4 28 8 36 4 4 16-8 28-20 32-12-8-20-20-16-36z" fill="#3a8a50"/>
+<path d="M70 110c8 8 8 20 0 28-12 0-20-12-16-24z" fill="#3a8a50"/>
+<circle cx="108" cy="74" r="5" fill="#e02020"/><circle cx="156" cy="116" r="5" fill="#e02020"/><circle cx="76" cy="120" r="4" fill="#e02020"/>
+<path d="M40 90h160M120 28v124M60 50c40 20 80 20 120 0M60 130c40-20 80-20 120 0" fill="none" stroke="#7ab0d0" stroke-width="1" opacity=".5"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ct-a-i22" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#204068"/><stop offset="1" stop-color="#0a2038"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ct-a-i22)"/>
+<rect x="20" y="80" width="28" height="80" fill="#c0c8d0"/><rect x="54" y="50" width="36" height="110" fill="#d8c070"/>
+<rect x="96" y="70" width="24" height="90" fill="#b0b8c0"/><rect x="126" y="36" width="40" height="124" fill="#e8d080"/>
+<rect x="172" y="60" width="32" height="100" fill="#c8d0d8"/><rect x="208" y="90" width="22" height="70" fill="#a0a8b0"/>
+<circle cx="146" cy="28" r="14" fill="#f4d060"/><path d="M146 18v20M138 28h16" stroke="#8a6010" stroke-width="3"/>
+<rect x="136" y="60" width="8" height="8" fill="#7ac8ff"/><rect x="150" y="60" width="8" height="8" fill="#7ac8ff"/>
+<rect x="136" y="76" width="8" height="8" fill="#7ac8ff"/><rect x="150" y="76" width="8" height="8" fill="#7ac8ff"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="bt-a-i23" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d8f0f8"/><stop offset="1" stop-color="#6ab0c8"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#bt-a-i23)"/>
+<ellipse cx="120" cy="120" rx="90" ry="36" fill="#f0f4f8" stroke="#c0c8d0" stroke-width="6"/>
+<ellipse cx="120" cy="116" rx="70" ry="22" fill="#4aa0c8"/>
+<path d="M70 116h40l-6-16H80z" fill="#c04030"/><rect x="86" y="90" width="4" height="16" fill="#eee"/><path d="M86 90h16" stroke="#c04030" stroke-width="3"/>
+<path d="M130 118h36l-6-14h-24z" fill="#2060a0"/><rect x="144" y="94" width="4" height="14" fill="#eee"/><path d="M144 94h14" stroke="#2060a0" stroke-width="3"/>
+<circle cx="200" cy="50" r="16" fill="#ffe080"/><circle cx="50" cy="50" r="10" fill="#fff" opacity=".8"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ne-a-i24" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#120028"/><stop offset="1" stop-color="#1a0830"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ne-a-i24)"/>
+<g transform="translate(120 90)">
+  <circle r="64" fill="#1a0830" stroke="#ff4cff" stroke-width="4"/>
+  <path d="M0 0 L0-64 A64 64 0 0 1 55.4-32z" fill="#ff4cff"/>
+  <path d="M0 0 L55.4-32 A64 64 0 0 1 55.4 32z" fill="#00f0ff"/>
+  <path d="M0 0 L55.4 32 A64 64 0 0 1 0 64z" fill="#ffd34d"/>
+  <path d="M0 0 L0 64 A64 64 0 0 1 -55.4 32z" fill="#ff4cff"/>
+  <path d="M0 0 L-55.4 32 A64 64 0 0 1 -55.4-32z" fill="#00f0ff"/>
+  <path d="M0 0 L-55.4-32 A64 64 0 0 1 0-64z" fill="#ffd34d"/>
+  <circle r="14" fill="#120028" stroke="#fff" stroke-width="3"/>
+</g>
+<path d="M120 20l8 16h-16z" fill="#fff"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ws-a-i25" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#102040"/><stop offset="1" stop-color="#1a3058"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ws-a-i25)"/>
+<path d="M40 40c40 20 40 40 0 60 50-10 80-6 110 10-10-30 10-50 40-50-20 30-10 60 16 80-40 4-80-10-120 0 10-30-10-70-46-100z" fill="#d0d8e8" opacity=".85"/>
+<g fill="#fff" font-family="Impact, Arial Black, sans-serif" font-weight="800" font-size="28">
+  <text x="70" y="80" transform="rotate(-20 70 80)">W</text>
+  <text x="110" y="70">O</text>
+  <text x="150" y="90" transform="rotate(18 150 90)">R</text>
+  <text x="90" y="120" transform="rotate(8 90 120)">D</text>
+  <text x="160" y="130">S</text>
+</g></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="wc-a-i26" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0c1020"/><stop offset="1" stop-color="#141028"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#wc-a-i26)"/>
+<circle cx="54" cy="90" r="22" fill="#3a4060"/><circle cx="120" cy="90" r="26" fill="#4a5080"/><circle cx="190" cy="90" r="22" fill="#3a4060"/>
+<path d="M76 90h18M146 90h18" stroke="#c0c8e0" stroke-width="6" stroke-linecap="round"/>
+<circle cx="48" cy="84" r="3" fill="#e8e0ff"/><circle cx="60" cy="84" r="3" fill="#e8e0ff"/>
+<circle cx="112" cy="82" r="3.5" fill="#e8e0ff"/><circle cx="128" cy="82" r="3.5" fill="#e8e0ff"/>
+<circle cx="184" cy="84" r="3" fill="#e8e0ff"/><circle cx="196" cy="84" r="3" fill="#e8e0ff"/>
+<path d="M46 100c6 6 12 6 16 0" fill="none" stroke="#c0c8e0" stroke-width="2"/>
+<path d="M110 102c8 7 16 7 20 0" fill="none" stroke="#c0c8e0" stroke-width="2"/>
+<path d="M182 100c6 6 12 6 16 0" fill="none" stroke="#c0c8e0" stroke-width="2"/>
+<path d="M36 70c-16-10-20-4-10 8M204 70c16-10 20-4 10 8" fill="none" stroke="#8a90b0" stroke-width="2"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="mv-a-i27" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1a18"/><stop offset="1" stop-color="#0a0a0a"/></linearGradient><radialGradient id="mv-b-i27" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ffe080"/><stop offset="1" stop-color="#8a6010"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#mv-a-i27)"/>
+<circle cx="120" cy="90" r="66" fill="#3a3a38" stroke="#c0a060" stroke-width="8"/>
+<circle cx="120" cy="90" r="44" fill="#2a2a28" stroke="#e0c070" stroke-width="3"/>
+<circle cx="120" cy="90" r="16" fill="url(#mv-b-i27)"/>
+<path d="M120 90h44" stroke="#e0c070" stroke-width="6"/><circle cx="168" cy="90" r="8" fill="#e0c070"/>
+<path d="M120 50v8M120 122v8M80 90h8M152 50l6 6M88 50l-6 6M88 130l-6-6M152 130l6-6" stroke="#e0c070" stroke-width="3"/>
+<text x="120" y="96" text-anchor="middle" fill="#3a2408" font-size="18" font-weight="800" font-family="Georgia, serif">$</text></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ks-a-i28" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a0a0a"/><stop offset="1" stop-color="#2a1010"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ks-a-i28)"/>
+<path d="M0 20h40l10 10H0zM200 20h40v10h-30zM0 150h50l-10 10H0zM190 160 240 150v10z" fill="#ffcc00"/>
+<rect x="70" y="40" width="100" height="110" rx="8" fill="#2a2a2a" stroke="#ffcc00" stroke-width="3"/>
+<rect x="88" y="70" width="64" height="64" rx="6" fill="#1a1a1a"/>
+<rect x="108" y="78" width="24" height="40" rx="4" fill="#e01010"/><circle cx="120" cy="86" r="6" fill="#ff8080"/>
+<path d="M80 52h80" stroke="#ffcc00" stroke-width="4"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="gp-a-i29" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#07141c"/><stop offset="1" stop-color="#0a2e2a"/></linearGradient><radialGradient id="gp-b-i29" cx="70%" cy="22%" r="45%"><stop offset="0" stop-color="#f4ff8a"/><stop offset="1" stop-color="#3a8010"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#gp-a-i29)"/>
+<circle cx="178" cy="36" r="28" fill="url(#gp-b-i29)"/>
+<path d="M0 128c28-18 48-8 70-16 22-8 40-26 66-22 24 4 36 22 64 18 18-3 28-14 40-12v84H0z" fill="#0a1c18"/>
+<path d="M18 148l14-44 16 8 12-36 18 16 10-22 20 78z" fill="#163830"/>
+<rect x="38" y="118" width="22" height="28" rx="2" fill="#1c2c28"/><path d="M38 118h22v-8c0-10-22-10-22 0z" fill="#2a3c38"/>
+<rect x="70" y="124" width="16" height="22" rx="2" fill="#1c2c28"/><path d="M70 124h16v-6c0-8-16-8-16 0z" fill="#2a3c38"/>
+<path d="M20 86c40 8 70-30 120-18 20 5 40 4 80-8" fill="none" stroke="#6fd0c0" stroke-width="3"/>
+<circle cx="168" cy="92" r="6" fill="#f4ff8a"/>
+<path d="M200 150 168 70l-10 8 22 72z" fill="#8aa4a0" opacity=".7"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="pn-a-i30" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#120018"/><stop offset="1" stop-color="#2a0050"/></linearGradient><radialGradient id="pn-b-i30" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff5c8"/><stop offset="1" stop-color="#3a00ff"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#pn-a-i30)"/>
+<circle cx="120" cy="86" r="70" fill="none" stroke="#ff4cf0" stroke-width="2" opacity=".45"/>
+<circle cx="120" cy="86" r="50" fill="none" stroke="#7af0ff" stroke-width="2"/>
+<circle cx="120" cy="86" r="32" fill="none" stroke="#fff" stroke-width="1.5" opacity=".5"/>
+<circle cx="120" cy="86" r="22" fill="url(#pn-b-i30)"/>
+<path d="M120 16v28M120 128v28M24 86h28M188 86h28M48 28l18 18M174 28l-18 18M48 144l18-18M174 144l-18-18" stroke="#7af0ff" stroke-width="2" stroke-linecap="round"/>
+<rect x="108" y="74" width="24" height="24" rx="3" fill="#120018" stroke="#7af0ff"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="nw-a-i31" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a0520"/><stop offset="1" stop-color="#120830"/></linearGradient><linearGradient id="nw-b-i31" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ff3da0"/><stop offset="1" stop-color="#00f0ff"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#nw-a-i31)"/>
+<path d="M-10 80c40 8 50-30 90-20 30 8 40 40 80 28 28-8 40-36 80-24" fill="none" stroke="#00f0ff" stroke-width="6"/>
+<path d="M-10 96c40 8 50-30 90-20 30 8 40 40 80 28 28-8 40-36 80-24" fill="none" stroke="#ff3da0" stroke-width="4"/>
+<path d="M-10 112c44 6 52-22 92-14 32 6 42 30 82 20 30-8 42-28 80-18" fill="none" stroke="#fff" stroke-width="1.5" opacity=".5"/>
+<ellipse cx="120" cy="150" rx="90" ry="14" fill="#00f0ff" opacity=".15"/>
+<path d="M112 70l16 8-6 14-16-6z" fill="url(#nw-b-i31)"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="rr-a-i32" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a0508"/><stop offset="1" stop-color="#1a0508"/></linearGradient><radialGradient id="rr-b-i32" cx="50%" cy="40%" r="50%"><stop offset="0" stop-color="#ffdd66"/><stop offset="1" stop-color="#4a0000"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#rr-a-i32)"/>
+<circle cx="120" cy="78" r="40" fill="url(#rr-b-i32)"/>
+<path d="M70 78c8-40 30-54 50-54 8 0 14 4 20 10-28 4-40 28-36 54-16 0-28-4-34-10z" fill="#3a0508"/>
+<path d="M20 160c30-40 40-70 58-86 10 20 8 40 0 62 20-30 50-50 84-54-10 24-6 50 8 78 24-34 50-40 70-38-16 20-20 44-16 58z" fill="#0e0202"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="pd-a-i33" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0d48a"/><stop offset="1" stop-color="#3a1c08"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#pd-a-i33)"/>
+<path d="M120 18 210 150H30z" fill="#e6b85a"/><path d="M120 18 120 150 30 150z" fill="#c4923a"/>
+<path d="M120 18 168 90 72 90z" fill="#f4e2a8"/>
+<rect x="108" y="108" width="24" height="28" fill="#5a3010"/><path d="M108 108h24l-12-10z" fill="#3a1c08"/>
+<circle cx="120" cy="70" r="10" fill="#7a2010" stroke="#f4e2a8" stroke-width="2"/>
+<path d="M120 62v16M112 70h16" stroke="#f4e2a8" stroke-width="1.5"/>
+<path d="M40 158h160" stroke="#8a4a10" stroke-width="6"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="uj-a-i34" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a0a50"/><stop offset="1" stop-color="#f0a0c8"/></linearGradient><linearGradient id="uj-b-i34" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#e0d0ff"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#uj-a-i34)"/>
+<circle cx="40" cy="36" r="3" fill="#fff"/><circle cx="200" cy="50" r="2" fill="#ffe9a0"/>
+<path d="M70 130c10-40 18-70 36-86 8-6 20-8 28-2 14-28 22-36 26-36 2 8-2 22-12 38 14 8 20 22 18 40-20-6-36 4-50 22-6 8-18 20-46 24z" fill="url(#uj-b-i34)"/>
+<path d="M130 44 176 8l-8 20 22 4z" fill="#ffe08a"/>
+<circle cx="108" cy="70" r="4" fill="#2a1030"/>
+<path d="M20 158h200" stroke="#f0a0c8" stroke-width="4"/>
+<path d="M160 120l50 8" stroke="#ffe08a" stroke-width="4" stroke-linecap="round"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="sw-a-i35" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1020"/><stop offset="1" stop-color="#3a1810"/></linearGradient><radialGradient id="sw-b-i35" cx="50%" cy="70%" r="60%"><stop offset="0" stop-color="#fff4b0"/><stop offset="1" stop-color="#6a2008"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#sw-a-i35)"/>
+<ellipse cx="120" cy="150" rx="70" ry="18" fill="#2a1810"/>
+<ellipse cx="120" cy="148" rx="50" ry="12" fill="url(#sw-b-i35)"/>
+<path d="M120 148 70 40M120 148 90 20M120 148 120 16M120 148 150 22M120 148 174 44M120 148 200 70M120 148 40 70" stroke="#ffd060" stroke-width="2" stroke-linecap="round"/>
+<circle cx="70" cy="40" r="5" fill="#fff4b0"/><circle cx="90" cy="20" r="4" fill="#ff9a20"/>
+<circle cx="120" cy="16" r="6" fill="#fff"/><circle cx="150" cy="22" r="4" fill="#ffd060"/>
+<circle cx="174" cy="44" r="5" fill="#ff9a20"/><circle cx="200" cy="70" r="4" fill="#fff4b0"/><circle cx="40" cy="70" r="4" fill="#ffd060"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="lh-a-i36" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0c060"/><stop offset="1" stop-color="#8a2010"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#lh-a-i36)"/>
+<circle cx="186" cy="40" r="22" fill="#ffe08a"/>
+<path d="M0 130c40-10 80 10 120 0 40-10 80 8 120 0v50H0z" fill="#c44a1a"/>
+<path d="M70 130c8-28 20-50 40-58 8 16 6 30-2 46 16-10 40-8 54 4-20 4-36 2-50 12-8-14-24-16-42-4z" fill="#5a2a10"/>
+<circle cx="108" cy="78" r="12" fill="#5a2a10"/><circle cx="112" cy="76" r="2.5" fill="#ffe08a"/>
+<path d="M118 74l16-8" stroke="#5a2a10" stroke-width="3" stroke-linecap="round"/>
+<path d="M60 128c-16 4-28 16-30 22" stroke="#5a2a10" stroke-width="4" fill="none" stroke-linecap="round"/>
+<path d="M150 122c18-8 34-4 44 6" stroke="#5a2a10" stroke-width="4" fill="none" stroke-linecap="round"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="av-a-i37" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#120028"/><stop offset="1" stop-color="#0a1020"/></linearGradient><radialGradient id="av-b-i37" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#c0ff6a"/><stop offset="1" stop-color="#101028"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#av-a-i37)"/>
+<path d="M0 140h240M0 120h240M0 100h240" stroke="#3a2060" stroke-width="1"/>
+<path d="M20 160l40-80 40 40 40-80 40 50 40-30 20 100" fill="none" stroke="#5a3080"/>
+<circle cx="120" cy="80" r="36" fill="none" stroke="#c0ff6a" stroke-width="3"/>
+<circle cx="120" cy="80" r="22" fill="none" stroke="#7af0ff" stroke-width="2"/>
+<circle cx="120" cy="80" r="10" fill="url(#av-b-i37)"/>
+<path d="M120 150l-8-22h16z" fill="#c0ff6a"/>
+<text x="16" y="22" fill="#c0ff6a" font-size="11" font-family="monospace">1984</text></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ch-a-i38" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#140820"/><stop offset="1" stop-color="#201030"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ch-a-i38)"/>
+<g transform="translate(120 90)">
+  <polygon points="0,-28 24,-14 24,14 0,28 -24,14 -24,-14" fill="#ff4d8d"/>
+  <polygon points="-40,-8 -16,-22 -16,6 -40,20 -64,6 -64,-22" fill="#ffd34d"/>
+  <polygon points="40,-8 64,-22 64,6 40,20 16,6 16,-22" fill="#3ecbff"/>
+  <polygon points="-20,40 4,26 4,54 -20,68 -44,54 -44,26" fill="#3ee89a"/>
+  <polygon points="20,40 44,26 44,54 20,68 -4,54 -4,26" fill="#c084fc"/>
+  <polygon points="-20,-48 4,-62 4,-34 -20,-20 -44,-34 -44,-62" fill="#ff7a3c"/>
+  <polygon points="20,-48 44,-62 44,-34 20,-20 -4,-34 -4,-62" fill="#7af0ff"/>
+</g></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="sg-a-i39" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0a030"/><stop offset="1" stop-color="#1a0808"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#sg-a-i39)"/>
+<circle cx="120" cy="50" r="24" fill="#ffe08a"/>
+<path d="M0 110c40-10 80 8 120-6 40-14 80 4 120-8v84H0z" fill="#2a1008"/>
+<path d="M40 120h50c4 0 6 4 6 8v6H50l-16 16H22l6-16h12z" fill="#c0b8a8"/><circle cx="48" cy="138" r="10" fill="#8a8070"/>
+<path d="M200 120h-50c-4 0-6 4-6 8v6h46l16 16h12l-6-16h-12z" fill="#c0b8a8"/><circle cx="192" cy="138" r="10" fill="#8a8070"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="sn-a-i40" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#140020"/><stop offset="1" stop-color="#200810"/></linearGradient><radialGradient id="sn-b-i40" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#4a00a0"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#sn-a-i40)"/>
+<circle cx="120" cy="90" r="70" fill="url(#sn-b-i40)"/><circle cx="120" cy="90" r="24" fill="#fff"/>
+<path d="M120 20v20M120 140v20M40 90h20M180 90h20M58 36l14 14M168 36l-14 14M58 144l14-14M168 144l-14-14" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ss-a-i41" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#040814"/><stop offset="1" stop-color="#0a1840"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ss-a-i41)"/>
+<g fill="#9ad4ff"><circle cx="30" cy="30" r="1.5"/><circle cx="60" cy="50" r="1"/><circle cx="90" cy="24" r="1.4"/><circle cx="140" cy="36" r="1"/><circle cx="180" cy="22" r="1.6"/><circle cx="210" cy="48" r="1"/><circle cx="40" cy="80" r="1"/><circle cx="200" cy="90" r="1.2"/><circle cx="20" cy="120" r="1"/><circle cx="70" cy="140" r="1.3"/><circle cx="170" cy="130" r="1"/><circle cx="220" cy="150" r="1.4"/></g>
+<g fill="#ff6a7a"><polygon points="40,44 44,54 34,48 46,48 36,54"/><polygon points="200,60 204,70 194,64 206,64 196,70"/><polygon points="70,70 74,80 64,74 76,74 66,80"/><polygon points="160,50 164,60 154,54 166,54 156,60"/><polygon points="50,110 54,120 44,114 56,114 46,120"/><polygon points="190,110 194,120 184,114 196,114 186,120"/><polygon points="100,40 104,50 94,44 106,44 96,50"/><polygon points="130,28 134,38 124,32 136,32 126,38"/></g>
+<path d="M120 150l-16-28h10l6-16 6 16h10z" fill="#7af0ff"/><path d="M104 150h32l-4 10h-24z" fill="#3ecbff"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="cc-a-i42" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1030"/><stop offset="1" stop-color="#0a0818"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#cc-a-i42)"/>
+<circle cx="180" cy="40" r="22" fill="#e8d8ff"/>
+<path d="M40 150V80h16v-24h16V40h16v16h16V56h16v24h16v20h16V80h20v70z" fill="#1a1028"/>
+<path d="M56 80V56h16V40h16v16h16v24h16V80h16v20h16V80h20v70H40V80h16z" fill="#2a1848" opacity=".0"/>
+<rect x="110" y="120" width="20" height="30" fill="#0a0810"/>
+<path d="M20 150h200" stroke="#4a2080" stroke-width="6"/>
+<path d="M0 160c40-20 80 0 120-16 40-16 80 6 120-10v30H0z" fill="#2a1060" opacity=".7"/>
+<rect x="70" y="90" width="10" height="14" fill="#c084fc" opacity=".7"/><rect x="160" y="90" width="10" height="14" fill="#c084fc" opacity=".7"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="bw-a-i43" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a80c0"/><stop offset="1" stop-color="#c07020"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#bw-a-i43)"/>
+<ellipse cx="80" cy="90" rx="36" ry="28" fill="none" stroke="#d4a020" stroke-width="10"/>
+<path d="M110 90h70c8 0 16 10 16 20s-6 16-16 16H150" fill="none" stroke="#d4a020" stroke-width="10" stroke-linecap="round"/>
+<circle cx="150" cy="126" r="10" fill="#f4d060"/>
+<path d="M0 70c40-20 70-8 110-18 30-8 50-24 90-16-20 20-50 16-80 28-40 16-70 4-120 20z" fill="#fff" opacity=".75"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="cw-a-i44" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a1a08"/><stop offset="1" stop-color="#5a3a10"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#cw-a-i44)"/>
+<circle cx="90" cy="90" r="44" fill="#c8922a" stroke="#f4d070" stroke-width="4"/><circle cx="90" cy="90" r="10" fill="#3a2408"/>
+<path d="M90 52h8v16h-8zM90 112h8v16h-8zM52 86h16v8H52zM112 86h16v8h-16z" fill="#f4d070"/>
+<circle cx="160" cy="110" r="32" fill="#d8a040" stroke="#f4d070" stroke-width="3"/><circle cx="160" cy="110" r="8" fill="#3a2408"/>
+<path d="M160 84h6v14h-6zM160 122h6v14h-6zM134 107h14v6h-14zM172 107h14v6h-14z" fill="#f4d070"/>
+<circle cx="150" cy="50" r="16" fill="#1a1008" stroke="#f4d070" stroke-width="3"/><circle cx="150" cy="50" r="6" fill="#000"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="mb-a-i45" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a0528"/><stop offset="1" stop-color="#1a0a40"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#mb-a-i45)"/>
+<path d="M0 70h40v80H0zM50 50h24v100H50zM90 30h20v120H90zM130 44h28v106h-28zM180 20h30v130h-30z" fill="#1a1048"/>
+<rect x="96" y="50" width="8" height="8" fill="#ff4cff"/><rect x="188" y="36" width="8" height="8" fill="#00f0ff"/><rect x="58" y="70" width="8" height="8" fill="#ffe060"/>
+<path d="M0 150h240" stroke="#ff4cff" stroke-width="4"/><path d="M0 158h240" stroke="#00f0ff" stroke-width="2"/>
+<path d="M70 134h50l10 8H80z" fill="#00f0ff"/>
+<circle cx="84" cy="146" r="6" fill="#222"/><circle cx="120" cy="146" r="6" fill="#222"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ra-a-i46" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#140810"/><stop offset="1" stop-color="#2a0810"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ra-a-i46)"/>
+<path d="M0 90h240" stroke="#3a1020" stroke-width="40"/>
+<path d="M20 90h80" stroke="#ff2040" stroke-width="6" opacity=".3"/>
+<path d="M40 90h80" stroke="#ff2040" stroke-width="6" opacity=".5"/>
+<path d="M70 90h80" stroke="#ff4060" stroke-width="6" opacity=".7"/>
+<path d="M110 70h90c8 0 16 8 18 16l8 4v12H126l-8-10h-8z" fill="#ff2a3a"/>
+<circle cx="140" cy="108" r="8" fill="#1a1a1a" stroke="#ddd" stroke-width="2"/>
+<circle cx="196" cy="108" r="8" fill="#1a1a1a" stroke="#ddd" stroke-width="2"/>
+<path d="M126 80h30v10h-30z" fill="#ff90a0"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ba-a-i47" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#020818"/><stop offset="1" stop-color="#031820"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ba-a-i47)"/>
+<ellipse cx="120" cy="80" rx="28" ry="36" fill="#0a4a50"/><ellipse cx="120" cy="80" rx="18" ry="26" fill="#1a8078"/>
+<path d="M120 116c0 20 8 36 0 44" stroke="#3ee0d0" stroke-width="3" fill="none"/>
+<path d="M100 50c-16-10-20-4-16 10M140 50c16-10 20-4 16 10" fill="#1a8078"/>
+<circle cx="110" cy="76" r="4" fill="#7afff0"/><circle cx="130" cy="76" r="4" fill="#7afff0"/>
+<circle cx="40" cy="130" r="8" fill="#3ee0d0" opacity=".7"/><circle cx="50" cy="40" r="5" fill="#7affb0" opacity=".6"/>
+<circle cx="200" cy="60" r="10" fill="#40c8ff" opacity=".55"/><circle cx="180" cy="140" r="6" fill="#7afff0" opacity=".7"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="eh-a-i48" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a0618"/><stop offset="1" stop-color="#1a0a20"/></linearGradient><radialGradient id="eh-b-i48" cx="50%" cy="50%" r="70%"><stop offset="0" stop-color="#000000"/><stop offset="1" stop-color="#ffb060"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#eh-a-i48)"/>
+<circle cx="120" cy="90" r="64" fill="url(#eh-b-i48)"/>
+<circle cx="120" cy="90" r="22" fill="#000"/>
+<ellipse cx="120" cy="90" rx="70" ry="18" fill="none" stroke="#ffb060" stroke-width="4" opacity=".8"/>
+<g fill="#ffd080" font-family="serif" font-size="12"><text x="40" y="40">12</text><text x="190" y="60">3</text><text x="30" y="130">9</text><text x="170" y="150">6</text></g></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="wd-a-i49" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a1a30"/><stop offset="1" stop-color="#081018"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#wd-a-i49)"/>
+<circle cx="120" cy="90" r="62" fill="#1a4a78"/><circle cx="120" cy="90" r="62" fill="none" stroke="#d8a020" stroke-width="4"/>
+<path d="M90 70c10-20 30-24 44-10 8 8 4 20-4 24-16 4-16 16-8 28-16 4-30-8-32-24-8-4-8-12 0-18z" fill="#3a8a50"/>
+<path d="M140 100c16-4 28 8 36 4 4 16-8 28-20 32-12-8-20-20-16-36z" fill="#3a8a50"/>
+<path d="M70 110c8 8 8 20 0 28-12 0-20-12-16-24z" fill="#3a8a50"/>
+<circle cx="108" cy="74" r="5" fill="#e02020"/><circle cx="156" cy="116" r="5" fill="#e02020"/><circle cx="76" cy="120" r="4" fill="#e02020"/>
+<path d="M40 90h160M120 28v124M60 50c40 20 80 20 120 0M60 130c40-20 80-20 120 0" fill="none" stroke="#7ab0d0" stroke-width="1" opacity=".5"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ct-a-i50" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#204068"/><stop offset="1" stop-color="#0a2038"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ct-a-i50)"/>
+<rect x="20" y="80" width="28" height="80" fill="#c0c8d0"/><rect x="54" y="50" width="36" height="110" fill="#d8c070"/>
+<rect x="96" y="70" width="24" height="90" fill="#b0b8c0"/><rect x="126" y="36" width="40" height="124" fill="#e8d080"/>
+<rect x="172" y="60" width="32" height="100" fill="#c8d0d8"/><rect x="208" y="90" width="22" height="70" fill="#a0a8b0"/>
+<circle cx="146" cy="28" r="14" fill="#f4d060"/><path d="M146 18v20M138 28h16" stroke="#8a6010" stroke-width="3"/>
+<rect x="136" y="60" width="8" height="8" fill="#7ac8ff"/><rect x="150" y="60" width="8" height="8" fill="#7ac8ff"/>
+<rect x="136" y="76" width="8" height="8" fill="#7ac8ff"/><rect x="150" y="76" width="8" height="8" fill="#7ac8ff"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="bt-a-i51" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d8f0f8"/><stop offset="1" stop-color="#6ab0c8"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#bt-a-i51)"/>
+<ellipse cx="120" cy="120" rx="90" ry="36" fill="#f0f4f8" stroke="#c0c8d0" stroke-width="6"/>
+<ellipse cx="120" cy="116" rx="70" ry="22" fill="#4aa0c8"/>
+<path d="M70 116h40l-6-16H80z" fill="#c04030"/><rect x="86" y="90" width="4" height="16" fill="#eee"/><path d="M86 90h16" stroke="#c04030" stroke-width="3"/>
+<path d="M130 118h36l-6-14h-24z" fill="#2060a0"/><rect x="144" y="94" width="4" height="14" fill="#eee"/><path d="M144 94h14" stroke="#2060a0" stroke-width="3"/>
+<circle cx="200" cy="50" r="16" fill="#ffe080"/><circle cx="50" cy="50" r="10" fill="#fff" opacity=".8"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ne-a-i52" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#120028"/><stop offset="1" stop-color="#1a0830"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ne-a-i52)"/>
+<g transform="translate(120 90)">
+  <circle r="64" fill="#1a0830" stroke="#ff4cff" stroke-width="4"/>
+  <path d="M0 0 L0-64 A64 64 0 0 1 55.4-32z" fill="#ff4cff"/>
+  <path d="M0 0 L55.4-32 A64 64 0 0 1 55.4 32z" fill="#00f0ff"/>
+  <path d="M0 0 L55.4 32 A64 64 0 0 1 0 64z" fill="#ffd34d"/>
+  <path d="M0 0 L0 64 A64 64 0 0 1 -55.4 32z" fill="#ff4cff"/>
+  <path d="M0 0 L-55.4 32 A64 64 0 0 1 -55.4-32z" fill="#00f0ff"/>
+  <path d="M0 0 L-55.4-32 A64 64 0 0 1 0-64z" fill="#ffd34d"/>
+  <circle r="14" fill="#120028" stroke="#fff" stroke-width="3"/>
+</g>
+<path d="M120 20l8 16h-16z" fill="#fff"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ws-a-i53" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#102040"/><stop offset="1" stop-color="#1a3058"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ws-a-i53)"/>
+<path d="M40 40c40 20 40 40 0 60 50-10 80-6 110 10-10-30 10-50 40-50-20 30-10 60 16 80-40 4-80-10-120 0 10-30-10-70-46-100z" fill="#d0d8e8" opacity=".85"/>
+<g fill="#fff" font-family="Impact, Arial Black, sans-serif" font-weight="800" font-size="28">
+  <text x="70" y="80" transform="rotate(-20 70 80)">W</text>
+  <text x="110" y="70">O</text>
+  <text x="150" y="90" transform="rotate(18 150 90)">R</text>
+  <text x="90" y="120" transform="rotate(8 90 120)">D</text>
+  <text x="160" y="130">S</text>
+</g></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="wc-a-i54" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0c1020"/><stop offset="1" stop-color="#141028"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#wc-a-i54)"/>
+<circle cx="54" cy="90" r="22" fill="#3a4060"/><circle cx="120" cy="90" r="26" fill="#4a5080"/><circle cx="190" cy="90" r="22" fill="#3a4060"/>
+<path d="M76 90h18M146 90h18" stroke="#c0c8e0" stroke-width="6" stroke-linecap="round"/>
+<circle cx="48" cy="84" r="3" fill="#e8e0ff"/><circle cx="60" cy="84" r="3" fill="#e8e0ff"/>
+<circle cx="112" cy="82" r="3.5" fill="#e8e0ff"/><circle cx="128" cy="82" r="3.5" fill="#e8e0ff"/>
+<circle cx="184" cy="84" r="3" fill="#e8e0ff"/><circle cx="196" cy="84" r="3" fill="#e8e0ff"/>
+<path d="M46 100c6 6 12 6 16 0" fill="none" stroke="#c0c8e0" stroke-width="2"/>
+<path d="M110 102c8 7 16 7 20 0" fill="none" stroke="#c0c8e0" stroke-width="2"/>
+<path d="M182 100c6 6 12 6 16 0" fill="none" stroke="#c0c8e0" stroke-width="2"/>
+<path d="M36 70c-16-10-20-4-10 8M204 70c16-10 20-4 10 8" fill="none" stroke="#8a90b0" stroke-width="2"/></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="mv-a-i55" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1a18"/><stop offset="1" stop-color="#0a0a0a"/></linearGradient><radialGradient id="mv-b-i55" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ffe080"/><stop offset="1" stop-color="#8a6010"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#mv-a-i55)"/>
+<circle cx="120" cy="90" r="66" fill="#3a3a38" stroke="#c0a060" stroke-width="8"/>
+<circle cx="120" cy="90" r="44" fill="#2a2a28" stroke="#e0c070" stroke-width="3"/>
+<circle cx="120" cy="90" r="16" fill="url(#mv-b-i55)"/>
+<path d="M120 90h44" stroke="#e0c070" stroke-width="6"/><circle cx="168" cy="90" r="8" fill="#e0c070"/>
+<path d="M120 50v8M120 122v8M80 90h8M152 50l6 6M88 50l-6 6M88 130l-6-6M152 130l6-6" stroke="#e0c070" stroke-width="3"/>
+<text x="120" y="96" text-anchor="middle" fill="#3a2408" font-size="18" font-weight="800" font-family="Georgia, serif">$</text></svg></div><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ks-a-i56" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a0a0a"/><stop offset="1" stop-color="#2a1010"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ks-a-i56)"/>
+<path d="M0 20h40l10 10H0zM200 20h40v10h-30zM0 150h50l-10 10H0zM190 160 240 150v10z" fill="#ffcc00"/>
+<rect x="70" y="40" width="100" height="110" rx="8" fill="#2a2a2a" stroke="#ffcc00" stroke-width="3"/>
+<rect x="88" y="70" width="64" height="64" rx="6" fill="#1a1a1a"/>
+<rect x="108" y="78" width="24" height="40" rx="4" fill="#e01010"/><circle cx="120" cy="86" r="6" fill="#ff8080"/>
+<path d="M80 52h80" stroke="#ffcc00" stroke-width="4"/></svg></div></div></div>
+<div class="ticker reverse" aria-hidden="true"><div class="ticker-track"><span>Action &amp; Arcade · High scores, higher heart rates.</span><span>Shooters · Lock on. Let loose.</span><span>Platformers &amp; Adventure · Leap first. Look later.</span><span>Racing &amp; Driving · Pedal down. Lights out.</span><span>Puzzles · Twists, turns, and a-ha moments.</span><span>Strategy, Board &amp; Tycoon · Outthink, outbuild, outlast.</span><span>Word, Trivia &amp; Party · Bring friends. Bring answers.</span><span>Action &amp; Arcade · High scores, higher heart rates.</span><span>Shooters · Lock on. Let loose.</span><span>Platformers &amp; Adventure · Leap first. Look later.</span><span>Racing &amp; Driving · Pedal down. Lights out.</span><span>Puzzles · Twists, turns, and a-ha moments.</span><span>Strategy, Board &amp; Tycoon · Outthink, outbuild, outlast.</span><span>Word, Trivia &amp; Party · Bring friends. Bring answers.</span><span>Action &amp; Arcade · High scores, higher heart rates.</span><span>Shooters · Lock on. Let loose.</span><span>Platformers &amp; Adventure · Leap first. Look later.</span><span>Racing &amp; Driving · Pedal down. Lights out.</span><span>Puzzles · Twists, turns, and a-ha moments.</span><span>Strategy, Board &amp; Tycoon · Outthink, outbuild, outlast.</span><span>Word, Trivia &amp; Party · Bring friends. Bring answers.</span><span>Action &amp; Arcade · High scores, higher heart rates.</span><span>Shooters · Lock on. Let loose.</span><span>Platformers &amp; Adventure · Leap first. Look later.</span><span>Racing &amp; Driving · Pedal down. Lights out.</span><span>Puzzles · Twists, turns, and a-ha moments.</span><span>Strategy, Board &amp; Tycoon · Outthink, outbuild, outlast.</span><span>Word, Trivia &amp; Party · Bring friends. Bring answers.</span></div></div>
 <nav class="jump" aria-label="Categories">
   <a href="#action">Action &amp; Arcade</a><a href="#shooters">Shooters</a><a href="#adventure">Platformers &amp; Adventure</a><a href="#racing">Racing &amp; Driving</a><a href="#puzzles">Puzzles</a><a href="#strategy">Strategy, Board &amp; Tycoon</a><a href="#party">Word, Trivia &amp; Party</a>
   <button type="button" class="nav-random" data-random>Random</button>
@@ -205,130 +582,651 @@ section{margin:0 0 48px;scroll-margin-top:76px}
 <main id="main">
 <section id="action" class="cat cat-action">
 <header class="banner">
-<div class="icon-badge" aria-hidden="true"><span class="emo">⚡</span><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="currentColor" d="M28.5 3 10 26.2h11.2L16.8 45 38 21.6H26.6L28.5 3z"/></svg></div>
+<div class="lights" aria-hidden="true"></div>
+<div class="banner-inner">
+<div class="icon-badge" aria-hidden="true">⚡</div>
 <div class="copy"><h2>Action &amp; Arcade</h2><p class="tagline">High scores, higher heart rates.</p></div>
 <div class="count" aria-label="17 games">17<small>games</small></div>
+</div>
+<div class="lights bot" aria-hidden="true"></div>
 </header>
 <div class="grid">
-<a class="g" href="graveyard-pinball/"><span class="art" aria-hidden="true">G</span><span class="name">Graveyard of the Atlantic (pinball)</span></a>
-<a class="g" href="protocol-nova/"><span class="art" aria-hidden="true">P</span><span class="name">Protocol Nova</span></a>
-<a class="g" href="far-ridge/"><span class="art" aria-hidden="true">F</span><span class="name">Far Ridge</span></a>
-<a class="g" href="frostbite-tower/"><span class="art" aria-hidden="true">F</span><span class="name">Frostbite Tower</span></a>
-<a class="g" href="neon-wake/"><span class="art" aria-hidden="true">N</span><span class="name">Neon Wake</span></a>
-<a class="g" href="ragnarok-rising/"><span class="art" aria-hidden="true">R</span><span class="name">Ragnarök Rising</span></a>
-<a class="g" href="pharaohs-descent/"><span class="art" aria-hidden="true">P</span><span class="name">Pharaoh&#x27;s Descent</span></a>
-<a class="g" href="lumen-drift/"><span class="art" aria-hidden="true">L</span><span class="name">Lumen Drift</span></a>
-<a class="g" href="little-apocalypse/"><span class="art" aria-hidden="true">L</span><span class="name">Little Apocalypse</span></a>
-<a class="g" href="pong-hyperdrive/"><span class="art" aria-hidden="true">P</span><span class="name">Pong: Hyperdrive</span></a>
-<a class="g" href="unicorn-joust/"><span class="art" aria-hidden="true">U</span><span class="name">Unicorn Joust</span></a>
-<a class="g" href="mime-high-rise/"><span class="art" aria-hidden="true">M</span><span class="name">Mime High-Rise</span></a>
-<a class="g" href="orangutan-keg-climb/"><span class="art" aria-hidden="true">O</span><span class="name">Orangutan Keg Climb</span></a>
-<a class="g" href="https://chrisvonderau.github.io/polar-ascent/"><span class="art" aria-hidden="true">P</span><span class="name">Polar Ascent</span></a>
-<a class="g" href="https://chrisvonderau.github.io/sparkwell/"><span class="art" aria-hidden="true">S</span><span class="name">Sparkwell</span></a>
-<a class="g" href="https://chrisvonderau.github.io/bubble-rescue/"><span class="art" aria-hidden="true">B</span><span class="name">Bubble Rescue</span></a>
-<a class="g" href="https://chrisvonderau.github.io/long-hop/"><span class="art" aria-hidden="true">L</span><span class="name">Long Hop: Red Centre Run</span></a>
+<a class="g" href="graveyard-pinball/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="gp-a-i57" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#07141c"/><stop offset="1" stop-color="#0a2e2a"/></linearGradient><radialGradient id="gp-b-i57" cx="70%" cy="22%" r="45%"><stop offset="0" stop-color="#f4ff8a"/><stop offset="1" stop-color="#3a8010"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#gp-a-i57)"/>
+<circle cx="178" cy="36" r="28" fill="url(#gp-b-i57)"/>
+<path d="M0 128c28-18 48-8 70-16 22-8 40-26 66-22 24 4 36 22 64 18 18-3 28-14 40-12v84H0z" fill="#0a1c18"/>
+<path d="M18 148l14-44 16 8 12-36 18 16 10-22 20 78z" fill="#163830"/>
+<rect x="38" y="118" width="22" height="28" rx="2" fill="#1c2c28"/><path d="M38 118h22v-8c0-10-22-10-22 0z" fill="#2a3c38"/>
+<rect x="70" y="124" width="16" height="22" rx="2" fill="#1c2c28"/><path d="M70 124h16v-6c0-8-16-8-16 0z" fill="#2a3c38"/>
+<path d="M20 86c40 8 70-30 120-18 20 5 40 4 80-8" fill="none" stroke="#6fd0c0" stroke-width="3"/>
+<circle cx="168" cy="92" r="6" fill="#f4ff8a"/>
+<path d="M200 150 168 70l-10 8 22 72z" fill="#8aa4a0" opacity=".7"/></svg></span><span class="name">Graveyard of the Atlantic (pinball)</span></a>
+<a class="g" href="protocol-nova/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="pn-a-i58" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#120018"/><stop offset="1" stop-color="#2a0050"/></linearGradient><radialGradient id="pn-b-i58" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff5c8"/><stop offset="1" stop-color="#3a00ff"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#pn-a-i58)"/>
+<circle cx="120" cy="86" r="70" fill="none" stroke="#ff4cf0" stroke-width="2" opacity=".45"/>
+<circle cx="120" cy="86" r="50" fill="none" stroke="#7af0ff" stroke-width="2"/>
+<circle cx="120" cy="86" r="32" fill="none" stroke="#fff" stroke-width="1.5" opacity=".5"/>
+<circle cx="120" cy="86" r="22" fill="url(#pn-b-i58)"/>
+<path d="M120 16v28M120 128v28M24 86h28M188 86h28M48 28l18 18M174 28l-18 18M48 144l18-18M174 144l-18-18" stroke="#7af0ff" stroke-width="2" stroke-linecap="round"/>
+<rect x="108" y="74" width="24" height="24" rx="3" fill="#120018" stroke="#7af0ff"/></svg></span><span class="name">Protocol Nova</span></a>
+<a class="g" href="far-ridge/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="fr-a-i59" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f39a4a"/><stop offset="1" stop-color="#2a1430"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#fr-a-i59)"/>
+<circle cx="186" cy="44" r="18" fill="#ffe9a0"/>
+<path d="M0 110c30-18 50-8 80-20 18-8 28-22 50-20l30 28 20-16 60 40v58H0z" fill="#3a2240"/>
+<path d="M0 138l70-48 30 26 40-36 40 22 60-18v96H0z" fill="#1a1018"/>
+<path d="M148 92l8 10-18 4z" fill="#6a4038"/><rect x="146" y="100" width="5" height="22" fill="#1a1018"/></svg></span><span class="name">Far Ridge</span></a>
+<a class="g" href="frostbite-tower/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ft-a-i60" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d8f4ff"/><stop offset="1" stop-color="#163050"/></linearGradient><linearGradient id="ft-b-i60" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#9ad4f0"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ft-a-i60)"/>
+<path d="M0 150 40 120 70 140 120 100 160 130 200 110 240 140v40H0z" fill="#e8f6ff"/>
+<path d="M108 150V58l12-28 12 28v92z" fill="url(#ft-b-i60)" stroke="#d0e8ff"/>
+<path d="M96 92h48l-6 10H102zM100 118h40l-6 10h-28z" fill="#eef8ff"/>
+<path d="M70 40l10 18-10 4 14 8-22 2 8-14-12-6zM190 30l8 14-8 4 12 6-18 2 6-12-10-4z" fill="#fff"/>
+<circle cx="40" cy="36" r="3" fill="#fff"/><circle cx="200" cy="70" r="2" fill="#fff"/></svg></span><span class="name">Frostbite Tower</span></a>
+<a class="g" href="neon-wake/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="nw-a-i61" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a0520"/><stop offset="1" stop-color="#120830"/></linearGradient><linearGradient id="nw-b-i61" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ff3da0"/><stop offset="1" stop-color="#00f0ff"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#nw-a-i61)"/>
+<path d="M-10 80c40 8 50-30 90-20 30 8 40 40 80 28 28-8 40-36 80-24" fill="none" stroke="#00f0ff" stroke-width="6"/>
+<path d="M-10 96c40 8 50-30 90-20 30 8 40 40 80 28 28-8 40-36 80-24" fill="none" stroke="#ff3da0" stroke-width="4"/>
+<path d="M-10 112c44 6 52-22 92-14 32 6 42 30 82 20 30-8 42-28 80-18" fill="none" stroke="#fff" stroke-width="1.5" opacity=".5"/>
+<ellipse cx="120" cy="150" rx="90" ry="14" fill="#00f0ff" opacity=".15"/>
+<path d="M112 70l16 8-6 14-16-6z" fill="url(#nw-b-i61)"/></svg></span><span class="name">Neon Wake</span></a>
+<a class="g" href="ragnarok-rising/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="rr-a-i62" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a0508"/><stop offset="1" stop-color="#1a0508"/></linearGradient><radialGradient id="rr-b-i62" cx="50%" cy="40%" r="50%"><stop offset="0" stop-color="#ffdd66"/><stop offset="1" stop-color="#4a0000"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#rr-a-i62)"/>
+<circle cx="120" cy="78" r="40" fill="url(#rr-b-i62)"/>
+<path d="M70 78c8-40 30-54 50-54 8 0 14 4 20 10-28 4-40 28-36 54-16 0-28-4-34-10z" fill="#3a0508"/>
+<path d="M20 160c30-40 40-70 58-86 10 20 8 40 0 62 20-30 50-50 84-54-10 24-6 50 8 78 24-34 50-40 70-38-16 20-20 44-16 58z" fill="#0e0202"/></svg></span><span class="name">Ragnarök Rising</span></a>
+<a class="g" href="pharaohs-descent/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="pd-a-i63" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0d48a"/><stop offset="1" stop-color="#3a1c08"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#pd-a-i63)"/>
+<path d="M120 18 210 150H30z" fill="#e6b85a"/><path d="M120 18 120 150 30 150z" fill="#c4923a"/>
+<path d="M120 18 168 90 72 90z" fill="#f4e2a8"/>
+<rect x="108" y="108" width="24" height="28" fill="#5a3010"/><path d="M108 108h24l-12-10z" fill="#3a1c08"/>
+<circle cx="120" cy="70" r="10" fill="#7a2010" stroke="#f4e2a8" stroke-width="2"/>
+<path d="M120 62v16M112 70h16" stroke="#f4e2a8" stroke-width="1.5"/>
+<path d="M40 158h160" stroke="#8a4a10" stroke-width="6"/></svg></span><span class="name">Pharaoh&#x27;s Descent</span></a>
+<a class="g" href="lumen-drift/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ld-a-i64" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#12082a"/><stop offset="1" stop-color="#1a1048"/></linearGradient><radialGradient id="ld-b-i64" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff6c8"/><stop offset="1" stop-color="#ff8ad4"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#ld-a-i64)"/>
+<circle cx="50" cy="50" r="4" fill="#fff"/><circle cx="200" cy="36" r="2.5" fill="#ffd0ff"/>
+<circle cx="180" cy="90" r="3" fill="#c8f0ff"/><circle cx="30" cy="120" r="2" fill="#fff"/>
+<ellipse cx="130" cy="88" rx="36" ry="14" fill="#6a40ff" opacity=".45"/>
+<ellipse cx="130" cy="80" rx="28" ry="10" fill="url(#ld-b-i64)"/>
+<path d="M102 80c8-16 20-22 28-22 10 0 22 8 28 22" fill="#d8b0ff" opacity=".8"/>
+<circle cx="70" cy="130" r="6" fill="#ffe9a0"/><circle cx="190" cy="140" r="8" fill="#7af0ff" opacity=".7"/>
+<circle cx="40" cy="80" r="5" fill="#ff8ad4"/><circle cx="160" cy="40" r="4" fill="#fff"/></svg></span><span class="name">Lumen Drift</span></a>
+<a class="g" href="little-apocalypse/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="la-a-i65" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4c878"/><stop offset="1" stop-color="#5a2030"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#la-a-i65)"/>
+<ellipse cx="120" cy="70" rx="42" ry="36" fill="#f4e0c0"/>
+<path d="M120 36c18 0 40 16 44 40-16-8-28 4-44 4s-28-12-44-4c4-24 26-40 44-40z" fill="#f8f0e0"/>
+<rect x="114" y="100" width="12" height="28" fill="#8a6050"/>
+<path d="M20 150h40v10H20zM70 140h20v20H70zM100 146h16v14h-16zM150 142h28v18h-28zM190 150h30v10h-30z" fill="#3a2030"/>
+<circle cx="80" cy="128" r="8" fill="#ff6a3c"/></svg></span><span class="name">Little Apocalypse</span></a>
+<a class="g" href="pong-hyperdrive/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ph-a-i66" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#080818"/><stop offset="1" stop-color="#1a0830"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ph-a-i66)"/>
+<path d="M20 30h200M20 150h200M120 20v140" stroke="#ff4cff" stroke-width="2" stroke-dasharray="6 8" opacity=".6"/>
+<rect x="28" y="70" width="10" height="44" rx="2" fill="#00f0ff"/>
+<rect x="202" y="58" width="10" height="44" rx="2" fill="#ff4cff"/>
+<circle cx="124" cy="86" r="8" fill="#fff"/>
+<path d="M124 86l40-8M124 86l28 16M124 86l36-22" stroke="#00f0ff" stroke-width="2"/></svg></span><span class="name">Pong: Hyperdrive</span></a>
+<a class="g" href="unicorn-joust/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="uj-a-i67" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a0a50"/><stop offset="1" stop-color="#f0a0c8"/></linearGradient><linearGradient id="uj-b-i67" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#e0d0ff"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#uj-a-i67)"/>
+<circle cx="40" cy="36" r="3" fill="#fff"/><circle cx="200" cy="50" r="2" fill="#ffe9a0"/>
+<path d="M70 130c10-40 18-70 36-86 8-6 20-8 28-2 14-28 22-36 26-36 2 8-2 22-12 38 14 8 20 22 18 40-20-6-36 4-50 22-6 8-18 20-46 24z" fill="url(#uj-b-i67)"/>
+<path d="M130 44 176 8l-8 20 22 4z" fill="#ffe08a"/>
+<circle cx="108" cy="70" r="4" fill="#2a1030"/>
+<path d="M20 158h200" stroke="#f0a0c8" stroke-width="4"/>
+<path d="M160 120l50 8" stroke="#ffe08a" stroke-width="4" stroke-linecap="round"/></svg></span><span class="name">Unicorn Joust</span></a>
+<a class="g" href="mime-high-rise/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="mh-a-i68" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0e8e0"/><stop offset="1" stop-color="#8a90a0"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#mh-a-i68)"/>
+<rect x="80" y="20" width="80" height="150" fill="#1a1a1a"/>
+<rect x="88" y="28" width="14" height="12" fill="#f0e8e0"/><rect x="108" y="28" width="14" height="12" fill="#f0e8e0"/>
+<rect x="128" y="28" width="14" height="12" fill="#f0e8e0"/><rect x="88" y="48" width="14" height="12" fill="#f0e8e0"/>
+<rect x="108" y="48" width="14" height="12" fill="#d02020"/><rect x="128" y="48" width="14" height="12" fill="#f0e8e0"/>
+<rect x="88" y="68" width="14" height="12" fill="#f0e8e0"/><rect x="108" y="68" width="14" height="12" fill="#f0e8e0"/>
+<rect x="128" y="68" width="14" height="12" fill="#f0e8e0"/>
+<circle cx="115" cy="108" r="16" fill="#f0e8e0"/><ellipse cx="115" cy="108" rx="16" ry="8" fill="#1a1a1a"/>
+<path d="M107 116c4 4 12 4 16 0" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+<rect x="70" y="20" width="10" height="150" fill="#c0c4cc"/><rect x="160" y="20" width="10" height="150" fill="#c0c4cc"/>
+<rect x="108" y="150" width="24" height="20" fill="#444"/></svg></span><span class="name">Mime High-Rise</span></a>
+<a class="g" href="orangutan-keg-climb/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ok-a-i69" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#87c04a"/><stop offset="1" stop-color="#1a4818"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ok-a-i69)"/>
+<rect x="108" y="10" width="24" height="170" fill="#6a3a18"/>
+<ellipse cx="70" cy="150" rx="22" ry="16" fill="#b06020" stroke="#5a3010" stroke-width="2"/>
+<rect x="54" y="134" width="32" height="20" fill="#b06020" stroke="#5a3010" stroke-width="2"/><ellipse cx="70" cy="134" rx="22" ry="10" fill="#d08038"/>
+<ellipse cx="170" cy="110" rx="22" ry="16" fill="#b06020" stroke="#5a3010" stroke-width="2"/>
+<rect x="154" y="94" width="32" height="20" fill="#b06020" stroke="#5a3010" stroke-width="2"/><ellipse cx="170" cy="94" rx="22" ry="10" fill="#d08038"/>
+<ellipse cx="70" cy="70" rx="18" ry="13" fill="#b06020" stroke="#5a3010" stroke-width="2"/>
+<path d="M118 50c-8-16-4-28 8-34 6 8 8 16 4 28 14 4 22 16 20 32-16-8-28-6-32 6z" fill="#c45a20"/>
+<circle cx="132" cy="40" r="10" fill="#c45a20"/><circle cx="136" cy="38" r="2" fill="#1a1008"/>
+<path d="M20 20c8 20 6 40 0 60M220 10c-10 24-8 50 0 80" fill="none" stroke="#0e3010" stroke-width="8"/></svg></span><span class="name">Orangutan Keg Climb</span></a>
+<a class="g" href="https://chrisvonderau.github.io/polar-ascent/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="pa-a-i70" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a3a68"/><stop offset="1" stop-color="#d8eef8"/></linearGradient><linearGradient id="pa-b-i70" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#a0ffd0"/><stop offset="1" stop-color="#70c8ff"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#pa-a-i70)"/>
+<path d="M0 50c40 8 60-20 100-10 30 8 50 4 80-16 20 20 40 10 60 18v40H0z" fill="url(#pa-b-i70)" opacity=".55"/>
+<path d="M20 180 90 50l30 44 28-36 72 122z" fill="#eef6ff"/>
+<path d="M90 50l16 28-28 6z" fill="#fff"/>
+<circle cx="148" cy="58" r="5" fill="#ff6b4a"/><path d="M148 63v16" stroke="#ff6b4a" stroke-width="2"/></svg></span><span class="name">Polar Ascent</span></a>
+<a class="g" href="https://chrisvonderau.github.io/sparkwell/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="sw-a-i71" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1020"/><stop offset="1" stop-color="#3a1810"/></linearGradient><radialGradient id="sw-b-i71" cx="50%" cy="70%" r="60%"><stop offset="0" stop-color="#fff4b0"/><stop offset="1" stop-color="#6a2008"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#sw-a-i71)"/>
+<ellipse cx="120" cy="150" rx="70" ry="18" fill="#2a1810"/>
+<ellipse cx="120" cy="148" rx="50" ry="12" fill="url(#sw-b-i71)"/>
+<path d="M120 148 70 40M120 148 90 20M120 148 120 16M120 148 150 22M120 148 174 44M120 148 200 70M120 148 40 70" stroke="#ffd060" stroke-width="2" stroke-linecap="round"/>
+<circle cx="70" cy="40" r="5" fill="#fff4b0"/><circle cx="90" cy="20" r="4" fill="#ff9a20"/>
+<circle cx="120" cy="16" r="6" fill="#fff"/><circle cx="150" cy="22" r="4" fill="#ffd060"/>
+<circle cx="174" cy="44" r="5" fill="#ff9a20"/><circle cx="200" cy="70" r="4" fill="#fff4b0"/><circle cx="40" cy="70" r="4" fill="#ffd060"/></svg></span><span class="name">Sparkwell</span></a>
+<a class="g" href="https://chrisvonderau.github.io/bubble-rescue/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="br-a-i72" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a3a58"/><stop offset="1" stop-color="#0a7088"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#br-a-i72)"/>
+<circle cx="120" cy="86" r="44" fill="#7ad4e8" opacity=".35" stroke="#e0ffff" stroke-width="3"/>
+<circle cx="104" cy="70" r="12" fill="#fff" opacity=".35"/>
+<circle cx="120" cy="90" r="10" fill="#ffd0a0"/>
+<path d="M112 98c4 6 12 6 16 0" fill="none" stroke="#c07040" stroke-width="2"/>
+<circle cx="40" cy="50" r="16" fill="#7ad4e8" opacity=".3" stroke="#e0ffff" stroke-width="2"/>
+<circle cx="200" cy="40" r="12" fill="#7ad4e8" opacity=".3" stroke="#e0ffff" stroke-width="2"/>
+<circle cx="190" cy="130" r="22" fill="#7ad4e8" opacity=".25" stroke="#e0ffff" stroke-width="2"/>
+<circle cx="50" cy="140" r="18" fill="#7ad4e8" opacity=".28" stroke="#e0ffff" stroke-width="2"/></svg></span><span class="name">Bubble Rescue</span></a>
+<a class="g" href="https://chrisvonderau.github.io/long-hop/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="lh-a-i73" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0c060"/><stop offset="1" stop-color="#8a2010"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#lh-a-i73)"/>
+<circle cx="186" cy="40" r="22" fill="#ffe08a"/>
+<path d="M0 130c40-10 80 10 120 0 40-10 80 8 120 0v50H0z" fill="#c44a1a"/>
+<path d="M70 130c8-28 20-50 40-58 8 16 6 30-2 46 16-10 40-8 54 4-20 4-36 2-50 12-8-14-24-16-42-4z" fill="#5a2a10"/>
+<circle cx="108" cy="78" r="12" fill="#5a2a10"/><circle cx="112" cy="76" r="2.5" fill="#ffe08a"/>
+<path d="M118 74l16-8" stroke="#5a2a10" stroke-width="3" stroke-linecap="round"/>
+<path d="M60 128c-16 4-28 16-30 22" stroke="#5a2a10" stroke-width="4" fill="none" stroke-linecap="round"/>
+<path d="M150 122c18-8 34-4 44 6" stroke="#5a2a10" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span><span class="name">Long Hop: Red Centre Run</span></a>
 </div>
 </section><section id="shooters" class="cat cat-shooters">
 <header class="banner">
-<div class="icon-badge" aria-hidden="true"><span class="emo">🎯</span><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="8" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="24" cy="24" r="3" fill="currentColor"/><path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" d="M24 4v10M24 34v10M4 24h10M34 24h10"/></svg></div>
+<div class="lights" aria-hidden="true"></div>
+<div class="banner-inner">
+<div class="icon-badge" aria-hidden="true">🎯</div>
 <div class="copy"><h2>Shooters</h2><p class="tagline">Lock on. Let loose.</p></div>
 <div class="count" aria-label="16 games">16<small>games</small></div>
+</div>
+<div class="lights bot" aria-hidden="true"></div>
 </header>
 <div class="grid">
-<a class="g" href="astro-vortex/"><span class="art" aria-hidden="true">A</span><span class="name">ASTRO-VORTEX &#x27;84</span></a>
-<a class="g" href="shatterfield/"><span class="art" aria-hidden="true">S</span><span class="name">Shatterfield</span></a>
-<a class="g" href="chromahive/"><span class="art" aria-hidden="true">C</span><span class="name">CHROMAHIVE</span></a>
-<a class="g" href="fort-fisher/"><span class="art" aria-hidden="true">F</span><span class="name">Fort Fisher</span></a>
-<a class="g" href="dead-mans-gulch/"><span class="art" aria-hidden="true">D</span><span class="name">Dead Man&#x27;s Gulch</span></a>
-<a class="g" href="soul-trigger/"><span class="art" aria-hidden="true">S</span><span class="name">Soul Trigger</span></a>
-<a class="g" href="time-cop-1986/"><span class="art" aria-hidden="true">T</span><span class="name">TIME COP 1986</span></a>
-<a class="g" href="star-swarm-defender/"><span class="art" aria-hidden="true">S</span><span class="name">Star Swarm Defender</span></a>
-<a class="g" href="get-off-my-lawn/"><span class="art" aria-hidden="true">G</span><span class="name">Get Off My Lawn</span></a>
-<a class="g" href="blackout/"><span class="art" aria-hidden="true">B</span><span class="name">BLACKOUT</span></a>
-<a class="g" href="starbreak/"><span class="art" aria-hidden="true">S</span><span class="name">STARBREAK</span></a>
-<a class="g" href="https://chrisvonderau.github.io/six-gun-showdown/Six-Gun%20Sundown.html"><span class="art" aria-hidden="true">S</span><span class="name">Six-Gun Sundown</span></a>
-<a class="g" href="https://chrisvonderau.github.io/chrono-spark/"><span class="art" aria-hidden="true">C</span><span class="name">Chrono Spark</span></a>
-<a class="g" href="https://chrisvonderau.github.io/hollow-light/"><span class="art" aria-hidden="true">H</span><span class="name">Hollow Light</span></a>
-<a class="g" href="https://chrisvonderau.github.io/kill-switch/"><span class="art" aria-hidden="true">K</span><span class="name">Kill Switch</span></a>
-<a class="g" href="https://chrisvonderau.github.io/supernova/"><span class="art" aria-hidden="true">S</span><span class="name">Supernova</span></a>
+<a class="g" href="astro-vortex/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="av-a-i74" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#120028"/><stop offset="1" stop-color="#0a1020"/></linearGradient><radialGradient id="av-b-i74" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#c0ff6a"/><stop offset="1" stop-color="#101028"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#av-a-i74)"/>
+<path d="M0 140h240M0 120h240M0 100h240" stroke="#3a2060" stroke-width="1"/>
+<path d="M20 160l40-80 40 40 40-80 40 50 40-30 20 100" fill="none" stroke="#5a3080"/>
+<circle cx="120" cy="80" r="36" fill="none" stroke="#c0ff6a" stroke-width="3"/>
+<circle cx="120" cy="80" r="22" fill="none" stroke="#7af0ff" stroke-width="2"/>
+<circle cx="120" cy="80" r="10" fill="url(#av-b-i74)"/>
+<path d="M120 150l-8-22h16z" fill="#c0ff6a"/>
+<text x="16" y="22" fill="#c0ff6a" font-size="11" font-family="monospace">1984</text></svg></span><span class="name">ASTRO-VORTEX &#x27;84</span></a>
+<a class="g" href="shatterfield/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="sf-a-i75" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1030"/><stop offset="1" stop-color="#4a2080"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#sf-a-i75)"/>
+<polygon points="120,20 150,70 200,50 170,100 220,140 140,130 120,170 100,130 20,140 70,100 40,50 90,70" fill="#e8d0ff" opacity=".9"/>
+<polygon points="120,40 140,76 170,64 152,100 190,126 140,118 120,150 100,118 50,126 88,100 70,64 100,76" fill="#7a40ff"/>
+<polygon points="120,70 132,96 150,90 136,110 156,126 128,120 120,140 112,120 84,126 104,110 90,90 108,96" fill="#fff"/></svg></span><span class="name">Shatterfield</span></a>
+<a class="g" href="chromahive/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ch-a-i76" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#140820"/><stop offset="1" stop-color="#201030"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ch-a-i76)"/>
+<g transform="translate(120 90)">
+  <polygon points="0,-28 24,-14 24,14 0,28 -24,14 -24,-14" fill="#ff4d8d"/>
+  <polygon points="-40,-8 -16,-22 -16,6 -40,20 -64,6 -64,-22" fill="#ffd34d"/>
+  <polygon points="40,-8 64,-22 64,6 40,20 16,6 16,-22" fill="#3ecbff"/>
+  <polygon points="-20,40 4,26 4,54 -20,68 -44,54 -44,26" fill="#3ee89a"/>
+  <polygon points="20,40 44,26 44,54 20,68 -4,54 -4,26" fill="#c084fc"/>
+  <polygon points="-20,-48 4,-62 4,-34 -20,-20 -44,-34 -44,-62" fill="#ff7a3c"/>
+  <polygon points="20,-48 44,-62 44,-34 20,-20 -4,-34 -4,-62" fill="#7af0ff"/>
+</g></svg></span><span class="name">CHROMAHIVE</span></a>
+<a class="g" href="fort-fisher/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ff-a-i77" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#87b8d0"/><stop offset="1" stop-color="#3a5a30"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ff-a-i77)"/>
+<path d="M0 110c40-8 80 8 120 0s80 8 120 0v20H0z" fill="#c8b070"/>
+<path d="M0 128h240v52H0z" fill="#2a6a88"/>
+<path d="M40 120V70h20l8-16h24l8 16h20v50z" fill="#6a5a40"/>
+<path d="M40 70h80v8H40z" fill="#4a3c28"/><rect x="70" y="86" width="12" height="16" fill="#1a2010"/>
+<path d="M0 150c30-10 60 6 90 0 30-6 60 8 90 0 20-4 40 4 60 0" fill="none" stroke="#e8f0f4" stroke-width="3"/>
+<circle cx="200" cy="36" r="14" fill="#ffe08a"/></svg></span><span class="name">Fort Fisher</span></a>
+<a class="g" href="dead-mans-gulch/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="dg-a-i78" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0a050"/><stop offset="1" stop-color="#3a1808"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#dg-a-i78)"/>
+<path d="M0 80c20-30 40-40 60-20 10-30 30-50 50-30 16-24 40-30 60-10 20-16 40-8 70 20v120H0z" fill="#8a3a18"/>
+<path d="M0 130c30-20 70-8 110-24 40-16 80 0 130-16v90H0z" fill="#3a1808"/>
+<circle cx="120" cy="100" r="22" fill="#e8d0b0"/>
+<ellipse cx="112" cy="96" rx="4" ry="5" fill="#1a0a08"/><ellipse cx="128" cy="96" rx="4" ry="5" fill="#1a0a08"/>
+<path d="M112 110c6 6 14 6 16 0" fill="none" stroke="#1a0a08" stroke-width="2"/>
+<path d="M40 150c0-20 8-36 8-36s8 16 8 36z" fill="#2a2010"/>
+<path d="M44 114c-10-4-12-16-4-20 10 4 16 8 8 20zM52 114c10-4 12-16 4-20-10 4-16 8-8 20z" fill="#2a2010"/></svg></span><span class="name">Dead Man&#x27;s Gulch</span></a>
+<a class="g" href="soul-trigger/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="st-a-i79" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#080818"/><stop offset="1" stop-color="#0a2030"/></linearGradient><radialGradient id="st-b-i79" cx="50%" cy="40%" r="50%"><stop offset="0" stop-color="#e8ffff"/><stop offset="1" stop-color="#40e0c0"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#st-a-i79)"/>
+<path d="M120 30c28 0 50 22 50 54 0 40-50 72-50 72S70 124 70 84c0-32 22-54 50-54z" fill="url(#st-b-i79)" opacity=".85"/>
+<circle cx="106" cy="74" r="6" fill="#082028"/><circle cx="132" cy="74" r="6" fill="#082028"/>
+<path d="M150 100h40c4 0 8 6 6 12l-8 20H150z" fill="#c0d0d4"/>
+<rect x="186" y="108" width="22" height="10" rx="2" fill="#c0d0d4"/>
+<circle cx="154" cy="118" r="8" fill="#8a9a9e"/><path d="M150 112h-16v8h16" fill="#c0d0d4"/></svg></span><span class="name">Soul Trigger</span></a>
+<a class="g" href="time-cop-1986/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="tc-a-i80" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#083040"/><stop offset="1" stop-color="#0a1820"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#tc-a-i80)"/>
+<circle cx="120" cy="86" r="58" fill="none" stroke="#20e0c0" stroke-width="6"/>
+<circle cx="120" cy="86" r="48" fill="#0e2830" stroke="#d8a020" stroke-width="2"/>
+<path d="M120 86l0-32" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+<path d="M120 86l22 14" stroke="#d8a020" stroke-width="3" stroke-linecap="round"/>
+<circle cx="120" cy="86" r="5" fill="#d8a020"/>
+<path d="M120 38v8M120 126v8M72 86h8M160 86h8" stroke="#20e0c0" stroke-width="3"/>
+<text x="120" y="168" text-anchor="middle" fill="#20e0c0" font-size="14" font-family="monospace" font-weight="700">1986</text></svg></span><span class="name">TIME COP 1986</span></a>
+<a class="g" href="star-swarm-defender/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ss-a-i81" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#040814"/><stop offset="1" stop-color="#0a1840"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ss-a-i81)"/>
+<g fill="#9ad4ff"><circle cx="30" cy="30" r="1.5"/><circle cx="60" cy="50" r="1"/><circle cx="90" cy="24" r="1.4"/><circle cx="140" cy="36" r="1"/><circle cx="180" cy="22" r="1.6"/><circle cx="210" cy="48" r="1"/><circle cx="40" cy="80" r="1"/><circle cx="200" cy="90" r="1.2"/><circle cx="20" cy="120" r="1"/><circle cx="70" cy="140" r="1.3"/><circle cx="170" cy="130" r="1"/><circle cx="220" cy="150" r="1.4"/></g>
+<g fill="#ff6a7a"><polygon points="40,44 44,54 34,48 46,48 36,54"/><polygon points="200,60 204,70 194,64 206,64 196,70"/><polygon points="70,70 74,80 64,74 76,74 66,80"/><polygon points="160,50 164,60 154,54 166,54 156,60"/><polygon points="50,110 54,120 44,114 56,114 46,120"/><polygon points="190,110 194,120 184,114 196,114 186,120"/><polygon points="100,40 104,50 94,44 106,44 96,50"/><polygon points="130,28 134,38 124,32 136,32 126,38"/></g>
+<path d="M120 150l-16-28h10l6-16 6 16h10z" fill="#7af0ff"/><path d="M104 150h32l-4 10h-24z" fill="#3ecbff"/></svg></span><span class="name">Star Swarm Defender</span></a>
+<a class="g" href="get-off-my-lawn/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="gl-a-i82" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#87c8ff"/><stop offset="1" stop-color="#3a8a30"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#gl-a-i82)"/>
+<path d="M0 110h240v70H0z" fill="#3a9a28"/><path d="M0 110h240" stroke="#2a7018" stroke-width="4"/>
+<rect x="20" y="96" width="8" height="28" fill="#d8d0c0"/><rect x="52" y="96" width="8" height="28" fill="#d8d0c0"/><rect x="84" y="96" width="8" height="28" fill="#d8d0c0"/>
+<path d="M16 96h80" stroke="#8a2010" stroke-width="4"/>
+<path d="M150 110V70l40-22 40 22v40" fill="#c05030"/><rect x="178" y="88" width="14" height="22" fill="#6a2010"/>
+<rect x="164" y="74" width="12" height="10" fill="#7ac8ff"/><rect x="192" y="74" width="12" height="10" fill="#7ac8ff"/>
+<circle cx="60" cy="140" r="10" fill="#f0e070"/></svg></span><span class="name">Get Off My Lawn</span></a>
+<a class="g" href="blackout/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="bo-a-i83" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#04040a"/><stop offset="1" stop-color="#0a1020"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#bo-a-i83)"/>
+<path d="M0 150 30 90 46 110 70 70 90 100 120 40 150 90 170 60 200 110 220 80 240 130v50H0z" fill="#12151f"/>
+<rect x="116" y="86" width="8" height="6" fill="#ffe08a"/>
+<path d="M160 20l8 22 20-10-12 20 22 6-22 8 12 18-24-8-8 22-8-22-24 8 12-18-22-8 22-6-12-20 20 10z" fill="#c0d0e0" opacity=".5"/></svg></span><span class="name">BLACKOUT</span></a>
+<a class="g" href="starbreak/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="sb-a-i84" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a1030"/><stop offset="1" stop-color="#2a1060"/></linearGradient><radialGradient id="sb-b-i84" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fffce0"/><stop offset="1" stop-color="#ff6a00"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#sb-a-i84)"/>
+<path d="M120 16 136 70 192 70 148 104 164 160 120 128 76 160 92 104 48 70 104 70z" fill="url(#sb-b-i84)"/>
+<path d="M110 20 150 170M88 90 170 130M70 60 190 80" stroke="#0a1030" stroke-width="3"/>
+<circle cx="40" cy="40" r="2" fill="#fff"/><circle cx="200" cy="50" r="2" fill="#ffd060"/></svg></span><span class="name">STARBREAK</span></a>
+<a class="g" href="https://chrisvonderau.github.io/six-gun-showdown/Six-Gun%20Sundown.html"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="sg-a-i85" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0a030"/><stop offset="1" stop-color="#1a0808"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#sg-a-i85)"/>
+<circle cx="120" cy="50" r="24" fill="#ffe08a"/>
+<path d="M0 110c40-10 80 8 120-6 40-14 80 4 120-8v84H0z" fill="#2a1008"/>
+<path d="M40 120h50c4 0 6 4 6 8v6H50l-16 16H22l6-16h12z" fill="#c0b8a8"/><circle cx="48" cy="138" r="10" fill="#8a8070"/>
+<path d="M200 120h-50c-4 0-6 4-6 8v6h46l16 16h12l-6-16h-12z" fill="#c0b8a8"/><circle cx="192" cy="138" r="10" fill="#8a8070"/></svg></span><span class="name">Six-Gun Sundown</span></a>
+<a class="g" href="https://chrisvonderau.github.io/chrono-spark/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="cs-a-i86" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1040"/><stop offset="1" stop-color="#081428"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#cs-a-i86)"/>
+<circle cx="110" cy="90" r="50" fill="none" stroke="#7aa0ff" stroke-width="6"/>
+<circle cx="110" cy="90" r="40" fill="#101830"/>
+<path d="M110 90V58M110 90l24 18" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+<path d="M150 50l30-20M160 60l36-8M158 74l40 6" stroke="#ffe060" stroke-width="3" stroke-linecap="round"/>
+<circle cx="180" cy="30" r="6" fill="#ffe060"/><circle cx="196" cy="52" r="4" fill="#fff"/><circle cx="198" cy="80" r="5" fill="#ffb020"/>
+<circle cx="110" cy="90" r="5" fill="#7aa0ff"/></svg></span><span class="name">Chrono Spark</span></a>
+<a class="g" href="https://chrisvonderau.github.io/hollow-light/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="hl-a-i87" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#08080e"/><stop offset="1" stop-color="#16101a"/></linearGradient><radialGradient id="hl-b-i87" cx="50%" cy="42%" r="55%"><stop offset="0" stop-color="#fff6c8"/><stop offset="1" stop-color="#181018"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#hl-a-i87)"/>
+<circle cx="120" cy="80" r="50" fill="url(#hl-b-i87)"/><circle cx="120" cy="80" r="22" fill="#08080e"/>
+<path d="M108 128c0 20 8 36 12 36s12-16 12-36" fill="#6a5030"/>
+<path d="M100 126h40l-4-10h-32z" fill="#c8a050"/></svg></span><span class="name">Hollow Light</span></a>
+<a class="g" href="https://chrisvonderau.github.io/kill-switch/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ks-a-i88" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a0a0a"/><stop offset="1" stop-color="#2a1010"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ks-a-i88)"/>
+<path d="M0 20h40l10 10H0zM200 20h40v10h-30zM0 150h50l-10 10H0zM190 160 240 150v10z" fill="#ffcc00"/>
+<rect x="70" y="40" width="100" height="110" rx="8" fill="#2a2a2a" stroke="#ffcc00" stroke-width="3"/>
+<rect x="88" y="70" width="64" height="64" rx="6" fill="#1a1a1a"/>
+<rect x="108" y="78" width="24" height="40" rx="4" fill="#e01010"/><circle cx="120" cy="86" r="6" fill="#ff8080"/>
+<path d="M80 52h80" stroke="#ffcc00" stroke-width="4"/></svg></span><span class="name">Kill Switch</span></a>
+<a class="g" href="https://chrisvonderau.github.io/supernova/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="sn-a-i89" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#140020"/><stop offset="1" stop-color="#200810"/></linearGradient><radialGradient id="sn-b-i89" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#4a00a0"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#sn-a-i89)"/>
+<circle cx="120" cy="90" r="70" fill="url(#sn-b-i89)"/><circle cx="120" cy="90" r="24" fill="#fff"/>
+<path d="M120 20v20M120 140v20M40 90h20M180 90h20M58 36l14 14M168 36l-14 14M58 144l14-14M168 144l-14-14" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg></span><span class="name">Supernova</span></a>
 </div>
 </section><section id="adventure" class="cat cat-adventure">
 <header class="banner">
-<div class="icon-badge" aria-hidden="true"><span class="emo">🗺️</span><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="currentColor" d="m8 38 10.5-16 5.2 8 3.3-5.2L40 38H8zm16.8-20.5 3.4-5.3 2.2 3.4 3.1-2.2 6.5 10.4-3.8-.1-4.6-6.2-1.6 2.5-5.2-2.5z"/></svg></div>
+<div class="lights" aria-hidden="true"></div>
+<div class="banner-inner">
+<div class="icon-badge" aria-hidden="true">🗺️</div>
 <div class="copy"><h2>Platformers &amp; Adventure</h2><p class="tagline">Leap first. Look later.</p></div>
 <div class="count" aria-label="9 games">9<small>games</small></div>
+</div>
+<div class="lights bot" aria-hidden="true"></div>
 </header>
 <div class="grid">
-<a class="g" href="clockwork-heist/"><span class="art" aria-hidden="true">C</span><span class="name">Clockwork Heist</span></a>
-<a class="g" href="tender-titan/"><span class="art" aria-hidden="true">T</span><span class="name">Tender Titan</span></a>
-<a class="g" href="tinderhelm/"><span class="art" aria-hidden="true">T</span><span class="name">Tinderhelm</span></a>
-<a class="g" href="tock/"><span class="art" aria-hidden="true">T</span><span class="name">Tock</span></a>
-<a class="g" href="the-idol-wakes/"><span class="art" aria-hidden="true">T</span><span class="name">The Idol Wakes</span></a>
-<a class="g" href="castle-of-chaos/"><span class="art" aria-hidden="true">C</span><span class="name">Castle of Chaos: The Midnight Curse</span></a>
-<a class="g" href="gemini-platformer/"><span class="art" aria-hidden="true">A</span><span class="name">Aether Prism 3D</span></a>
-<a class="g" href="https://chrisvonderau.github.io/brasswind/"><span class="art" aria-hidden="true">B</span><span class="name">Brasswind: The Stolen Sky</span></a>
-<a class="g" href="https://chrisvonderau.github.io/horizon-wake-up/"><span class="art" aria-hidden="true">H</span><span class="name">Horizon: Wake Up</span></a>
+<a class="g" href="clockwork-heist/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="cw-a-i90" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a1a08"/><stop offset="1" stop-color="#5a3a10"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#cw-a-i90)"/>
+<circle cx="90" cy="90" r="44" fill="#c8922a" stroke="#f4d070" stroke-width="4"/><circle cx="90" cy="90" r="10" fill="#3a2408"/>
+<path d="M90 52h8v16h-8zM90 112h8v16h-8zM52 86h16v8H52zM112 86h16v8h-16z" fill="#f4d070"/>
+<circle cx="160" cy="110" r="32" fill="#d8a040" stroke="#f4d070" stroke-width="3"/><circle cx="160" cy="110" r="8" fill="#3a2408"/>
+<path d="M160 84h6v14h-6zM160 122h6v14h-6zM134 107h14v6h-14zM172 107h14v6h-14z" fill="#f4d070"/>
+<circle cx="150" cy="50" r="16" fill="#1a1008" stroke="#f4d070" stroke-width="3"/><circle cx="150" cy="50" r="6" fill="#000"/></svg></span><span class="name">Clockwork Heist</span></a>
+<a class="g" href="tender-titan/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="tt-a-i91" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0c8a0"/><stop offset="1" stop-color="#88b070"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#tt-a-i91)"/>
+<ellipse cx="120" cy="160" rx="90" ry="16" fill="#6a9048"/>
+<path d="M80 160c0-60 8-90 40-110 32 20 40 50 40 110z" fill="#e0a070"/>
+<circle cx="120" cy="48" r="22" fill="#f0c0a0"/>
+<circle cx="112" cy="46" r="3" fill="#3a2010"/><circle cx="130" cy="46" r="3" fill="#3a2010"/>
+<path d="M112 56c6 6 12 6 16 0" fill="none" stroke="#c06040" stroke-width="2"/>
+<path d="M80 110c-20 0-30 16-36 30 16 0 28-6 40-4M160 110c20 0 30 16 36 30-16 0-28-6-40-4" fill="#e0a070"/>
+<circle cx="170" cy="96" r="10" fill="#e05070"/>
+<path d="M170 86c4-10 12-12 16-8" fill="none" stroke="#5a9040" stroke-width="2"/></svg></span><span class="name">Tender Titan</span></a>
+<a class="g" href="tinderhelm/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="th-a-i92" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a1008"/><stop offset="1" stop-color="#1a0808"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#th-a-i92)"/>
+<path d="M60 110c0-50 26-80 60-80s60 30 60 80c-16-10-36-16-60-16s-44 6-60 16z" fill="#c0c8d0"/>
+<path d="M80 100c8-20 20-28 40-28s32 8 40 28" fill="#e8eef0"/>
+<path d="M70 70c-10-30-4-50 10-58 8 16 10 30 4 50M170 70c10-30 4-50-10-58-8 16-10 30-4 50" fill="#c0c8d0"/>
+<path d="M90 118c10 16 50 16 60 0" fill="none" stroke="#c0c8d0" stroke-width="6"/>
+<path d="M100 40c-6-28 4-50 20-60 16 10 26 32 20 60" fill="#ff6a20"/>
+<path d="M108 20c0-16 8-28 12-32 4 4 12 16 12 32" fill="#ffe080"/></svg></span><span class="name">Tinderhelm</span></a>
+<a class="g" href="tock/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="tk-a-i93" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8dcc8"/><stop offset="1" stop-color="#8a7a60"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#tk-a-i93)"/>
+<circle cx="120" cy="90" r="64" fill="#f4eee0" stroke="#2a2010" stroke-width="8"/><circle cx="120" cy="90" r="6" fill="#2a2010"/>
+<path d="M120 90V40" stroke="#2a2010" stroke-width="6" stroke-linecap="round"/>
+<path d="M120 90l36 20" stroke="#8a2010" stroke-width="4" stroke-linecap="round"/>
+<g fill="#2a2010" font-family="serif" font-size="14" font-weight="700" text-anchor="middle">
+  <text x="120" y="42">12</text><text x="120" y="152">6</text><text x="174" y="96">3</text><text x="66" y="96">9</text>
+</g></svg></span><span class="name">Tock</span></a>
+<a class="g" href="the-idol-wakes/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="iw-a-i94" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a3018"/><stop offset="1" stop-color="#0a1808"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#iw-a-i94)"/>
+<ellipse cx="120" cy="160" rx="70" ry="12" fill="#1a4010"/>
+<path d="M80 160 90 70c0-20 10-36 30-36s30 16 30 36l10 90z" fill="#c8b060"/>
+<rect x="96" y="80" width="48" height="36" rx="4" fill="#8a7030"/>
+<circle cx="108" cy="96" r="8" fill="#1a1008"/><circle cx="132" cy="96" r="8" fill="#ffe080"/><circle cx="132" cy="96" r="3" fill="#1a1008"/>
+<path d="M100 130h40v10H100z" fill="#8a7030"/>
+<path d="M20 20c10 40 6 80 0 120M220 10c-12 40-8 90 0 140" fill="none" stroke="#0e2808" stroke-width="16"/></svg></span><span class="name">The Idol Wakes</span></a>
+<a class="g" href="castle-of-chaos/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="cc-a-i95" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1030"/><stop offset="1" stop-color="#0a0818"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#cc-a-i95)"/>
+<circle cx="180" cy="40" r="22" fill="#e8d8ff"/>
+<path d="M40 150V80h16v-24h16V40h16v16h16V56h16v24h16v20h16V80h20v70z" fill="#1a1028"/>
+<path d="M56 80V56h16V40h16v16h16v24h16V80h16v20h16V80h20v70H40V80h16z" fill="#2a1848" opacity=".0"/>
+<rect x="110" y="120" width="20" height="30" fill="#0a0810"/>
+<path d="M20 150h200" stroke="#4a2080" stroke-width="6"/>
+<path d="M0 160c40-20 80 0 120-16 40-16 80 6 120-10v30H0z" fill="#2a1060" opacity=".7"/>
+<rect x="70" y="90" width="10" height="14" fill="#c084fc" opacity=".7"/><rect x="160" y="90" width="10" height="14" fill="#c084fc" opacity=".7"/></svg></span><span class="name">Castle of Chaos: The Midnight Curse</span></a>
+<a class="g" href="gemini-platformer/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ap-a-i96" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0c1838"/><stop offset="1" stop-color="#1a1048"/></linearGradient><linearGradient id="ap-b-i96" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7af0ff"/><stop offset="1" stop-color="#ff7ad9"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ap-a-i96)"/>
+<polygon points="120,30 180,60 180,120 120,150 60,120 60,60" fill="url(#ap-b-i96)" opacity=".9"/>
+<polygon points="120,30 180,60 120,90 60,60" fill="#e8ffff" opacity=".5"/>
+<polygon points="120,90 180,60 180,120" fill="#7a40c0" opacity=".45"/>
+<polygon points="80,130 110,130 124,150 94,150" fill="#7af0ff"/>
+<polygon points="140,110 168,110 180,126 152,126" fill="#ff7ad9"/></svg></span><span class="name">Aether Prism 3D</span></a>
+<a class="g" href="https://chrisvonderau.github.io/brasswind/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="bw-a-i97" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a80c0"/><stop offset="1" stop-color="#c07020"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#bw-a-i97)"/>
+<ellipse cx="80" cy="90" rx="36" ry="28" fill="none" stroke="#d4a020" stroke-width="10"/>
+<path d="M110 90h70c8 0 16 10 16 20s-6 16-16 16H150" fill="none" stroke="#d4a020" stroke-width="10" stroke-linecap="round"/>
+<circle cx="150" cy="126" r="10" fill="#f4d060"/>
+<path d="M0 70c40-20 70-8 110-18 30-8 50-24 90-16-20 20-50 16-80 28-40 16-70 4-120 20z" fill="#fff" opacity=".75"/></svg></span><span class="name">Brasswind: The Stolen Sky</span></a>
+<a class="g" href="https://chrisvonderau.github.io/horizon-wake-up/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="hw-a-i98" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1040"/><stop offset="1" stop-color="#f0c070"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#hw-a-i98)"/>
+<circle cx="120" cy="86" r="32" fill="#ffe08a"/>
+<path d="M0 100c40-16 80-8 120-16s80-8 120-16v112H0z" fill="#2a1848"/>
+<path d="M0 124c30-10 70 6 110-8 40-14 80 4 130-10v74H0z" fill="#1a1028"/></svg></span><span class="name">Horizon: Wake Up</span></a>
 </div>
 </section><section id="racing" class="cat cat-racing">
 <header class="banner">
-<div class="icon-badge" aria-hidden="true"><span class="emo">🏁</span><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="currentColor" d="m18 10 16 14H24l8 14L14 24h11L18 10z"/></svg></div>
+<div class="lights" aria-hidden="true"></div>
+<div class="banner-inner">
+<div class="icon-badge" aria-hidden="true">🏁</div>
 <div class="copy"><h2>Racing &amp; Driving</h2><p class="tagline">Pedal down. Lights out.</p></div>
 <div class="count" aria-label="4 games">4<small>games</small></div>
+</div>
+<div class="lights bot" aria-hidden="true"></div>
 </header>
 <div class="grid">
-<a class="g" href="redline-and-rust/"><span class="art" aria-hidden="true">R</span><span class="name">Redline and Rust</span></a>
-<a class="g" href="https://chrisvonderau.github.io/midnight-break/"><span class="art" aria-hidden="true">M</span><span class="name">Midnight Break: Neon Gambit</span></a>
-<a class="g" href="https://chrisvonderau.github.io/the-last-ten-seconds/"><span class="art" aria-hidden="true">T</span><span class="name">The Last Ten Seconds</span></a>
-<a class="g" href="https://chrisvonderau.github.io/redline-afterimage/"><span class="art" aria-hidden="true">R</span><span class="name">REDLINE: Afterimage</span></a>
+<a class="g" href="redline-and-rust/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ru-a-i99" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d8a070"/><stop offset="1" stop-color="#5a2010"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ru-a-i99)"/>
+<circle cx="200" cy="36" r="16" fill="#f0c070"/>
+<path d="M20 120c20-20 40-28 70-24l20-16h50l16 16c20 4 40 0 54 14v20H20z" fill="#8a2a18"/>
+<path d="M20 130h200v20H20z" fill="#6a2010"/>
+<circle cx="70" cy="148" r="16" fill="#2a2018" stroke="#c0a070" stroke-width="4"/>
+<circle cx="180" cy="148" r="16" fill="#2a2018" stroke="#c0a070" stroke-width="4"/>
+<path d="M96 96h40v16H96z" fill="#3a1008"/>
+<path d="M150 40h8v50h-8z" fill="#2a2a2a"/>
+<path d="M154 40l20-20M154 40l-16-20" stroke="#e02020" stroke-width="3"/>
+<circle cx="154" cy="40" r="10" fill="#1a1a1a" stroke="#e02020" stroke-width="2"/></svg></span><span class="name">Redline and Rust</span></a>
+<a class="g" href="https://chrisvonderau.github.io/midnight-break/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="mb-a-i100" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a0528"/><stop offset="1" stop-color="#1a0a40"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#mb-a-i100)"/>
+<path d="M0 70h40v80H0zM50 50h24v100H50zM90 30h20v120H90zM130 44h28v106h-28zM180 20h30v130h-30z" fill="#1a1048"/>
+<rect x="96" y="50" width="8" height="8" fill="#ff4cff"/><rect x="188" y="36" width="8" height="8" fill="#00f0ff"/><rect x="58" y="70" width="8" height="8" fill="#ffe060"/>
+<path d="M0 150h240" stroke="#ff4cff" stroke-width="4"/><path d="M0 158h240" stroke="#00f0ff" stroke-width="2"/>
+<path d="M70 134h50l10 8H80z" fill="#00f0ff"/>
+<circle cx="84" cy="146" r="6" fill="#222"/><circle cx="120" cy="146" r="6" fill="#222"/></svg></span><span class="name">Midnight Break: Neon Gambit</span></a>
+<a class="g" href="https://chrisvonderau.github.io/the-last-ten-seconds/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="lt-a-i101" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#200808"/><stop offset="1" stop-color="#100808"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#lt-a-i101)"/>
+<text x="120" y="120" text-anchor="middle" font-size="110" font-weight="800" font-family="Impact, Arial Black, sans-serif" fill="#ff2a2a">10</text>
+<path d="M0 40h20v20H0zM20 20h20v20H20zM40 40h20v20H40zM60 20h20v20H60zM80 40h20v20H80zM100 20h20v20H100zM120 40h20v20h-20zM140 20h20v20h-20zM160 40h20v20h-20zM180 20h20v20h-20zM200 40h20v20h-20zM220 20h20v20h-20z" fill="#f0f0f0"/>
+<path d="M0 140h20v20H0zM20 160h20v20H20zM40 140h20v20H40zM60 160h20v20H60zM80 140h20v20H80zM100 160h20v20H100zM120 140h20v20h-20zM140 160h20v20h-20zM160 140h20v20h-20zM180 160h20v20h-20zM200 140h20v20h-20zM220 160h20v20h-20z" fill="#f0f0f0"/></svg></span><span class="name">The Last Ten Seconds</span></a>
+<a class="g" href="https://chrisvonderau.github.io/redline-afterimage/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ra-a-i102" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#140810"/><stop offset="1" stop-color="#2a0810"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ra-a-i102)"/>
+<path d="M0 90h240" stroke="#3a1020" stroke-width="40"/>
+<path d="M20 90h80" stroke="#ff2040" stroke-width="6" opacity=".3"/>
+<path d="M40 90h80" stroke="#ff2040" stroke-width="6" opacity=".5"/>
+<path d="M70 90h80" stroke="#ff4060" stroke-width="6" opacity=".7"/>
+<path d="M110 70h90c8 0 16 8 18 16l8 4v12H126l-8-10h-8z" fill="#ff2a3a"/>
+<circle cx="140" cy="108" r="8" fill="#1a1a1a" stroke="#ddd" stroke-width="2"/>
+<circle cx="196" cy="108" r="8" fill="#1a1a1a" stroke="#ddd" stroke-width="2"/>
+<path d="M126 80h30v10h-30z" fill="#ff90a0"/></svg></span><span class="name">REDLINE: Afterimage</span></a>
 </div>
 </section><section id="puzzles" class="cat cat-puzzles">
 <header class="banner">
-<div class="icon-badge" aria-hidden="true"><span class="emo">🧩</span><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" d="m24 6 16 9v18L24 42 8 33V15z"/><path fill="none" stroke="currentColor" stroke-width="3" d="M24 6v36M8 15l16 9 16-9"/></svg></div>
+<div class="lights" aria-hidden="true"></div>
+<div class="banner-inner">
+<div class="icon-badge" aria-hidden="true">🧩</div>
 <div class="copy"><h2>Puzzles</h2><p class="tagline">Twists, turns, and a-ha moments.</p></div>
 <div class="count" aria-label="6 games">6<small>games</small></div>
+</div>
+<div class="lights bot" aria-hidden="true"></div>
 </header>
 <div class="grid">
-<a class="g" href="event-horizon/"><span class="art" aria-hidden="true">E</span><span class="name">Event Horizon: Chrono-Drift</span></a>
-<a class="g" href="chroma-resonance/"><span class="art" aria-hidden="true">C</span><span class="name">Chroma Resonance</span></a>
-<a class="g" href="bioluminescent-abyss/"><span class="art" aria-hidden="true">B</span><span class="name">Bioluminescent Abyss</span></a>
-<a class="g" href="prism-hop/"><span class="art" aria-hidden="true">P</span><span class="name">Prism Hop</span></a>
-<a class="g" href="https://chrisvonderau.github.io/tilt-maze/"><span class="art" aria-hidden="true">T</span><span class="name">Tilt Maze</span></a>
-<a class="g" href="https://chrisvonderau.github.io/clockwork-kinetics/"><span class="art" aria-hidden="true">C</span><span class="name">Clockwork Kinetics</span></a>
+<a class="g" href="event-horizon/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="eh-a-i103" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a0618"/><stop offset="1" stop-color="#1a0a20"/></linearGradient><radialGradient id="eh-b-i103" cx="50%" cy="50%" r="70%"><stop offset="0" stop-color="#000000"/><stop offset="1" stop-color="#ffb060"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#eh-a-i103)"/>
+<circle cx="120" cy="90" r="64" fill="url(#eh-b-i103)"/>
+<circle cx="120" cy="90" r="22" fill="#000"/>
+<ellipse cx="120" cy="90" rx="70" ry="18" fill="none" stroke="#ffb060" stroke-width="4" opacity=".8"/>
+<g fill="#ffd080" font-family="serif" font-size="12"><text x="40" y="40">12</text><text x="190" y="60">3</text><text x="30" y="130">9</text><text x="170" y="150">6</text></g></svg></span><span class="name">Event Horizon: Chrono-Drift</span></a>
+<a class="g" href="chroma-resonance/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="cr-a-i104" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#100820"/><stop offset="1" stop-color="#180c30"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#cr-a-i104)"/>
+<circle cx="120" cy="90" r="16" fill="#fff"/>
+<circle cx="120" cy="90" r="32" fill="none" stroke="#ff4ecd" stroke-width="4"/>
+<circle cx="120" cy="90" r="48" fill="none" stroke="#7aa0ff" stroke-width="4"/>
+<circle cx="120" cy="90" r="64" fill="none" stroke="#3ee89a" stroke-width="4"/>
+<circle cx="120" cy="90" r="78" fill="none" stroke="#ffd34d" stroke-width="3" opacity=".7"/></svg></span><span class="name">Chroma Resonance</span></a>
+<a class="g" href="bioluminescent-abyss/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ba-a-i105" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#020818"/><stop offset="1" stop-color="#031820"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ba-a-i105)"/>
+<ellipse cx="120" cy="80" rx="28" ry="36" fill="#0a4a50"/><ellipse cx="120" cy="80" rx="18" ry="26" fill="#1a8078"/>
+<path d="M120 116c0 20 8 36 0 44" stroke="#3ee0d0" stroke-width="3" fill="none"/>
+<path d="M100 50c-16-10-20-4-16 10M140 50c16-10 20-4 16 10" fill="#1a8078"/>
+<circle cx="110" cy="76" r="4" fill="#7afff0"/><circle cx="130" cy="76" r="4" fill="#7afff0"/>
+<circle cx="40" cy="130" r="8" fill="#3ee0d0" opacity=".7"/><circle cx="50" cy="40" r="5" fill="#7affb0" opacity=".6"/>
+<circle cx="200" cy="60" r="10" fill="#40c8ff" opacity=".55"/><circle cx="180" cy="140" r="6" fill="#7afff0" opacity=".7"/></svg></span><span class="name">Bioluminescent Abyss</span></a>
+<a class="g" href="prism-hop/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="pr-a-i106" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1048"/><stop offset="1" stop-color="#0a1830"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#pr-a-i106)"/>
+<polygon points="50,130 80,130 65,104" fill="#ff5a7a"/>
+<polygon points="90,110 128,110 109,80" fill="#ffd34d"/>
+<polygon points="140,124 178,124 159,92" fill="#3ee89a"/>
+<polygon points="108,70 142,70 125,44" fill="#7aa0ff"/>
+<polygon points="160,70 196,70 178,42" fill="#c084fc"/>
+<circle cx="125" cy="36" r="7" fill="#fff"/>
+<path d="M65 104 109 80 125 44" fill="none" stroke="#fff" stroke-width="1.5" opacity=".4" stroke-dasharray="3 3"/></svg></span><span class="name">Prism Hop</span></a>
+<a class="g" href="https://chrisvonderau.github.io/tilt-maze/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="tm-a-i107" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a2030"/><stop offset="1" stop-color="#101820"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#tm-a-i107)"/>
+<g transform="rotate(-12 120 90)">
+  <rect x="40" y="30" width="160" height="120" rx="6" fill="#152030" stroke="#7af0ff" stroke-width="3"/>
+  <path d="M60 30v80h40V70h40v60h40" fill="none" stroke="#7af0ff" stroke-width="8" stroke-linecap="square"/>
+  <circle cx="70" cy="50" r="8" fill="#ff6a3c"/><rect x="176" y="126" width="16" height="16" fill="#3ee89a"/>
+</g></svg></span><span class="name">Tilt Maze</span></a>
+<a class="g" href="https://chrisvonderau.github.io/clockwork-kinetics/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ck-a-i108" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#201808"/><stop offset="1" stop-color="#3a2a10"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ck-a-i108)"/>
+<circle cx="90" cy="90" r="50" fill="#c89428" stroke="#f4d070" stroke-width="5"/><circle cx="90" cy="90" r="12" fill="#3a2408"/>
+<g fill="#f4d070"><rect x="84" y="40" width="12" height="20"/><rect x="84" y="120" width="12" height="20"/><rect x="40" y="84" width="20" height="12"/><rect x="120" y="84" width="20" height="12"/></g>
+<circle cx="168" cy="64" r="34" fill="#d8a040" stroke="#f4d070" stroke-width="4"/><circle cx="168" cy="64" r="8" fill="#3a2408"/>
+<g fill="#f4d070"><rect x="162" y="32" width="12" height="14"/><rect x="162" y="82" width="12" height="14"/><rect x="136" y="58" width="14" height="12"/><rect x="186" y="58" width="14" height="12"/></g>
+<circle cx="160" cy="130" r="24" fill="#b88020" stroke="#f4d070" stroke-width="3"/><circle cx="160" cy="130" r="6" fill="#3a2408"/></svg></span><span class="name">Clockwork Kinetics</span></a>
 </div>
 </section><section id="strategy" class="cat cat-strategy">
 <header class="banner">
-<div class="icon-badge" aria-hidden="true"><span class="emo">♟️</span><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="currentColor" d="M34 40H12v-4h22v4zm-1.5-8H15c-1 0-2.2-1.5-1.6-3.3 1.4-4.2 3.2-7.4 3.2-12.2 0-2.4.4-4.8 3.1-6.4 0-2.2 1.8-4.1 4-4.1 1 0 1.8.3 2.5.9l.3-1.7h3.4l-1.2 6.4c1.6 1.2 3.3 3.3 3.8 6.4.2 1.3-.4 2.2-1.3 2.6l2.8 1.3c.7.3 1.1 1 .9 1.7l-1.4 5.2c-.2.8-1 1.2-1.8 1.2h.1z"/></svg></div>
+<div class="lights" aria-hidden="true"></div>
+<div class="banner-inner">
+<div class="icon-badge" aria-hidden="true">♟️</div>
 <div class="copy"><h2>Strategy, Board &amp; Tycoon</h2><p class="tagline">Outthink, outbuild, outlast.</p></div>
 <div class="count" aria-label="9 games">9<small>games</small></div>
+</div>
+<div class="lights bot" aria-hidden="true"></div>
 </header>
 <div class="grid">
-<a class="g" href="port-city-tycoon/"><span class="art" aria-hidden="true">P</span><span class="name">Port City Tycoon</span></a>
-<a class="g" href="jade-star-checkers/"><span class="art" aria-hidden="true">J</span><span class="name">Jade Star Checkers</span></a>
-<a class="g" href="marble-mayhem/"><span class="art" aria-hidden="true">M</span><span class="name">Marble Mayhem</span></a>
-<a class="g" href="knight-shift/"><span class="art" aria-hidden="true">K</span><span class="name">Knight Shift</span></a>
-<a class="g" href="tide-table/"><span class="art" aria-hidden="true">T</span><span class="name">Tide Table</span></a>
-<a class="g" href="https://chrisvonderau.github.io/bathtub-admirals/"><span class="art" aria-hidden="true">B</span><span class="name">Bathtub Admirals</span></a>
-<a class="g" href="https://chrisvonderau.github.io/lively-chess/"><span class="art" aria-hidden="true">L</span><span class="name">Lively Chess</span></a>
-<a class="g" href="https://chrisvonderau.github.io/capital-tycoon/"><span class="art" aria-hidden="true">C</span><span class="name">Capital Tycoon</span></a>
-<a class="g" href="https://chrisvonderau.github.io/world-domination/"><span class="art" aria-hidden="true">W</span><span class="name">World Domination: Grand Conquest</span></a>
+<a class="g" href="port-city-tycoon/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="pc-a-i109" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0b060"/><stop offset="1" stop-color="#204060"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#pc-a-i109)"/>
+<path d="M0 110h240v70H0z" fill="#1a3a58"/>
+<rect x="20" y="70" width="18" height="50" fill="#c0c8d0"/><rect x="44" y="50" width="24" height="70" fill="#d8c0a0"/>
+<rect x="74" y="60" width="16" height="60" fill="#b0b8c0"/><rect x="150" y="54" width="22" height="66" fill="#d0c0a8"/>
+<rect x="176" y="40" width="28" height="80" fill="#c8d0d8"/>
+<path d="M110 110V40h8v20h20v8h-20v42z" fill="#8a8a90"/>
+<rect x="200" y="86" width="40" height="16" fill="#c05020"/><rect x="200" y="102" width="40" height="16" fill="#2060a0"/>
+<path d="M0 128c40 8 80-8 120 0s80-8 120 0" fill="none" stroke="#e8f0f8" stroke-width="3"/>
+<path d="M40 140h50v8H40z" fill="#d8d0c0"/></svg></span><span class="name">Port City Tycoon</span></a>
+<a class="g" href="jade-star-checkers/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="js-a-i110" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a3028"/><stop offset="1" stop-color="#082018"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#js-a-i110)"/>
+<g>
+  <rect x="44" y="14" width="38" height="38" fill="#0e4a3a"/><rect x="82" y="14" width="38" height="38" fill="#c8e0c8"/>
+  <rect x="120" y="14" width="38" height="38" fill="#0e4a3a"/><rect x="158" y="14" width="38" height="38" fill="#c8e0c8"/>
+  <rect x="44" y="52" width="38" height="38" fill="#c8e0c8"/><rect x="82" y="52" width="38" height="38" fill="#0e4a3a"/>
+  <rect x="120" y="52" width="38" height="38" fill="#c8e0c8"/><rect x="158" y="52" width="38" height="38" fill="#0e4a3a"/>
+  <rect x="44" y="90" width="38" height="38" fill="#0e4a3a"/><rect x="82" y="90" width="38" height="38" fill="#c8e0c8"/>
+  <rect x="120" y="90" width="38" height="38" fill="#0e4a3a"/><rect x="158" y="90" width="38" height="38" fill="#c8e0c8"/>
+  <rect x="44" y="128" width="38" height="38" fill="#c8e0c8"/><rect x="82" y="128" width="38" height="38" fill="#0e4a3a"/>
+  <rect x="120" y="128" width="38" height="38" fill="#c8e0c8"/><rect x="158" y="128" width="38" height="38" fill="#0e4a3a"/>
+</g>
+<circle cx="101" cy="33" r="12" fill="#e8f8e8" stroke="#f4e080" stroke-width="2"/>
+<circle cx="177" cy="71" r="12" fill="#e8f8e8" stroke="#f4e080" stroke-width="2"/>
+<circle cx="63" cy="109" r="12" fill="#145a40" stroke="#f4e080" stroke-width="2"/>
+<circle cx="139" cy="147" r="12" fill="#145a40" stroke="#f4e080" stroke-width="2"/>
+<path d="M101 28l2 6h6l-5 4 2 6-5-4-5 4 2-6-5-4h6z" fill="#f4e080"/></svg></span><span class="name">Jade Star Checkers</span></a>
+<a class="g" href="marble-mayhem/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="mm-a-i111" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#201040"/><stop offset="1" stop-color="#301858"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#mm-a-i111)"/>
+<circle cx="80" cy="90" r="32" fill="#ff5a7a"/><circle cx="68" cy="78" r="10" fill="#fff" opacity=".4"/>
+<circle cx="150" cy="70" r="28" fill="#3ecbff"/><circle cx="140" cy="60" r="8" fill="#fff" opacity=".4"/>
+<circle cx="130" cy="120" r="24" fill="#ffd34d"/><circle cx="122" cy="112" r="7" fill="#fff" opacity=".4"/>
+<circle cx="50" cy="130" r="18" fill="#3ee89a"/><circle cx="44" cy="124" r="5" fill="#fff" opacity=".4"/>
+<circle cx="190" cy="120" r="20" fill="#c084fc"/><circle cx="184" cy="112" r="6" fill="#fff" opacity=".4"/></svg></span><span class="name">Marble Mayhem</span></a>
+<a class="g" href="knight-shift/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="kn-a-i112" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f0e0c0"/><stop offset="1" stop-color="#1a1830"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#kn-a-i112)"/>
+<path d="M88 150h64v10H88zM96 140h48l-4-16c8-8 16-24 12-44-2-10-10-16-20-18 0-12 8-22 8-22s-18 4-24 16c-10-4-22 2-26 16-2 10 4 22 12 30l-6 38z" fill="#1a1830"/>
+<path d="M150 90c16-4 30 6 28 20" fill="none" stroke="#1a1830" stroke-width="6"/></svg></span><span class="name">Knight Shift</span></a>
+<a class="g" href="tide-table/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="td-a-i113" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a3048"/><stop offset="1" stop-color="#0a2030"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#td-a-i113)"/>
+<circle cx="186" cy="34" r="16" fill="#e8f0ff"/>
+<path d="M0 80c30 16 50-16 80 0s50-16 80 0 50-16 80 0v40c-30-16-50 16-80 0s-50 16-80 0-50 16-80 0z" fill="#2a80a0" opacity=".7"/>
+<path d="M0 110c30 16 50-16 80 0s50-16 80 0 50-16 80 0v70H0z" fill="#1a6080"/>
+<g stroke="#d0e8f0" stroke-width="2" fill="none" opacity=".6"><path d="M40 40h160v100H40z"/><path d="M40 70h160M40 100h160M80 40v100M120 40v100M160 40v100"/></g></svg></span><span class="name">Tide Table</span></a>
+<a class="g" href="https://chrisvonderau.github.io/bathtub-admirals/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="bt-a-i114" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d8f0f8"/><stop offset="1" stop-color="#6ab0c8"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#bt-a-i114)"/>
+<ellipse cx="120" cy="120" rx="90" ry="36" fill="#f0f4f8" stroke="#c0c8d0" stroke-width="6"/>
+<ellipse cx="120" cy="116" rx="70" ry="22" fill="#4aa0c8"/>
+<path d="M70 116h40l-6-16H80z" fill="#c04030"/><rect x="86" y="90" width="4" height="16" fill="#eee"/><path d="M86 90h16" stroke="#c04030" stroke-width="3"/>
+<path d="M130 118h36l-6-14h-24z" fill="#2060a0"/><rect x="144" y="94" width="4" height="14" fill="#eee"/><path d="M144 94h14" stroke="#2060a0" stroke-width="3"/>
+<circle cx="200" cy="50" r="16" fill="#ffe080"/><circle cx="50" cy="50" r="10" fill="#fff" opacity=".8"/></svg></span><span class="name">Bathtub Admirals</span></a>
+<a class="g" href="https://chrisvonderau.github.io/lively-chess/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="lc-a-i115" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4e8d0"/><stop offset="1" stop-color="#8a6a40"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#lc-a-i115)"/>
+<g>
+  <rect x="40" y="20" width="40" height="40" fill="#f4eee0"/><rect x="80" y="20" width="40" height="40" fill="#2a2010"/>
+  <rect x="120" y="20" width="40" height="40" fill="#f4eee0"/><rect x="160" y="20" width="40" height="40" fill="#2a2010"/>
+  <rect x="40" y="60" width="40" height="40" fill="#2a2010"/><rect x="80" y="60" width="40" height="40" fill="#f4eee0"/>
+  <rect x="120" y="60" width="40" height="40" fill="#2a2010"/><rect x="160" y="60" width="40" height="40" fill="#f4eee0"/>
+  <rect x="40" y="100" width="40" height="40" fill="#f4eee0"/><rect x="80" y="100" width="40" height="40" fill="#2a2010"/>
+  <rect x="120" y="100" width="40" height="40" fill="#f4eee0"/><rect x="160" y="100" width="40" height="40" fill="#2a2010"/>
+  <rect x="40" y="140" width="40" height="40" fill="#2a2010"/><rect x="80" y="140" width="40" height="40" fill="#f4eee0"/>
+  <rect x="120" y="140" width="40" height="40" fill="#2a2010"/><rect x="160" y="140" width="40" height="40" fill="#f4eee0"/>
+</g>
+<path d="M60 70c0-16 12-24 20-24 4 0 8 4 10 8 6-10 16-8 18 0 8 4 12 16 4 28H58c-2-6 0-10 2-12z" fill="#1a1a1a"/>
+<path d="M140 130c8-20 4-36 20-48 6 14 4 28-4 40 16-4 28 8 24 24h-48c0-6 2-12 8-16z" fill="#f4eee0" stroke="#2a2010" stroke-width="2"/></svg></span><span class="name">Lively Chess</span></a>
+<a class="g" href="https://chrisvonderau.github.io/capital-tycoon/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ct-a-i116" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#204068"/><stop offset="1" stop-color="#0a2038"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ct-a-i116)"/>
+<rect x="20" y="80" width="28" height="80" fill="#c0c8d0"/><rect x="54" y="50" width="36" height="110" fill="#d8c070"/>
+<rect x="96" y="70" width="24" height="90" fill="#b0b8c0"/><rect x="126" y="36" width="40" height="124" fill="#e8d080"/>
+<rect x="172" y="60" width="32" height="100" fill="#c8d0d8"/><rect x="208" y="90" width="22" height="70" fill="#a0a8b0"/>
+<circle cx="146" cy="28" r="14" fill="#f4d060"/><path d="M146 18v20M138 28h16" stroke="#8a6010" stroke-width="3"/>
+<rect x="136" y="60" width="8" height="8" fill="#7ac8ff"/><rect x="150" y="60" width="8" height="8" fill="#7ac8ff"/>
+<rect x="136" y="76" width="8" height="8" fill="#7ac8ff"/><rect x="150" y="76" width="8" height="8" fill="#7ac8ff"/></svg></span><span class="name">Capital Tycoon</span></a>
+<a class="g" href="https://chrisvonderau.github.io/world-domination/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="wd-a-i117" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a1a30"/><stop offset="1" stop-color="#081018"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#wd-a-i117)"/>
+<circle cx="120" cy="90" r="62" fill="#1a4a78"/><circle cx="120" cy="90" r="62" fill="none" stroke="#d8a020" stroke-width="4"/>
+<path d="M90 70c10-20 30-24 44-10 8 8 4 20-4 24-16 4-16 16-8 28-16 4-30-8-32-24-8-4-8-12 0-18z" fill="#3a8a50"/>
+<path d="M140 100c16-4 28 8 36 4 4 16-8 28-20 32-12-8-20-20-16-36z" fill="#3a8a50"/>
+<path d="M70 110c8 8 8 20 0 28-12 0-20-12-16-24z" fill="#3a8a50"/>
+<circle cx="108" cy="74" r="5" fill="#e02020"/><circle cx="156" cy="116" r="5" fill="#e02020"/><circle cx="76" cy="120" r="4" fill="#e02020"/>
+<path d="M40 90h160M120 28v124M60 50c40 20 80 20 120 0M60 130c40-20 80-20 120 0" fill="none" stroke="#7ab0d0" stroke-width="1" opacity=".5"/></svg></span><span class="name">World Domination: Grand Conquest</span></a>
 </div>
 </section><section id="party" class="cat cat-party">
 <header class="banner">
-<div class="icon-badge" aria-hidden="true"><span class="emo">🎉</span><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="currentColor" d="m24 4 3.2 12.3L38.8 9.2l-6.4 11.1L44 24l-11.6 3.7 6.4 11.1-11.6-7.1L24 44l-3.2-12.3-11.6 7.1 6.4-11.1L4 24l11.6-3.7-6.4-11.1 11.6 7.1z"/></svg></div>
+<div class="lights" aria-hidden="true"></div>
+<div class="banner-inner">
+<div class="icon-badge" aria-hidden="true">🎉</div>
 <div class="copy"><h2>Word, Trivia &amp; Party</h2><p class="tagline">Bring friends. Bring answers.</p></div>
 <div class="count" aria-label="10 games">10<small>games</small></div>
+</div>
+<div class="lights bot" aria-hidden="true"></div>
 </header>
 <div class="grid">
-<a class="g" href="docket-dojo/"><span class="art" aria-hidden="true">D</span><span class="name">Docket Dojo</span></a>
-<a class="g" href="neon-wheel/"><span class="art" aria-hidden="true">W</span><span class="name">Wheel of Fortune: Neon Edition</span></a>
-<a class="g" href="legal-jeopardy/"><span class="art" aria-hidden="true">L</span><span class="name">Legal Jeopardy</span></a>
-<a class="g" href="truth-factory/"><span class="art" aria-hidden="true">T</span><span class="name">The Truth Factory</span></a>
-<a class="g" href="lexfury/"><span class="art" aria-hidden="true">L</span><span class="name">LEXFURY</span></a>
-<a class="g" href="https://chrisvonderau.github.io/Sketch-showdown/"><span class="art" aria-hidden="true">S</span><span class="name">Sketch Showdown</span></a>
-<a class="g" href="https://chrisvonderau.github.io/hung-jury/"><span class="art" aria-hidden="true">H</span><span class="name">Hung Jury</span></a>
-<a class="g" href="https://chrisvonderau.github.io/wordstorm/"><span class="art" aria-hidden="true">W</span><span class="name">WORDSTORM</span></a>
-<a class="g" href="https://chrisvonderau.github.io/million-dollar-vault/"><span class="art" aria-hidden="true">T</span><span class="name">The Million-Dollar Vault</span></a>
-<a class="g" href="https://chrisvonderau.github.io/whisperchain/"><span class="art" aria-hidden="true">W</span><span class="name">Whisperchain</span></a>
+<a class="g" href="docket-dojo/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="dd-a-i118" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a1010"/><stop offset="1" stop-color="#1a0808"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#dd-a-i118)"/>
+<path d="M20 80 120 30 220 80v16H20z" fill="#2a0a0a"/>
+<path d="M20 80 120 30 220 80" fill="none" stroke="#e0b060" stroke-width="5"/>
+<rect x="50" y="96" width="140" height="60" fill="#f0e0c0"/><rect x="50" y="96" width="140" height="10" fill="#8a2010"/>
+<path d="M150 70v54" stroke="#c0a060" stroke-width="8" stroke-linecap="round"/>
+<path d="M128 124h44c4 0 6 6 2 10H132c-6 0-8-6-4-10z" fill="#3a2a10"/>
+<circle cx="150" cy="66" r="8" fill="#e0b060"/></svg></span><span class="name">Docket Dojo</span></a>
+<a class="g" href="neon-wheel/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ne-a-i119" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#120028"/><stop offset="1" stop-color="#1a0830"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ne-a-i119)"/>
+<g transform="translate(120 90)">
+  <circle r="64" fill="#1a0830" stroke="#ff4cff" stroke-width="4"/>
+  <path d="M0 0 L0-64 A64 64 0 0 1 55.4-32z" fill="#ff4cff"/>
+  <path d="M0 0 L55.4-32 A64 64 0 0 1 55.4 32z" fill="#00f0ff"/>
+  <path d="M0 0 L55.4 32 A64 64 0 0 1 0 64z" fill="#ffd34d"/>
+  <path d="M0 0 L0 64 A64 64 0 0 1 -55.4 32z" fill="#ff4cff"/>
+  <path d="M0 0 L-55.4 32 A64 64 0 0 1 -55.4-32z" fill="#00f0ff"/>
+  <path d="M0 0 L-55.4-32 A64 64 0 0 1 0-64z" fill="#ffd34d"/>
+  <circle r="14" fill="#120028" stroke="#fff" stroke-width="3"/>
+</g>
+<path d="M120 20l8 16h-16z" fill="#fff"/></svg></span><span class="name">Wheel of Fortune: Neon Edition</span></a>
+<a class="g" href="legal-jeopardy/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="lj-a-i120" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a1850"/><stop offset="1" stop-color="#081030"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#lj-a-i120)"/>
+<rect x="30" y="36" width="180" height="80" rx="6" fill="#102070" stroke="#d8a020" stroke-width="3"/>
+<text x="120" y="88" text-anchor="middle" fill="#d8a020" font-family="Impact, Arial Black, sans-serif" font-size="28" font-weight="800">LAW</text>
+<rect x="50" y="130" width="40" height="30" fill="#1a2870"/>
+<rect x="100" y="122" width="40" height="38" fill="#d8a020"/>
+<rect x="150" y="130" width="40" height="30" fill="#1a2870"/>
+<path d="M110 28h20v-12h-8l-2-8-2 8h-8z" fill="#d8a020"/></svg></span><span class="name">Legal Jeopardy</span></a>
+<a class="g" href="truth-factory/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="tf-a-i121" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a8088"/><stop offset="1" stop-color="#2a3840"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#tf-a-i121)"/>
+<rect x="30" y="80" width="120" height="70" fill="#c0c8d0"/>
+<rect x="40" y="90" width="24" height="18" fill="#7ac8ff"/><rect x="70" y="90" width="24" height="18" fill="#7ac8ff"/><rect x="100" y="90" width="24" height="18" fill="#7ac8ff"/>
+<rect x="150" y="50" width="28" height="100" fill="#8a9098"/><rect x="188" y="66" width="22" height="84" fill="#8a9098"/>
+<path d="M156 20c8 8 8 20 0 30 12-4 20 6 16 20" fill="none" stroke="#c0c8d0" stroke-width="8"/>
+<path d="M194 36c8 8 8 20 0 28" fill="none" stroke="#c0c8d0" stroke-width="7"/>
+<circle cx="200" cy="130" r="22" fill="#3ee89a"/>
+<path d="M190 130l8 8 16-16" fill="none" stroke="#0a3018" stroke-width="5" stroke-linecap="round"/></svg></span><span class="name">The Truth Factory</span></a>
+<a class="g" href="lexfury/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="lx-a-i122" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a0820"/><stop offset="1" stop-color="#100810"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#lx-a-i122)"/>
+<g font-family="Impact, Arial Black, sans-serif" font-weight="800" text-anchor="middle">
+  <text x="70" y="70" font-size="56" fill="#ff2a6a" transform="rotate(-18 70 70)">L</text>
+  <text x="120" y="50" font-size="64" fill="#ffe060">E</text>
+  <text x="170" y="80" font-size="58" fill="#ff4cff" transform="rotate(16 170 80)">X</text>
+  <text x="80" y="140" font-size="52" fill="#00f0ff" transform="rotate(10 80 140)">F</text>
+  <text x="150" y="150" font-size="60" fill="#ff6a20" transform="rotate(-12 150 150)">!</text>
+</g></svg></span><span class="name">LEXFURY</span></a>
+<a class="g" href="https://chrisvonderau.github.io/Sketch-showdown/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="sk-a-i123" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f0e8"/><stop offset="1" stop-color="#d0c8b8"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#sk-a-i123)"/>
+<path d="M40 130 90 40 110 48 60 138z" fill="#2a2a2a"/><path d="M90 40l8-8 20 8-8 8z" fill="#e05040"/>
+<path d="M200 130 150 40 130 48 180 138z" fill="#2a2a2a"/><path d="M150 40l-8-8-20 8 8 8z" fill="#2060c0"/>
+<path d="M70 150c20-20 40-16 50-4 10-20 40-16 50 4" fill="none" stroke="#2a2a2a" stroke-width="2" stroke-dasharray="4 3"/></svg></span><span class="name">Sketch Showdown</span></a>
+<a class="g" href="https://chrisvonderau.github.io/hung-jury/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="hj-a-i124" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2a28"/><stop offset="1" stop-color="#101010"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#hj-a-i124)"/>
+<path d="M60 50h120v8H60z" fill="#c0a060"/><path d="M120 58v70" stroke="#c0a060" stroke-width="6"/>
+<path d="M70 128h100v8H70z" fill="#c0a060"/>
+<circle cx="86" cy="148" r="14" fill="#c0a060"/><circle cx="154" cy="148" r="14" fill="#c0a060"/>
+<path d="M120 58l-40 70M120 58l40 70" stroke="#c0a060" stroke-width="4"/>
+<rect x="20" y="70" width="16" height="40" fill="#e8e0d0"/><rect x="204" y="70" width="16" height="40" fill="#e8e0d0"/>
+<path d="M20 70h16l-8-16zM204 70h16l-8-16z" fill="#8a2010"/></svg></span><span class="name">Hung Jury</span></a>
+<a class="g" href="https://chrisvonderau.github.io/wordstorm/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ws-a-i125" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#102040"/><stop offset="1" stop-color="#1a3058"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#ws-a-i125)"/>
+<path d="M40 40c40 20 40 40 0 60 50-10 80-6 110 10-10-30 10-50 40-50-20 30-10 60 16 80-40 4-80-10-120 0 10-30-10-70-46-100z" fill="#d0d8e8" opacity=".85"/>
+<g fill="#fff" font-family="Impact, Arial Black, sans-serif" font-weight="800" font-size="28">
+  <text x="70" y="80" transform="rotate(-20 70 80)">W</text>
+  <text x="110" y="70">O</text>
+  <text x="150" y="90" transform="rotate(18 150 90)">R</text>
+  <text x="90" y="120" transform="rotate(8 90 120)">D</text>
+  <text x="160" y="130">S</text>
+</g></svg></span><span class="name">WORDSTORM</span></a>
+<a class="g" href="https://chrisvonderau.github.io/million-dollar-vault/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="mv-a-i126" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1a18"/><stop offset="1" stop-color="#0a0a0a"/></linearGradient><radialGradient id="mv-b-i126" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ffe080"/><stop offset="1" stop-color="#8a6010"/></radialGradient></defs>
+<rect width="240" height="180" fill="url(#mv-a-i126)"/>
+<circle cx="120" cy="90" r="66" fill="#3a3a38" stroke="#c0a060" stroke-width="8"/>
+<circle cx="120" cy="90" r="44" fill="#2a2a28" stroke="#e0c070" stroke-width="3"/>
+<circle cx="120" cy="90" r="16" fill="url(#mv-b-i126)"/>
+<path d="M120 90h44" stroke="#e0c070" stroke-width="6"/><circle cx="168" cy="90" r="8" fill="#e0c070"/>
+<path d="M120 50v8M120 122v8M80 90h8M152 50l6 6M88 50l-6 6M88 130l-6-6M152 130l6-6" stroke="#e0c070" stroke-width="3"/>
+<text x="120" y="96" text-anchor="middle" fill="#3a2408" font-size="18" font-weight="800" font-family="Georgia, serif">$</text></svg></span><span class="name">The Million-Dollar Vault</span></a>
+<a class="g" href="https://chrisvonderau.github.io/whisperchain/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="wc-a-i127" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0c1020"/><stop offset="1" stop-color="#141028"/></linearGradient></defs>
+<rect width="240" height="180" fill="url(#wc-a-i127)"/>
+<circle cx="54" cy="90" r="22" fill="#3a4060"/><circle cx="120" cy="90" r="26" fill="#4a5080"/><circle cx="190" cy="90" r="22" fill="#3a4060"/>
+<path d="M76 90h18M146 90h18" stroke="#c0c8e0" stroke-width="6" stroke-linecap="round"/>
+<circle cx="48" cy="84" r="3" fill="#e8e0ff"/><circle cx="60" cy="84" r="3" fill="#e8e0ff"/>
+<circle cx="112" cy="82" r="3.5" fill="#e8e0ff"/><circle cx="128" cy="82" r="3.5" fill="#e8e0ff"/>
+<circle cx="184" cy="84" r="3" fill="#e8e0ff"/><circle cx="196" cy="84" r="3" fill="#e8e0ff"/>
+<path d="M46 100c6 6 12 6 16 0" fill="none" stroke="#c0c8e0" stroke-width="2"/>
+<path d="M110 102c8 7 16 7 20 0" fill="none" stroke="#c0c8e0" stroke-width="2"/>
+<path d="M182 100c6 6 12 6 16 0" fill="none" stroke="#c0c8e0" stroke-width="2"/>
+<path d="M36 70c-16-10-20-4-10 8M204 70c16-10 20-4 10 8" fill="none" stroke="#8a90b0" stroke-width="2"/></svg></span><span class="name">Whisperchain</span></a>
 </div>
 </section>
 </main>
@@ -339,8 +1237,7 @@ section{margin:0 0 48px;scroll-margin-top:76px}
   var games = Array.prototype.slice.call(document.querySelectorAll("a.g"));
   function pickRandom(){
     if(!games.length) return;
-    var g = games[Math.floor(Math.random()*games.length)];
-    location.href = g.href;
+    location.href = games[Math.floor(Math.random()*games.length)].href;
   }
   Array.prototype.forEach.call(document.querySelectorAll("[data-random]"), function(btn){
     btn.addEventListener("click", pickRandom);
@@ -359,34 +1256,24 @@ section{margin:0 0 48px;scroll-margin-top:76px}
   var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var canvas = document.getElementById("sky");
   if(!reduce && canvas && canvas.getContext){
-    var ctx = canvas.getContext("2d");
-    var stars = [];
+    var ctx = canvas.getContext("2d"), stars = [];
     function resize(){
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      stars = [];
-      var n = Math.min(120, Math.floor(canvas.width * canvas.height / 14000));
-      for(var i=0;i<n;i++){
-        stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.4+.2,s:Math.random()*0.8+.2,p:Math.random()*Math.PI*2});
-      }
+      canvas.width = window.innerWidth; canvas.height = window.innerHeight; stars = [];
+      var n = Math.min(140, Math.floor(canvas.width * canvas.height / 12000));
+      for(var i=0;i<n;i++) stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.5+.2,s:Math.random()*0.9+.2,p:Math.random()*Math.PI*2});
     }
-    resize();
-    window.addEventListener("resize", resize);
+    resize(); window.addEventListener("resize", resize);
     var t0 = performance.now();
-    function tick(now){
+    (function tick(now){
       var t = (now - t0)/1000;
       ctx.clearRect(0,0,canvas.width,canvas.height);
       for(var i=0;i<stars.length;i++){
-        var s = stars[i];
-        var a = 0.35 + 0.65 * Math.abs(Math.sin(t * s.s + s.p));
+        var s = stars[i], a = 0.3 + 0.7 * Math.abs(Math.sin(t * s.s + s.p));
         ctx.fillStyle = "rgba(255,255,255,"+a+")";
-        ctx.beginPath();
-        ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();
       }
       requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
+    })(t0);
   }
 })();
 
