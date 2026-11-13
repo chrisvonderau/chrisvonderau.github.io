@@ -5189,7 +5189,13 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     if (charge && charge.src === 'padA' && charge.pad && charge.pad.index === p.index && !down(p, 0)) { releaseCharge('padA'); return; }
     // B (outside spin mode) cancels a stroke
     if (!I.spinMode && pressed(p, s, 1) && (strokeOwner === 'pad' || strokeOwner === 'charge')) { cancelStroke(); setStroke(0); padStroke.lock = true; call(BPH.Audio, 'uiBack'); }
-    padStrokeUpdate(p, ry, dt, t);
+    // RIGHT STICK = cue tip, anywhere on the cue ball (up = follow, down = draw, sides = English, any diagonal).
+    // Slow and curved so a light push creeps the tip; it stays where you leave it. R3 recenters.
+    var rx = ax(p, 2), rmag = Math.hypot(rx, ry);
+    if (rmag > 0.15) {
+      var rn = clamp((rmag - 0.15) / 0.85, 0, 1), rr = (0.05 + 0.75 * rn * rn) * dt;
+      setSpin((a.spinX || 0) + rx / rmag * rr, (a.spinY || 0) - ry / rmag * rr);
+    }
   }
 
   // Right stick stroke: pull down = draw the cue back; fast push up through center = shoot.
@@ -5513,7 +5519,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
       var parts = [];
       if (Math.abs(sy) >= 0.05) parts.push((sy > 0 ? 'FOLLOW ' : 'DRAW ') + Math.round(Math.abs(sy) * 100));
       if (Math.abs(sx) >= 0.05) parts.push((sx > 0 ? 'RIGHT ' : 'LEFT ') + Math.round(Math.abs(sx) * 100));
-      setText(W.spinLbl, 'spinl', (I.spinMode || I.tipHeld) ? 'TIP • STICK' : parts.length ? parts.join(' · ') : (I.lastDevice === 'pad' ? 'HOLD LT: MOVE TIP' : 'CENTER BALL'));
+      setText(W.spinLbl, 'spinl', (I.spinMode || I.tipHeld) ? 'TIP • STICK' : parts.length ? parts.join(' · ') : (I.lastDevice === 'pad' ? 'RIGHT STICK: TIP' : 'CENTER BALL'));
       var pm = (I.spinMode || I.tipHeld) && I.lastDevice === 'pad';
       if (last.spinPad !== pm) { last.spinPad = pm; W.spin.classList.toggle('pad', pm); }
     }
@@ -6515,8 +6521,8 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     ],
     pad: [
       ['Aim', 'Left stick (push farther to swing faster). <span class="kb">LB</span>/<span class="kb">RB</span> or D-pad \u25C0 \u25B6 for fine nudges.'],
-      ['Shoot', 'Squeeze <span class="kb">RT</span>: how far you squeeze is how hard you hit; let go to shoot. Or pull the right stick down to draw the cue back and push it up to stroke. Or hold <span class="kb">A</span> and let go. <span class="kb">B</span> cancels.'],
-      ['Cue tip', 'Hold <span class="kb">LT</span> and push the left stick (or tap the D-pad) to put the tip anywhere on the cue ball: top = follow, bottom = draw, left or right = English, or any corner. Let go of LT and it stays. <span class="kb">R3</span> recenters. (<span class="kb">Y</span> also toggles tip mode.)'],
+      ['Shoot', 'Squeeze <span class="kb">RT</span>: how far you squeeze is how hard you hit; let go to shoot. Or hold <span class="kb">A</span> and let go. <span class="kb">B</span> cancels.'],
+      ['Cue tip', 'Push the <span class="kb">right stick</span> to put the tip anywhere on the cue ball: up = follow, down = draw, left or right = English, or any corner. It stays where you leave it. <span class="kb">R3</span> recenters. (Holding <span class="kb">LT</span> with the left stick or D-pad works too.)'],
       ['Ball in hand', 'Left stick moves the cue ball, <span class="kb">A</span> places it.'],
       ['Call the 8', '<span class="kb">X</span> cycles the called pocket.'],
       ['View', '<span class="kb">View</span> button toggles 3D/Top.'],
