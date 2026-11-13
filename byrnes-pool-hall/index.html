@@ -3016,6 +3016,43 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     // foot spot sticker
     var spot = new THREE.Mesh(new THREE.CircleGeometry(0.009, 20), std({ color: 0xf2efe6, roughness: 0.6 }));
     spot.rotation.x = -PI / 2; at(spot, T.footX, 0, 0.0004); spot.receiveShadow = true; scene.add(spot);
+    // head spot (break spot): neon pink "BYRNES POOL HALL" decal on the head string, readable from the break end
+    (function () {
+      var S = 512, cv = mkCanvas(S, S), g = cv.getContext('2d'), c = S / 2;
+      var pink = '#ff3fb4', hot = '#ffd2ef';
+      function arcText(txt, rad, top, maxArc, maxPx) {
+        g.textAlign = 'center'; g.textBaseline = 'middle';
+        var px = maxPx || 46, widths, total, i;
+        for (var fit = 0; fit < 4; fit++) {           // shrink until the words fit in ~150 degrees of arc
+          g.font = 'bold ' + px + 'px "Arial Black", "Arial Rounded MT Bold", Arial, sans-serif';
+          widths = []; total = 0;
+          for (i = 0; i < txt.length; i++) { var w = g.measureText(txt[i]).width + 3; widths.push(w); total += w; }
+          if (total / rad <= maxArc) break;
+          px = Math.floor(px * maxArc * rad / total);
+        }
+        var span = total / rad, a = top ? -PI / 2 - span / 2 : PI / 2 + span / 2;
+        for (i = 0; i < txt.length; i++) {
+          var step = widths[i] / rad, mid = top ? a + step / 2 : a - step / 2;
+          g.save(); g.translate(c + Math.cos(mid) * rad, c + Math.sin(mid) * rad); g.rotate(top ? mid + PI / 2 : mid - PI / 2);
+          g.fillText(txt[i], 0, 0); g.restore();
+          a = top ? a + step : a - step;
+        }
+        return px;
+      }
+      var namePx = 0;
+      function paint(blur, col, alpha) {
+        g.globalAlpha = alpha; g.shadowColor = pink; g.shadowBlur = blur; g.fillStyle = col; g.strokeStyle = col;
+        namePx = arcText('BYRNES POOL HALL', 168, true, 2.95);
+        arcText('★ BREAK HERE ★', 168, false, 2.4, Math.round(namePx * 0.8));
+        g.lineWidth = 5; g.beginPath(); g.arc(c, c, 128, 0, 2 * PI); g.stroke();
+        g.beginPath(); g.arc(c, c, 34, 0, 2 * PI); g.fill();
+      }
+      paint(28, pink, 0.9); paint(12, pink, 1); paint(0, hot, 0.85);
+      g.globalAlpha = 1; g.shadowBlur = 0; g.fillStyle = '#fff4fb'; g.beginPath(); g.arc(c, c, 14, 0, 2 * PI); g.fill();
+      var mat = basic({ map: texOf(cv), transparent: true, depthWrite: false, toneMapped: false, polygonOffset: true, polygonOffsetFactor: -2 });
+      var d = new THREE.Mesh(new THREE.PlaneGeometry(0.13, 0.13), mat);
+      d.rotation.set(-PI / 2, 0, -PI / 2); at(d, T.headX, 0, 0.0005); d.renderOrder = 2; scene.add(d);
+    })();
 
     // rails: frame rectangle minus the cushion-back rectangle unioned with liner circles
     var railCircles = T.pockets.map(function (p) { return { x: p.x, y: p.y, r: p.r + 0.006 }; });
@@ -7206,6 +7243,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     var c = cue(); c.onTable = true; c.pocketed = false; c.pocketId = -1; c.sink = 0;
     c.vx = c.vy = 0; c.w = { x: 0, y: 0, z: 0 }; c.x = x; c.y = y;
   }
+  var BREAK_SPOT_X = T.headX - 0.002;   // the pink head spot: cue ball sits on it for the break
   function findPlace(x, y, kitchen) {
     if (P.placeValid(G.balls, x, y, kitchen)) return { x: x, y: y };
     for (var r = 0.02; r < 1.2; r += 0.02) for (var a = 0; a < 6.283; a += 0.3) {
@@ -7223,7 +7261,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     G.callPocket = { needed: false, pocket: -1, manual: false };
     var c = cue();
     if (ballInHand) {
-      var spot = c.onTable ? { x: c.x, y: c.y } : findPlace(kitchen ? T.headX - 0.12 : T.headX, 0, kitchen);
+      var spot = c.onTable ? { x: c.x, y: c.y } : findPlace(kitchen ? (shotIsBreak() ? BREAK_SPOT_X : T.headX - 0.12) : T.headX, 0, kitchen);
       if (!c.onTable) resetCue(spot.x, spot.y);
       // remove cue from table collision while placing
       G.place = { active: true, kitchen: !!kitchen, x: c.x, y: c.y, valid: true };
@@ -7555,7 +7593,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     call(UI(), 'hideAll');
     var srs = G.ledger && G.ledger.series, gno = srs && !srs.done && !G.king && G.cfg.mode !== 'practice' && G.cfg.mode !== 'trick' ? srs.games.length + 1 : 0;
     toast((gno ? 'Game ' + gno + ' of ' + SERIES_LEN + '. ' : '') + G.players[breaker].name + ' breaks.', 'info');
-    resetCue(T.headX - 0.06, 0);
+    resetCue(BREAK_SPOT_X, 0);
     beginTurn(true, true);
   }
   Main.rematch = function () { if (!G.cfg) return Main.toMenu(); if (G.cfg.mode === 'trick') return Main.retryTrick(); Main.startGame(G.cfg); };
