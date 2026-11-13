@@ -5941,10 +5941,12 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     liveU.push(u); if (liveU.length > 12) liveU.shift();   // keep references (Chrome drops events on collected utterances)
     return u;
   }
+  var DEAN_VOICE_OFF = true;
   function speak(text, dur, parts) {
     clearTimeout(speakTimer);
     setTalking(1);
     speakTimer = setTimeout(function () { setTalking(0); }, dur || 3500);
+    if (DEAN_VOICE_OFF) return;   // Christopher's call: no synthesized voice, Dean talks in speech bubbles only
     if (!SS || !S.deanVoice || !window.SpeechSynthesisUtterance) return;
     if (!speechUnlocked && !unlockHinted) { unlockHinted = true; try { toast('Tap the screen once to hear Dean talk', 'info'); } catch (e) { } }
     parts = parts || [{ t: text }];
@@ -6184,13 +6186,13 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     "#bph-ui .toast.money{color:#ffe08a;border-color:#f2d78a;font-size:clamp(26px,6vmin,46px);background:linear-gradient(180deg,rgba(40,30,8,.88),rgba(18,12,4,.9));text-shadow:0 0 16px rgba(255,200,60,.65)}",
     "#bph-ui .toast.trash{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;letter-spacing:0;font-size:clamp(14px,2.6vmin,18px);font-style:italic}",
     // Dean bubble
-    "#bph-ui .bubble{position:absolute;top:calc(var(--sat) + clamp(60px,10.5vmin,74px));display:flex;gap:8px;align-items:flex-start;max-width:min(420px,74vw);opacity:0;transform:translateY(-6px) scale(.95);transform-origin:top right;transition:opacity .3s,transform .35s cubic-bezier(.2,.9,.3,1.3);pointer-events:none}",
+    "#bph-ui .bubble{position:absolute;top:calc(var(--sat) + clamp(60px,10.5vmin,74px));display:flex;gap:8px;align-items:flex-start;max-width:min(560px,80vw);opacity:0;transform:translateY(-6px) scale(.95);transform-origin:top right;transition:opacity .3s,transform .35s cubic-bezier(.2,.9,.3,1.3);pointer-events:none}",
     "#bph-ui .bubble.right{right:calc(var(--sar) + 62px);flex-direction:row-reverse}",
     "#bph-ui .bubble.left{left:calc(var(--sal) + 8px);transform-origin:top left}",
     "#bph-ui .bubble.on{opacity:1;transform:none}",
     "#bph-ui .bubble .pic{flex:0 0 auto;width:clamp(44px,8.5vmin,64px);height:clamp(44px,8.5vmin,64px);border-radius:50%;overflow:hidden;border:2px solid var(--brass);box-shadow:0 4px 12px rgba(0,0,0,.6)}",
     "#bph-ui .bubble.on .pic svg{animation:bphTalk .24s ease-in-out infinite alternate}",
-    "#bph-ui .bubble .txt{position:relative;background:#fbf7ee;color:#1d1410;border-radius:14px;padding:8px 12px 9px;font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;letter-spacing:0;font-size:clamp(13px,2.5vmin,17px);line-height:1.3;box-shadow:0 6px 18px rgba(0,0,0,.55);border:2px solid #1d1410}",
+    "#bph-ui .bubble .txt{position:relative;background:#fbf7ee;color:#1d1410;border-radius:16px;padding:10px 15px 11px;font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;letter-spacing:0;font-size:clamp(17px,3.5vmin,25px);line-height:1.28;box-shadow:0 6px 18px rgba(0,0,0,.55);border:2px solid #1d1410}",
     "#bph-ui .bubble .txt b{display:block;font-family:'Bebas Neue','Oswald','Impact',sans-serif;font-weight:400;letter-spacing:.1em;color:#1d5fa6;font-size:.95em;margin-bottom:1px}",
     "#bph-ui .bubble.right .txt::after{content:'';position:absolute;right:-9px;top:14px;border:8px solid transparent;border-left-color:#1d1410;border-right:0}",
     "#bph-ui .bubble.left .txt::after{content:'';position:absolute;left:-9px;top:14px;border:8px solid transparent;border-right-color:#1d1410;border-left:0}",
@@ -6841,7 +6843,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     add(el.bubTxt, h('b', null, DEAN_NAME), doc.createTextNode(text));
     el.bubble.classList.remove('on'); void el.bubble.offsetWidth; el.bubble.classList.add('on');
     clearTimeout(bubTimer);
-    var dur = Math.max(3500, Math.min(6000, 1200 + text.length * 55));
+    var dur = Math.max(4000, Math.min(7500, 1500 + text.length * 65));
     bubTimer = setTimeout(function () { el.bubble.classList.remove('on'); }, dur);
     var d = deanState(); if (d && mood) d.mood = mood;
     speak(text, dur, gz.parts);
