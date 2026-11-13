@@ -5010,7 +5010,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
   var padState = {}; // by gamepad.index: {prev:[], rep:{}, rtHist:[]}
   var padStroke = { armed: false, peak: 0, deepT: 0, deepY: 0, centerT: 0, lastY: 0, lock: false, pad: null };
   var menuRep = { dir: null, next: 0 };
-  var aimVel = 0;
+  var aimVel = 0, aimHold = 0, dotX = 0, dotY = 0;
 
   function getPads() {
     var raw = [];
@@ -5137,25 +5137,29 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     I.tipHeld = btn(p, 6) > 0.3;
     var tipMode = I.spinMode || I.tipHeld;
     if (tipMode) {
-      if (pressed(p, s, 12)) spinKey(0, 0.1);
-      if (pressed(p, s, 13)) spinKey(0, -0.1);
-      if (pressed(p, s, 14)) spinKey(-0.1, 0);
-      if (pressed(p, s, 15)) spinKey(0.1, 0);
+      if (pressed(p, s, 12)) spinKey(0, 0.05);
+      if (pressed(p, s, 13)) spinKey(0, -0.05);
+      if (pressed(p, s, 14)) spinKey(-0.05, 0);
+      if (pressed(p, s, 15)) spinKey(0.05, 0);
     }
     if (tipMode) {
+      // slow, curved tip travel: a light push creeps the tip, a full push crosses the ball in ~1.5 s
       var mag = Math.hypot(lx, ly);
       if (mag > 0.15) {
-        var k = (mag - 0.15) / (0.85 * mag);
-        var sp = 1.8 * dt;
-        setSpin((a.spinX || 0) + lx * k * sp, (a.spinY || 0) - ly * k * sp);
+        var nn = clamp((mag - 0.15) / 0.85, 0, 1), rate = (0.04 + 0.66 * nn * nn) * dt;
+        setSpin((a.spinX || 0) + lx / mag * rate, (a.spinY || 0) - ly / mag * rate);
       }
       aimVel = 0;
     } else {
       // left stick X = aim: deadzone + response curve, smoothed velocity
       // ~0.4 deg/s just past the deadzone (surgical), ~2 deg/s at 30%, ~140 deg/s full tilt
-      var c = curve(lx, 0.14, 1), n = Math.abs(c);
-      var target = n ? (c < 0 ? -1 : 1) * (0.007 + 2.44 * Math.pow(n, 2.6)) * sens() : 0; // rad/s
-      aimVel += (target - aimVel) * clamp(dt * (target ? 16 : 30), 0, 1);
+      // real-pool feel: a light push turns the cue a fraction of a degree per second, a full push starts at
+      // ~18 deg/s and only builds to ~50 deg/s if you keep holding it
+      var c = curve(lx, 0.15, 1), n = Math.abs(c);
+      if (n) aimHold += dt; else aimHold = 0;
+      var ramp = 0.35 + 0.65 * clamp((aimHold - 0.5) / 1.5, 0, 1);
+      var target = n ? (c < 0 ? -1 : 1) * (0.004 + 0.9 * n * n * n) * ramp * sens() : 0; // rad/s
+      aimVel += (target - aimVel) * clamp(dt * (target ? 8 : 30), 0, 1);
       if (!target && Math.abs(aimVel) < 0.003) aimVel = 0;
       if (Math.abs(aimVel) > 1e-5) nudgeAim(aimVel * dt);
     }
@@ -5169,7 +5173,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     if (rt > 0.06 && !charge && (!strokeOwner || strokeOwner === 'charge')) startCharge('rt', p);
     if (charge && charge.src === 'rt' && charge.pad && charge.pad.index === p.index) {
       s.rtHist.push([t, rt]); while (s.rtHist.length && t - s.rtHist[0][0] > 0.25) s.rtHist.shift();
-      if (rt > 0.06) { charge.s = clamp((rt - 0.06) / 0.9, 0, 1); setStroke(charge.s); a.power = Math.max(0.02, charge.s); }
+      if (rt > 0.06) { var rtT = clamp((rt - 0.06) / 0.9, 0, 1); charge.s = (charge.s || 0) + (rtT - (charge.s || 0)) * clamp(dt * 14, 0, 1); setStroke(charge.s); a.power = Math.max(0.02, charge.s); }
       else {
         var pk = 0; for (var h = 0; h < s.rtHist.length; h++) pk = Math.max(pk, s.rtHist[h][1]);
         charge.s = clamp((pk - 0.06) / 0.9, 0, 1); s.rtHist.length = 0;
@@ -5499,7 +5503,9 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
       setText(W.fineDeg, 'deg', deg.toFixed(2) + '°');
     }
     if (vis.spin) {
-      var sx = a.spinX || 0, sy = a.spinY || 0;
+      var ez = I.lastDevice === 'pad' ? 0.35 : 1;   // the dot glides for the stick, sits under a finger or mouse
+      dotX += ((a.spinX || 0) - dotX) * ez; dotY += ((a.spinY || 0) - dotY) * ez;
+      var sx = dotX, sy = dotY;
       var k = 38; // % of face (matches 0.38 radius in apply())
       setStyle(W.dot, 'dotl', 'left', (50 + sx * k).toFixed(2) + '%');
       setStyle(W.dot, 'dott', 'top', (50 - sy * k).toFixed(2) + '%');
