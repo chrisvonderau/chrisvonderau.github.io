@@ -6203,7 +6203,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     add(el.banner, el.callP); hud.appendChild(el.banner);
 
     el.replayTag = h('div', 'replayTag', '\u25CF REPLAY'); hud.appendChild(el.replayTag);
-    el.replayBtn = btn('Replay', function () { hideReplayBtn(); M('replay'); }, 'small replayBtn', '\u21BA');
+    el.replayBtn = btn('Great shot \u2014 Replay', function () { hideReplayBtn(); M('replay'); }, 'small replayBtn', '\u21BA');
     el.replayBar = h('i', 'bar'); el.replayBtn.appendChild(el.replayBar);
     hud.appendChild(el.replayBtn);
 
@@ -6348,11 +6348,11 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     setShow(el.replayTag, replaying);
     var can = !!g.canReplay && !replaying && mode !== 'rolling' && mode !== 'over' && mode !== 'paused';
     var t0 = now();
-    if (can && !hudState.prevCanReplay) { hudState.replayUntil = t0 + 6000; }
+    if (can && !hudState.prevCanReplay) { hudState.replayUntil = t0 + 8000; }
     hudState.prevCanReplay = !!g.canReplay;
     var showR = can && t0 < hudState.replayUntil;
     setShow(el.replayBtn, showR);
-    if (showR) el.replayBar.style.transform = 'scaleX(' + Math.max(0, (hudState.replayUntil - t0) / 6000).toFixed(3) + ')';
+    if (showR) el.replayBar.style.transform = 'scaleX(' + Math.max(0, (hudState.replayUntil - t0) / 8000).toFixed(3) + ')';
 
     // jukebox ticker (poll once a second)
     if (t0 >= hudState.tickNext) {
@@ -6694,6 +6694,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
   var shot = null, rec = null, lastRec = null, endTimer = 0;
   var cpu = null; // cpu turn controller
   var pendingAfterReplay = null;
+  var lastGreat = false; // replay is offered only after a great shot
   var replay = null;
   var lastBreaker = -1;
 
@@ -6734,7 +6735,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
 
   // ---------- turn flow ----------
   function beginTurn(ballInHand, kitchen) {
-    G.canReplay = !!lastRec;
+    G.canReplay = !!lastRec && lastGreat; lastGreat = false;
     G.cpuAim = null; G.dean.shooting = false;
     G.aim.stroke = 0; G.aim.spinX = 0; G.aim.spinY = 0;
     G.callPocket = { needed: false, pocket: -1, manual: false };
@@ -6815,7 +6816,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     if (!lastRec || !lastRec.frames.length || G.mode === 'replay') return;
     if (G.mode !== 'aim' && G.mode !== 'place' && G.mode !== 'over' && G.mode !== 'cpu' && !after) return;
     if (cpu && G.mode === 'cpu') return;
-    replay = { saved: saveBalls(), prev: G.mode, i: 0, t: 0, speed: speed || 1, after: after || null, ev: 0 };
+    replay = { saved: saveBalls(), prev: G.mode, i: 0, t: 0, speed: speed || 0.6, after: after || null, ev: 0 };
     G.mode = 'replay'; G.replaying = true; G.canReplay = false;
   };
   Main.skipReplay = function () { if (replay) endReplay(); };
@@ -6907,8 +6908,8 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     }
     var next = (G.state && typeof G.state.turn === 'number') ? G.state.turn : (res.keepTurn ? shooter : 1 - shooter);
     var go = function () { G.activePlayer = next; beginTurn(!!res.ballInHand, !!res.kitchen); };
-    if (great && !G.settings.noAutoReplay) { toast('Instant replay', 'info'); Main.replay(0.55, go); G.mode = 'replay'; }
-    else go();
+    lastGreat = !!great; // no automatic replay: the Replay button (R / L3) is offered after a great shot
+    go();
   }
   function cpuAhead() {
     var cp = G.players.findIndex(function (p) { return p.isCPU; }); if (cp < 0) return false;
@@ -6939,8 +6940,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     if (bonus) {
       G.celebrate = 1; call(A(), 'crowd', 'big'); call(A(), 'sting');
       toast(bonus && res.bonusText ? res.bonusText : '$2! Pay the man.', 'money');
-      Main.replay(0.3, function () { G.celebrate = Math.max(G.celebrate, 0.8); finish(); });
-      G.mode = 'replay';
+      G.mode = 'over-wait'; setTimeout(function () { G.celebrate = Math.max(G.celebrate, 0.8); finish(); }, 2600);
     } else {
       call(A(), 'crowd', 'cheer');
       toast(res.winText || (G.players[w].name + ' wins.'), 'money');
@@ -7102,7 +7102,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     else call(A(), 'crowd', 'groan');
     G.mode = 'over';
     var show = function () { G.mode = 'over'; call(UI(), 'showTrickResult', { success: ok, stars: stars, name: t.name, attempts: G.trick.attempts }); };
-    if (ok) { Main.replay(0.6, show); G.mode = 'replay'; } else setTimeout(show, 700);
+    setTimeout(show, ok ? 1100 : 700);
   }
   Main.retryTrick = function () { var t = TRICKS[trickIdx]; call(UI(), 'hideAll'); setupTrick(t); };
   Main.nextTrick = function () { var n = TRICKS[(trickIdx + 1) % TRICKS.length]; G.trick = null; Main.startTrick(n.id); };
@@ -7168,6 +7168,14 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
   function boot() {
     canvas = document.getElementById('bph-canvas');
     call(BPH.Render, 'init', canvas);
+    if (!BPH.Render || !BPH.Render.ready) {
+      try {
+        var n = document.createElement('div');
+        n.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;max-width:90vw;padding:12px 18px;border-radius:12px;background:rgba(20,10,8,.92);border:1px solid #c9a04a;color:#f3e6c4;font:15px/1.4 system-ui,sans-serif;text-align:center';
+        n.textContent = "This browser has 3D graphics (WebGL) turned off, so the table can't be drawn. Try Chrome or Safari with hardware acceleration on.";
+        document.body.appendChild(n);
+      } catch (e) {}
+    }
     resize();
     window.addEventListener('resize', resize);
     window.addEventListener('orientationchange', function () { setTimeout(resize, 250); });
