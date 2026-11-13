@@ -4369,10 +4369,11 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     cam.dUp.set(0, 1, 0);
     if (kind === 'aim') {
       var a = (mode === 'cpu' && G.cpuAim) ? +G.cpuAim.angle || 0 : (G.aim ? +G.aim.angle || 0 : 0);
-      cam.angle += angDiff(a, cam.angle) * (cam.init ? 1 - Math.exp(-dt * 16) : 1);
-      var ca = Math.cos(cam.angle), sa = Math.sin(cam.angle), back = portrait ? 0.78 : 0.58, up = portrait ? 0.4 : 0.31;
+      cam.angle += angDiff(a, cam.angle) * (cam.init ? 1 - Math.exp(-dt * 11) : 1);
+      // first-person: eye low over the cue, sighting down it through the cue ball to the object ball and pocket
+      var ca = Math.cos(cam.angle), sa = Math.sin(cam.angle), back = portrait ? 0.6 : 0.44, up = portrait ? 0.26 : 0.19;
       setW(cam.dEye, clamp(cx - ca * back, -WX + 0.2, WX - 0.2), clamp(cy - sa * back, -WY + 0.2, WY - 0.2), up);
-      setW(cam.dTgt, cx + ca * 1.15, cy + sa * 1.15, 0.0);
+      setW(cam.dTgt, cx + ca * 1.5, cy + sa * 1.5, 0.0);
       fov = vfovFor(70, 50, 76, aspect);
     } else if (kind === 'action') {
       var s = cam.shotDir, mx = 0, my = 0, n = 0, bs = G.balls || [];
