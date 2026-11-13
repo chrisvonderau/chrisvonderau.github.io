@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#070605">
 <title>Vonderau Games</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
 <style>
 
 :root{
@@ -296,6 +297,137 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 }
 @media (prefers-reduced-motion:reduce){.pad .g:focus{transform:none}}
 /* finder:end */
+/* skin:start */
+:root{--c:#e8c872;--c2:#fff1c2}
+.cat-action,.g.c-action{--c:#ff4f86;--c2:#ffb3cb}
+.cat-shooters,.g.c-shooters{--c:#2fc6ff;--c2:#a9ecff}
+.cat-adventure,.g.c-adventure{--c:#2fe596;--c2:#b4ffd9}
+.cat-racing,.g.c-racing{--c:#ff6a2c;--c2:#ffc2a3}
+.cat-puzzles,.g.c-puzzles{--c:#b77cff;--c2:#e2ccff}
+.cat-strategy,.g.c-strategy{--c:#ffc53a;--c2:#fff0b8}
+.cat-party,.g.c-party{--c:#ff5fd2;--c2:#ffc6f0}
+html,body{font-family:"Outfit","Segoe UI","Helvetica Neue",-apple-system,BlinkMacSystemFont,sans-serif}
+body{background:
+  radial-gradient(ellipse 70% 45% at 15% -5%,rgba(255,79,134,.20),transparent 60%),
+  radial-gradient(ellipse 60% 40% at 85% 0%,rgba(47,198,255,.20),transparent 60%),
+  radial-gradient(ellipse 80% 50% at 50% 110%,rgba(183,124,255,.16),transparent 60%),
+  #05040a}
+.aurora{background:
+  radial-gradient(ellipse 40% 38% at 16% 30%,rgba(255,79,134,.38),transparent 70%),
+  radial-gradient(ellipse 38% 34% at 50% 18%,rgba(232,200,114,.30),transparent 70%),
+  radial-gradient(ellipse 40% 36% at 84% 26%,rgba(47,198,255,.36),transparent 70%),
+  radial-gradient(ellipse 30% 30% at 60% 55%,rgba(183,124,255,.22),transparent 70%)}
+.gridlines{opacity:.22;background-size:56px 56px;
+  background-image:linear-gradient(rgba(47,198,255,.18) 1px,transparent 1px),linear-gradient(90deg,rgba(255,79,134,.16) 1px,transparent 1px);
+  transform:perspective(600px) rotateX(58deg) translateY(30vh) scale(2.2);transform-origin:50% 100%;
+  mask-image:linear-gradient(0deg,#000,transparent 60%);top:auto;height:70vh;bottom:0}
+.ticker{background:rgba(5,4,10,.75);border-color:rgba(255,255,255,.08)}
+.ticker-track span{font-family:"Bungee","Outfit",sans-serif;font-weight:400;letter-spacing:.12em;color:#f3e6c4}
+.ticker-track span:nth-child(7n+1)::before{background:#ff4f86;box-shadow:0 0 10px #ff4f86}
+.ticker-track span:nth-child(7n+2)::before{background:#2fc6ff;box-shadow:0 0 10px #2fc6ff}
+.ticker-track span:nth-child(7n+3)::before{background:#2fe596;box-shadow:0 0 10px #2fe596}
+.ticker-track span:nth-child(7n+4)::before{background:#ff6a2c;box-shadow:0 0 10px #ff6a2c}
+.ticker-track span:nth-child(7n+5)::before{background:#b77cff;box-shadow:0 0 10px #b77cff}
+.ticker-track span:nth-child(7n+6)::before{background:#ffc53a;box-shadow:0 0 10px #ffc53a}
+.ticker-track span:nth-child(7n)::before{background:#ff5fd2;box-shadow:0 0 10px #ff5fd2}
+.hero{padding:64px 20px 22px}
+.kicker{font-family:"Bungee",sans-serif;font-weight:400;letter-spacing:.18em;border-color:rgba(255,255,255,.25);
+  background:linear-gradient(90deg,rgba(255,79,134,.18),rgba(47,198,255,.18))}
+h1{font-family:"Bungee","Outfit",sans-serif;font-weight:400;letter-spacing:-.01em;line-height:.95;
+  font-size:clamp(46px,10.5vw,124px);
+  background:linear-gradient(100deg,#ff4f86 0%,#ffc53a 18%,#fff6dc 30%,#2fe596 44%,#2fc6ff 58%,#b77cff 72%,#ff5fd2 86%,#ff4f86 100%);
+  background-size:240% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 22px rgba(255,79,134,.35)) drop-shadow(0 0 40px rgba(47,198,255,.25)) drop-shadow(0 8px 0 rgba(0,0,0,.55));
+  animation:shimmer 12s linear infinite}
+.lead{font-size:clamp(17px,2.2vw,21px);color:#e9e2f5}
+.lead-n{font-family:"Bungee",sans-serif;font-weight:400;color:#fff;padding:0 .25em;border-radius:8px;
+  background:linear-gradient(90deg,#ff4f86,#b77cff);box-shadow:0 0 18px rgba(255,79,134,.5)}
+.random{font-family:"Outfit",sans-serif;font-weight:900;font-size:16px;padding:15px 28px;color:#14061a;
+  background:linear-gradient(180deg,#fff6dc 0%,#ffc53a 45%,#ff7a3a 100%);
+  box-shadow:inset 0 1px 0 #fff,0 0 0 3px rgba(255,197,58,.25),0 12px 32px rgba(255,122,58,.45)}
+.random:hover,.random:focus-visible{box-shadow:inset 0 1px 0 #fff,0 0 0 5px rgba(255,197,58,.35),0 18px 44px rgba(255,122,58,.6)}
+.reel-card{border:1px solid rgba(255,255,255,.18);border-radius:16px;box-shadow:0 16px 30px rgba(0,0,0,.55),0 0 0 3px rgba(255,255,255,.04)}
+.jump{background:rgba(6,5,12,.82);border-bottom:1px solid rgba(255,255,255,.10)}
+.jump a,.jump button{border-color:rgba(255,255,255,.16);background:rgba(255,255,255,.05);color:#f1ebff}
+.jump a.is-active{background:linear-gradient(90deg,#ff4f86,#b77cff);color:#fff;box-shadow:0 0 16px rgba(255,79,134,.45)}
+.jump .nav-random{background:linear-gradient(180deg,#fff6dc,#ffc53a);color:#14061a}
+.finder-box{background:linear-gradient(180deg,rgba(26,20,40,.85),rgba(10,8,18,.9));border-color:rgba(255,255,255,.14);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 20px 50px rgba(0,0,0,.5)}
+.search input{background:#07060d;border-color:rgba(255,255,255,.2)}
+.chip{border-color:rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:#f1ebff}
+.chip[aria-pressed="true"],.sort button[aria-pressed="true"]{background:linear-gradient(90deg,#ffc53a,#ff7a3a);color:#14061a}
+.sort{border-color:rgba(255,255,255,.14);background:#07060d}
+main{max-width:1240px}
+section{margin-bottom:72px}
+/* category banners: neon marquee in each arcade's color */
+.banner{padding:0;border:0;border-radius:24px;overflow:hidden;
+  background:linear-gradient(120deg,color-mix(in srgb,var(--c) 38%,#0a0812),#0a0812 55%,color-mix(in srgb,var(--c) 22%,#0a0812));
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--c) 70%,transparent),0 0 34px color-mix(in srgb,var(--c) 35%,transparent),0 24px 50px rgba(0,0,0,.55)}
+.banner .lights{display:none}
+.banner-inner{padding:22px 24px;min-height:118px;background:none}
+.banner-inner::before{opacity:1;background:
+  radial-gradient(circle at 8% 50%,color-mix(in srgb,var(--c) 45%,transparent),transparent 30%),
+  repeating-linear-gradient(115deg,rgba(255,255,255,.035) 0 2px,transparent 2px 14px)}
+.icon-badge{width:78px;height:78px;border-radius:22px;font-size:40px;border:0;
+  background:radial-gradient(circle at 30% 25%,var(--c2),var(--c) 55%,color-mix(in srgb,var(--c) 40%,#000) 100%);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.6),inset 0 -6px 12px rgba(0,0,0,.35),0 0 26px color-mix(in srgb,var(--c) 70%,transparent)!important;
+  text-shadow:0 2px 6px rgba(0,0,0,.35)}
+.banner h2{font-family:"Bungee","Outfit",sans-serif;font-weight:400;letter-spacing:.01em;font-size:clamp(22px,3.4vw,38px);
+  color:#fff;text-shadow:0 0 18px color-mix(in srgb,var(--c) 80%,transparent),0 3px 0 rgba(0,0,0,.4)}
+.tagline{color:color-mix(in srgb,var(--c2) 70%,#fff);font-size:16px;font-weight:600}
+.count{width:78px;height:78px;border-radius:22px;background:rgba(0,0,0,.35);border:1px solid color-mix(in srgb,var(--c) 75%,transparent);
+  color:var(--c2);font-family:"Bungee",sans-serif;font-weight:400;font-size:28px}
+.count small{font-family:"Outfit",sans-serif;color:#fff;opacity:.8}
+/* game cards: glossy cartridge with category glow */
+.grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:26px 20px}
+.g,.cat-adventure .g,.cat-puzzles .g,.cat-strategy .g,.g.c-adventure,.g.c-puzzles,.g.c-strategy{
+  padding:8px 8px 10px;border-radius:20px;
+  background:linear-gradient(160deg,color-mix(in srgb,var(--c) 26%,#14101f) 0%,#0c0a14 45%,#08070d 100%);
+  border:1px solid color-mix(in srgb,var(--c) 55%,transparent);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 14px 30px rgba(0,0,0,.55),0 0 0 rgba(0,0,0,0)}
+.g::before{left:18px;right:18px;background:linear-gradient(90deg,transparent,var(--c),#fff,var(--c),transparent);background-size:220% 100%}
+.g:hover,.g:focus-visible{transform:translateY(-12px) rotateX(var(--rx)) rotateY(var(--ry)) scale(1.04);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 26px 50px rgba(0,0,0,.6),0 0 0 2px var(--c),0 0 40px color-mix(in srgb,var(--c) 60%,transparent)}
+.pad .g:focus{box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 26px 50px rgba(0,0,0,.6),0 0 0 3px #fff,0 0 46px color-mix(in srgb,var(--c) 80%,transparent);outline:0}
+.art,.cat-action .art,.cat-shooters .art,.cat-adventure .art,.cat-racing .art,.cat-puzzles .art,.cat-strategy .art,.cat-party .art,
+.g.c-action .art,.g.c-shooters .art,.g.c-adventure .art,.g.c-racing .art,.g.c-puzzles .art,.g.c-strategy .art,.g.c-party .art{
+  border-radius:14px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12),0 8px 18px rgba(0,0,0,.5)}
+.art::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,transparent 45%,rgba(4,3,8,.82) 100%)}
+.art::after{z-index:3}
+.emblem{position:absolute;left:10px;top:10px;z-index:2;width:58px;height:58px;border-radius:18px;display:grid;place-items:center;
+  font-size:34px;line-height:1;
+  background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.55),color-mix(in srgb,var(--c) 85%,#000) 60%,color-mix(in srgb,var(--c) 35%,#000));
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.55),inset 0 -5px 10px rgba(0,0,0,.35),0 6px 14px rgba(0,0,0,.55),0 0 18px color-mix(in srgb,var(--c) 60%,transparent);
+  border:2px solid rgba(255,255,255,.75);transition:transform .35s cubic-bezier(.2,.9,.3,1.4)}
+.g:hover .emblem,.g:focus-visible .emblem,.pad .g:focus .emblem{transform:scale(1.18) rotate(-8deg)}
+.what{position:absolute;left:10px;right:10px;bottom:9px;z-index:2;font-size:12.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+  color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.9);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.what::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;vertical-align:1px;
+  background:var(--c);box-shadow:0 0 8px var(--c)}
+.name{margin-top:8px;padding:10px 10px 6px;min-height:46px;border:0;background:none;box-shadow:none;
+  font-size:15.5px;font-weight:800;color:#fff}
+.name::after,.cat-action .name::after,.cat-shooters .name::after,.cat-racing .name::after,.cat-party .name::after,
+.g.c-action .name::after,.g.c-shooters .name::after,.g.c-racing .name::after,.g.c-party .name::after{
+  content:"▶";display:grid;place-items:center;flex:none;width:28px;height:28px;border-radius:50%;margin-left:auto;font-size:11px;
+  color:#14061a;background:var(--c);box-shadow:0 0 12px color-mix(in srgb,var(--c) 70%,transparent);padding-left:2px}
+.g .tags span{border-color:color-mix(in srgb,var(--c) 40%,transparent);color:color-mix(in srgb,var(--c2) 80%,#fff)}
+.results-head{background:linear-gradient(120deg,rgba(255,79,134,.25),#0a0812 60%);border-color:rgba(255,255,255,.14)}
+@media (max-width:720px){
+  .hero{padding:40px 16px 14px}
+  .grid{gap:16px 12px}
+  .icon-badge,.count{width:58px;height:58px;border-radius:16px}
+  .icon-badge{font-size:30px}.count{font-size:21px}
+  .banner-inner{padding:16px;min-height:92px}
+  .emblem{width:44px;height:44px;border-radius:13px;font-size:25px;left:7px;top:7px}
+  .what{font-size:10.5px;bottom:7px;left:8px;right:8px}
+  .name{font-size:14px;padding:8px 6px 4px}
+  .name::after{width:22px;height:22px;font-size:9px}
+  .g:hover,.g:focus-visible{transform:translateY(-4px)}
+}
+@media (prefers-reduced-motion:reduce){.emblem{transition:none}.g:hover .emblem{transform:none}}
+
+/* skin:end */
 </style>
 </head>
 <body>
@@ -313,7 +445,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <header class="hero">
   <p class="kicker"><i></i> Press start</p>
   <h1>Vonderau Games</h1>
-  <p class="lead">73 games. Tap one to play.</p>
+  <p class="lead"><b class="lead-n">75</b> original games across seven arcades. Tap one to play.</p>
   <button type="button" class="random" data-random><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8" cy="8" r="1.4" fill="currentColor"/><circle cx="16" cy="8" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="8" cy="16" r="1.4" fill="currentColor"/><circle cx="16" cy="16" r="1.4" fill="currentColor"/></svg> Random game</button>
 </header>
 <div class="reel-wrap" aria-hidden="true"><div class="reel"><div class="reel-card"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="gp-a-i1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#07141c"/><stop offset="1" stop-color="#0a2e2a"/></linearGradient><radialGradient id="gp-b-i1" cx="70%" cy="22%" r="45%"><stop offset="0" stop-color="#f4ff8a"/><stop offset="1" stop-color="#3a8010"/></radialGradient></defs>
@@ -733,7 +865,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <rect x="70" y="124" width="16" height="22" rx="2" fill="#1c2c28"/><path d="M70 124h16v-6c0-8-16-8-16 0z" fill="#2a3c38"/>
 <path d="M20 86c40 8 70-30 120-18 20 5 40 4 80-8" fill="none" stroke="#6fd0c0" stroke-width="3"/>
 <circle cx="168" cy="92" r="6" fill="#f4ff8a"/>
-<path d="M200 150 168 70l-10 8 22 72z" fill="#8aa4a0" opacity=".7"/></svg></span><span class="name">Graveyard of the Atlantic (pinball)</span></a>
+<path d="M200 150 168 70l-10 8 22 72z" fill="#8aa4a0" opacity=".7"/></svg><span class="emblem" aria-hidden="true">🪦</span><span class="what" aria-hidden="true">Haunted pinball</span></span><span class="name">Graveyard of the Atlantic (pinball)</span></a>
 <a class="g" href="protocol-nova/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="pn-a-i58" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#120018"/><stop offset="1" stop-color="#2a0050"/></linearGradient><radialGradient id="pn-b-i58" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff5c8"/><stop offset="1" stop-color="#3a00ff"/></radialGradient></defs>
 <rect width="240" height="180" fill="url(#pn-a-i58)"/>
 <circle cx="120" cy="86" r="70" fill="none" stroke="#ff4cf0" stroke-width="2" opacity=".45"/>
@@ -741,32 +873,32 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <circle cx="120" cy="86" r="32" fill="none" stroke="#fff" stroke-width="1.5" opacity=".5"/>
 <circle cx="120" cy="86" r="22" fill="url(#pn-b-i58)"/>
 <path d="M120 16v28M120 128v28M24 86h28M188 86h28M48 28l18 18M174 28l-18 18M48 144l18-18M174 144l-18-18" stroke="#7af0ff" stroke-width="2" stroke-linecap="round"/>
-<rect x="108" y="74" width="24" height="24" rx="3" fill="#120018" stroke="#7af0ff"/></svg></span><span class="name">Protocol Nova</span></a>
+<rect x="108" y="74" width="24" height="24" rx="3" fill="#120018" stroke="#7af0ff"/></svg><span class="emblem" aria-hidden="true">⏱️</span><span class="what" aria-hidden="true">Time-bending brawler</span></span><span class="name">Protocol Nova</span></a>
 <a class="g" href="far-ridge/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="fr-a-i59" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f39a4a"/><stop offset="1" stop-color="#2a1430"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#fr-a-i59)"/>
 <circle cx="186" cy="44" r="18" fill="#ffe9a0"/>
 <path d="M0 110c30-18 50-8 80-20 18-8 28-22 50-20l30 28 20-16 60 40v58H0z" fill="#3a2240"/>
 <path d="M0 138l70-48 30 26 40-36 40 22 60-18v96H0z" fill="#1a1018"/>
-<path d="M148 92l8 10-18 4z" fill="#6a4038"/><rect x="146" y="100" width="5" height="22" fill="#1a1018"/></svg></span><span class="name">Far Ridge</span></a>
+<path d="M148 92l8 10-18 4z" fill="#6a4038"/><rect x="146" y="100" width="5" height="22" fill="#1a1018"/></svg><span class="emblem" aria-hidden="true">🦌</span><span class="what" aria-hidden="true">Scoped-rifle hunting</span></span><span class="name">Far Ridge</span></a>
 <a class="g" href="frostbite-tower/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ft-a-i60" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d8f4ff"/><stop offset="1" stop-color="#163050"/></linearGradient><linearGradient id="ft-b-i60" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#9ad4f0"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#ft-a-i60)"/>
 <path d="M0 150 40 120 70 140 120 100 160 130 200 110 240 140v40H0z" fill="#e8f6ff"/>
 <path d="M108 150V58l12-28 12 28v92z" fill="url(#ft-b-i60)" stroke="#d0e8ff"/>
 <path d="M96 92h48l-6 10H102zM100 118h40l-6 10h-28z" fill="#eef8ff"/>
 <path d="M70 40l10 18-10 4 14 8-22 2 8-14-12-6zM190 30l8 14-8 4 12 6-18 2 6-12-10-4z" fill="#fff"/>
-<circle cx="40" cy="36" r="3" fill="#fff"/><circle cx="200" cy="70" r="2" fill="#fff"/></svg></span><span class="name">Frostbite Tower</span></a>
+<circle cx="40" cy="36" r="3" fill="#fff"/><circle cx="200" cy="70" r="2" fill="#fff"/></svg><span class="emblem" aria-hidden="true">🧊</span><span class="what" aria-hidden="true">Frozen tower climb</span></span><span class="name">Frostbite Tower</span></a>
 <a class="g" href="neon-wake/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="nw-a-i61" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a0520"/><stop offset="1" stop-color="#120830"/></linearGradient><linearGradient id="nw-b-i61" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ff3da0"/><stop offset="1" stop-color="#00f0ff"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#nw-a-i61)"/>
 <path d="M-10 80c40 8 50-30 90-20 30 8 40 40 80 28 28-8 40-36 80-24" fill="none" stroke="#00f0ff" stroke-width="6"/>
 <path d="M-10 96c40 8 50-30 90-20 30 8 40 40 80 28 28-8 40-36 80-24" fill="none" stroke="#ff3da0" stroke-width="4"/>
 <path d="M-10 112c44 6 52-22 92-14 32 6 42 30 82 20 30-8 42-28 80-18" fill="none" stroke="#fff" stroke-width="1.5" opacity=".5"/>
 <ellipse cx="120" cy="150" rx="90" ry="14" fill="#00f0ff" opacity=".15"/>
-<path d="M112 70l16 8-6 14-16-6z" fill="url(#nw-b-i61)"/></svg></span><span class="name">Neon Wake</span></a>
+<path d="M112 70l16 8-6 14-16-6z" fill="url(#nw-b-i61)"/></svg><span class="emblem" aria-hidden="true">🏍️</span><span class="what" aria-hidden="true">Light-cycle racer</span></span><span class="name">Neon Wake</span></a>
 <a class="g" href="ragnarok-rising/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="rr-a-i62" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a0508"/><stop offset="1" stop-color="#1a0508"/></linearGradient><radialGradient id="rr-b-i62" cx="50%" cy="40%" r="50%"><stop offset="0" stop-color="#ffdd66"/><stop offset="1" stop-color="#4a0000"/></radialGradient></defs>
 <rect width="240" height="180" fill="url(#rr-a-i62)"/>
 <circle cx="120" cy="78" r="40" fill="url(#rr-b-i62)"/>
 <path d="M70 78c8-40 30-54 50-54 8 0 14 4 20 10-28 4-40 28-36 54-16 0-28-4-34-10z" fill="#3a0508"/>
-<path d="M20 160c30-40 40-70 58-86 10 20 8 40 0 62 20-30 50-50 84-54-10 24-6 50 8 78 24-34 50-40 70-38-16 20-20 44-16 58z" fill="#0e0202"/></svg></span><span class="name">Ragnarök Rising</span></a>
+<path d="M20 160c30-40 40-70 58-86 10 20 8 40 0 62 20-30 50-50 84-54-10 24-6 50 8 78 24-34 50-40 70-38-16 20-20 44-16 58z" fill="#0e0202"/></svg><span class="emblem" aria-hidden="true">🔨</span><span class="what" aria-hidden="true">Norse co-op brawler</span></span><span class="name">Ragnarök Rising</span></a>
 <a class="g" href="pharaohs-descent/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="pd-a-i63" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0d48a"/><stop offset="1" stop-color="#3a1c08"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#pd-a-i63)"/>
 <path d="M120 18 210 150H30z" fill="#e6b85a"/><path d="M120 18 120 150 30 150z" fill="#c4923a"/>
@@ -774,7 +906,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <rect x="108" y="108" width="24" height="28" fill="#5a3010"/><path d="M108 108h24l-12-10z" fill="#3a1c08"/>
 <circle cx="120" cy="70" r="10" fill="#7a2010" stroke="#f4e2a8" stroke-width="2"/>
 <path d="M120 62v16M112 70h16" stroke="#f4e2a8" stroke-width="1.5"/>
-<path d="M40 158h160" stroke="#8a4a10" stroke-width="6"/></svg></span><span class="name">Pharaoh&#x27;s Descent</span></a>
+<path d="M40 158h160" stroke="#8a4a10" stroke-width="6"/></svg><span class="emblem" aria-hidden="true">🏺</span><span class="what" aria-hidden="true">Egyptian tomb digger</span></span><span class="name">Pharaoh&#x27;s Descent</span></a>
 <a class="g" href="lumen-drift/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ld-a-i64" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#12082a"/><stop offset="1" stop-color="#1a1048"/></linearGradient><radialGradient id="ld-b-i64" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff6c8"/><stop offset="1" stop-color="#ff8ad4"/></radialGradient></defs>
 <rect width="240" height="180" fill="url(#ld-a-i64)"/>
 <circle cx="50" cy="50" r="4" fill="#fff"/><circle cx="200" cy="36" r="2.5" fill="#ffd0ff"/>
@@ -783,21 +915,21 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <ellipse cx="130" cy="80" rx="28" ry="10" fill="url(#ld-b-i64)"/>
 <path d="M102 80c8-16 20-22 28-22 10 0 22 8 28 22" fill="#d8b0ff" opacity=".8"/>
 <circle cx="70" cy="130" r="6" fill="#ffe9a0"/><circle cx="190" cy="140" r="8" fill="#7af0ff" opacity=".7"/>
-<circle cx="40" cy="80" r="5" fill="#ff8ad4"/><circle cx="160" cy="40" r="4" fill="#fff"/></svg></span><span class="name">Lumen Drift</span></a>
+<circle cx="40" cy="80" r="5" fill="#ff8ad4"/><circle cx="160" cy="40" r="4" fill="#fff"/></svg><span class="emblem" aria-hidden="true">🌟</span><span class="what" aria-hidden="true">Glowing drift run</span></span><span class="name">Lumen Drift</span></a>
 <a class="g" href="little-apocalypse/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="la-a-i65" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4c878"/><stop offset="1" stop-color="#5a2030"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#la-a-i65)"/>
 <ellipse cx="120" cy="70" rx="42" ry="36" fill="#f4e0c0"/>
 <path d="M120 36c18 0 40 16 44 40-16-8-28 4-44 4s-28-12-44-4c4-24 26-40 44-40z" fill="#f8f0e0"/>
 <rect x="114" y="100" width="12" height="28" fill="#8a6050"/>
 <path d="M20 150h40v10H20zM70 140h20v20H70zM100 146h16v14h-16zM150 142h28v18h-28zM190 150h30v10h-30z" fill="#3a2030"/>
-<circle cx="80" cy="128" r="8" fill="#ff6a3c"/></svg></span><span class="name">Little Apocalypse</span></a>
+<circle cx="80" cy="128" r="8" fill="#ff6a3c"/></svg><span class="emblem" aria-hidden="true">✈️</span><span class="what" aria-hidden="true">Small plane, big problems</span></span><span class="name">Little Apocalypse</span></a>
 <a class="g" href="pong-hyperdrive/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ph-a-i66" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#080818"/><stop offset="1" stop-color="#1a0830"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#ph-a-i66)"/>
 <path d="M20 30h200M20 150h200M120 20v140" stroke="#ff4cff" stroke-width="2" stroke-dasharray="6 8" opacity=".6"/>
 <rect x="28" y="70" width="10" height="44" rx="2" fill="#00f0ff"/>
 <rect x="202" y="58" width="10" height="44" rx="2" fill="#ff4cff"/>
 <circle cx="124" cy="86" r="8" fill="#fff"/>
-<path d="M124 86l40-8M124 86l28 16M124 86l36-22" stroke="#00f0ff" stroke-width="2"/></svg></span><span class="name">Pong: Hyperdrive</span></a>
+<path d="M124 86l40-8M124 86l28 16M124 86l36-22" stroke="#00f0ff" stroke-width="2"/></svg><span class="emblem" aria-hidden="true">🏓</span><span class="what" aria-hidden="true">Turbo Pong</span></span><span class="name">Pong: Hyperdrive</span></a>
 <a class="g" href="unicorn-joust/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="uj-a-i67" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a0a50"/><stop offset="1" stop-color="#f0a0c8"/></linearGradient><linearGradient id="uj-b-i67" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#e0d0ff"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#uj-a-i67)"/>
 <circle cx="40" cy="36" r="3" fill="#fff"/><circle cx="200" cy="50" r="2" fill="#ffe9a0"/>
@@ -805,7 +937,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <path d="M130 44 176 8l-8 20 22 4z" fill="#ffe08a"/>
 <circle cx="108" cy="70" r="4" fill="#2a1030"/>
 <path d="M20 158h200" stroke="#f0a0c8" stroke-width="4"/>
-<path d="M160 120l50 8" stroke="#ffe08a" stroke-width="4" stroke-linecap="round"/></svg></span><span class="name">Unicorn Joust</span></a>
+<path d="M160 120l50 8" stroke="#ffe08a" stroke-width="4" stroke-linecap="round"/></svg><span class="emblem" aria-hidden="true">🦄</span><span class="what" aria-hidden="true">Flying unicorn joust</span></span><span class="name">Unicorn Joust</span></a>
 <a class="g" href="mime-high-rise/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="mh-a-i68" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0e8e0"/><stop offset="1" stop-color="#8a90a0"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#mh-a-i68)"/>
 <rect x="80" y="20" width="80" height="150" fill="#1a1a1a"/>
@@ -817,7 +949,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <circle cx="115" cy="108" r="16" fill="#f0e8e0"/><ellipse cx="115" cy="108" rx="16" ry="8" fill="#1a1a1a"/>
 <path d="M107 116c4 4 12 4 16 0" fill="none" stroke="#1a1a1a" stroke-width="2"/>
 <rect x="70" y="20" width="10" height="150" fill="#c0c4cc"/><rect x="160" y="20" width="10" height="150" fill="#c0c4cc"/>
-<rect x="108" y="150" width="24" height="20" fill="#444"/></svg></span><span class="name">Mime High-Rise</span></a>
+<rect x="108" y="150" width="24" height="20" fill="#444"/></svg><span class="emblem" aria-hidden="true">🎭</span><span class="what" aria-hidden="true">Mime skyscraper climb</span></span><span class="name">Mime High-Rise</span></a>
 <a class="g" href="orangutan-keg-climb/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ok-a-i69" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#87c04a"/><stop offset="1" stop-color="#1a4818"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#ok-a-i69)"/>
 <rect x="108" y="10" width="24" height="170" fill="#6a3a18"/>
@@ -828,13 +960,13 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <ellipse cx="70" cy="70" rx="18" ry="13" fill="#b06020" stroke="#5a3010" stroke-width="2"/>
 <path d="M118 50c-8-16-4-28 8-34 6 8 8 16 4 28 14 4 22 16 20 32-16-8-28-6-32 6z" fill="#c45a20"/>
 <circle cx="132" cy="40" r="10" fill="#c45a20"/><circle cx="136" cy="38" r="2" fill="#1a1008"/>
-<path d="M20 20c8 20 6 40 0 60M220 10c-10 24-8 50 0 80" fill="none" stroke="#0e3010" stroke-width="8"/></svg></span><span class="name">Orangutan Keg Climb</span></a>
+<path d="M20 20c8 20 6 40 0 60M220 10c-10 24-8 50 0 80" fill="none" stroke="#0e3010" stroke-width="8"/></svg><span class="emblem" aria-hidden="true">🦧</span><span class="what" aria-hidden="true">Dodge the kegs, climb</span></span><span class="name">Orangutan Keg Climb</span></a>
 <a class="g" href="https://chrisvonderau.github.io/polar-ascent/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="pa-a-i70" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a3a68"/><stop offset="1" stop-color="#d8eef8"/></linearGradient><linearGradient id="pa-b-i70" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#a0ffd0"/><stop offset="1" stop-color="#70c8ff"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#pa-a-i70)"/>
 <path d="M0 50c40 8 60-20 100-10 30 8 50 4 80-16 20 20 40 10 60 18v40H0z" fill="url(#pa-b-i70)" opacity=".55"/>
 <path d="M20 180 90 50l30 44 28-36 72 122z" fill="#eef6ff"/>
 <path d="M90 50l16 28-28 6z" fill="#fff"/>
-<circle cx="148" cy="58" r="5" fill="#ff6b4a"/><path d="M148 63v16" stroke="#ff6b4a" stroke-width="2"/></svg></span><span class="name">Polar Ascent</span></a>
+<circle cx="148" cy="58" r="5" fill="#ff6b4a"/><path d="M148 63v16" stroke="#ff6b4a" stroke-width="2"/></svg><span class="emblem" aria-hidden="true">🐧</span><span class="what" aria-hidden="true">Polar ice climb</span></span><span class="name">Polar Ascent</span></a>
 <a class="g" href="https://chrisvonderau.github.io/sparkwell/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="sw-a-i71" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1020"/><stop offset="1" stop-color="#3a1810"/></linearGradient><radialGradient id="sw-b-i71" cx="50%" cy="70%" r="60%"><stop offset="0" stop-color="#fff4b0"/><stop offset="1" stop-color="#6a2008"/></radialGradient></defs>
 <rect width="240" height="180" fill="url(#sw-a-i71)"/>
 <ellipse cx="120" cy="150" rx="70" ry="18" fill="#2a1810"/>
@@ -842,7 +974,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <path d="M120 148 70 40M120 148 90 20M120 148 120 16M120 148 150 22M120 148 174 44M120 148 200 70M120 148 40 70" stroke="#ffd060" stroke-width="2" stroke-linecap="round"/>
 <circle cx="70" cy="40" r="5" fill="#fff4b0"/><circle cx="90" cy="20" r="4" fill="#ff9a20"/>
 <circle cx="120" cy="16" r="6" fill="#fff"/><circle cx="150" cy="22" r="4" fill="#ffd060"/>
-<circle cx="174" cy="44" r="5" fill="#ff9a20"/><circle cx="200" cy="70" r="4" fill="#fff4b0"/><circle cx="40" cy="70" r="4" fill="#ffd060"/></svg></span><span class="name">Sparkwell</span></a>
+<circle cx="174" cy="44" r="5" fill="#ff9a20"/><circle cx="200" cy="70" r="4" fill="#fff4b0"/><circle cx="40" cy="70" r="4" fill="#ffd060"/></svg><span class="emblem" aria-hidden="true">✨</span><span class="what" aria-hidden="true">Spark-chasing arcade</span></span><span class="name">Sparkwell</span></a>
 <a class="g" href="https://chrisvonderau.github.io/bubble-rescue/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="br-a-i72" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a3a58"/><stop offset="1" stop-color="#0a7088"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#br-a-i72)"/>
 <circle cx="120" cy="86" r="44" fill="#7ad4e8" opacity=".35" stroke="#e0ffff" stroke-width="3"/>
@@ -852,7 +984,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <circle cx="40" cy="50" r="16" fill="#7ad4e8" opacity=".3" stroke="#e0ffff" stroke-width="2"/>
 <circle cx="200" cy="40" r="12" fill="#7ad4e8" opacity=".3" stroke="#e0ffff" stroke-width="2"/>
 <circle cx="190" cy="130" r="22" fill="#7ad4e8" opacity=".25" stroke="#e0ffff" stroke-width="2"/>
-<circle cx="50" cy="140" r="18" fill="#7ad4e8" opacity=".28" stroke="#e0ffff" stroke-width="2"/></svg></span><span class="name">Bubble Rescue</span></a>
+<circle cx="50" cy="140" r="18" fill="#7ad4e8" opacity=".28" stroke="#e0ffff" stroke-width="2"/></svg><span class="emblem" aria-hidden="true">🫧</span><span class="what" aria-hidden="true">Bubble rescue</span></span><span class="name">Bubble Rescue</span></a>
 <a class="g" href="https://chrisvonderau.github.io/long-hop/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="lh-a-i73" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0c060"/><stop offset="1" stop-color="#8a2010"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#lh-a-i73)"/>
 <circle cx="186" cy="40" r="22" fill="#ffe08a"/>
@@ -861,7 +993,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <circle cx="108" cy="78" r="12" fill="#5a2a10"/><circle cx="112" cy="76" r="2.5" fill="#ffe08a"/>
 <path d="M118 74l16-8" stroke="#5a2a10" stroke-width="3" stroke-linecap="round"/>
 <path d="M60 128c-16 4-28 16-30 22" stroke="#5a2a10" stroke-width="4" fill="none" stroke-linecap="round"/>
-<path d="M150 122c18-8 34-4 44 6" stroke="#5a2a10" stroke-width="4" fill="none" stroke-linecap="round"/></svg></span><span class="name">Long Hop: Red Centre Run</span></a>
+<path d="M150 122c18-8 34-4 44 6" stroke="#5a2a10" stroke-width="4" fill="none" stroke-linecap="round"/></svg><span class="emblem" aria-hidden="true">🦘</span><span class="what" aria-hidden="true">Outback kangaroo run</span></span><span class="name">Long Hop: Red Centre Run</span></a>
 </div>
 </section><section id="shooters" class="cat cat-shooters">
 <header class="banner">
@@ -882,12 +1014,12 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <circle cx="120" cy="80" r="22" fill="none" stroke="#7af0ff" stroke-width="2"/>
 <circle cx="120" cy="80" r="10" fill="url(#av-b-i74)"/>
 <path d="M120 150l-8-22h16z" fill="#c0ff6a"/>
-<text x="16" y="22" fill="#c0ff6a" font-size="11" font-family="monospace">1984</text></svg></span><span class="name">ASTRO-VORTEX &#x27;84</span></a>
+<text x="16" y="22" fill="#c0ff6a" font-size="11" font-family="monospace">1984</text></svg><span class="emblem" aria-hidden="true">🚀</span><span class="what" aria-hidden="true">Retro space blaster</span></span><span class="name">ASTRO-VORTEX &#x27;84</span></a>
 <a class="g" href="shatterfield/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="sf-a-i75" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1030"/><stop offset="1" stop-color="#4a2080"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#sf-a-i75)"/>
 <polygon points="120,20 150,70 200,50 170,100 220,140 140,130 120,170 100,130 20,140 70,100 40,50 90,70" fill="#e8d0ff" opacity=".9"/>
 <polygon points="120,40 140,76 170,64 152,100 190,126 140,118 120,150 100,118 50,126 88,100 70,64 100,76" fill="#7a40ff"/>
-<polygon points="120,70 132,96 150,90 136,110 156,126 128,120 120,140 112,120 84,126 104,110 90,90 108,96" fill="#fff"/></svg></span><span class="name">Shatterfield</span></a>
+<polygon points="120,70 132,96 150,90 136,110 156,126 128,120 120,140 112,120 84,126 104,110 90,90 108,96" fill="#fff"/></svg><span class="emblem" aria-hidden="true">🪨</span><span class="what" aria-hidden="true">Asteroid smasher</span></span><span class="name">Shatterfield</span></a>
 <a class="g" href="chromahive/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ch-a-i76" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#140820"/><stop offset="1" stop-color="#201030"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#ch-a-i76)"/>
 <g transform="translate(120 90)">
@@ -898,7 +1030,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
   <polygon points="20,40 44,26 44,54 20,68 -4,54 -4,26" fill="#c084fc"/>
   <polygon points="-20,-48 4,-62 4,-34 -20,-20 -44,-34 -44,-62" fill="#ff7a3c"/>
   <polygon points="20,-48 44,-62 44,-34 20,-20 -4,-34 -4,-62" fill="#7af0ff"/>
-</g></svg></span><span class="name">CHROMAHIVE</span></a>
+</g></svg><span class="emblem" aria-hidden="true">🐝</span><span class="what" aria-hidden="true">Galaga-style swarm</span></span><span class="name">CHROMAHIVE</span></a>
 <a class="g" href="fort-fisher/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ff-a-i77" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#87b8d0"/><stop offset="1" stop-color="#3a5a30"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#ff-a-i77)"/>
 <path d="M0 110c40-8 80 8 120 0s80 8 120 0v20H0z" fill="#c8b070"/>
@@ -906,7 +1038,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <path d="M40 120V70h20l8-16h24l8 16h20v50z" fill="#6a5a40"/>
 <path d="M40 70h80v8H40z" fill="#4a3c28"/><rect x="70" y="86" width="12" height="16" fill="#1a2010"/>
 <path d="M0 150c30-10 60 6 90 0 30-6 60 8 90 0 20-4 40 4 60 0" fill="none" stroke="#e8f0f4" stroke-width="3"/>
-<circle cx="200" cy="36" r="14" fill="#ffe08a"/></svg></span><span class="name">Fort Fisher</span></a>
+<circle cx="200" cy="36" r="14" fill="#ffe08a"/></svg><span class="emblem" aria-hidden="true">💣</span><span class="what" aria-hidden="true">Civil War fort battle</span></span><span class="name">Fort Fisher</span></a>
 <a class="g" href="dead-mans-gulch/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="dg-a-i78" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0a050"/><stop offset="1" stop-color="#3a1808"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#dg-a-i78)"/>
 <path d="M0 80c20-30 40-40 60-20 10-30 30-50 50-30 16-24 40-30 60-10 20-16 40-8 70 20v120H0z" fill="#8a3a18"/>
@@ -915,14 +1047,14 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <ellipse cx="112" cy="96" rx="4" ry="5" fill="#1a0a08"/><ellipse cx="128" cy="96" rx="4" ry="5" fill="#1a0a08"/>
 <path d="M112 110c6 6 14 6 16 0" fill="none" stroke="#1a0a08" stroke-width="2"/>
 <path d="M40 150c0-20 8-36 8-36s8 16 8 36z" fill="#2a2010"/>
-<path d="M44 114c-10-4-12-16-4-20 10 4 16 8 8 20zM52 114c10-4 12-16 4-20-10 4-16 8-8 20z" fill="#2a2010"/></svg></span><span class="name">Dead Man&#x27;s Gulch</span></a>
+<path d="M44 114c-10-4-12-16-4-20 10 4 16 8 8 20zM52 114c10-4 12-16 4-20-10 4-16 8-8 20z" fill="#2a2010"/></svg><span class="emblem" aria-hidden="true">🧟</span><span class="what" aria-hidden="true">Zombie Old West shooter</span></span><span class="name">Dead Man&#x27;s Gulch</span></a>
 <a class="g" href="soul-trigger/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="st-a-i79" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#080818"/><stop offset="1" stop-color="#0a2030"/></linearGradient><radialGradient id="st-b-i79" cx="50%" cy="40%" r="50%"><stop offset="0" stop-color="#e8ffff"/><stop offset="1" stop-color="#40e0c0"/></radialGradient></defs>
 <rect width="240" height="180" fill="url(#st-a-i79)"/>
 <path d="M120 30c28 0 50 22 50 54 0 40-50 72-50 72S70 124 70 84c0-32 22-54 50-54z" fill="url(#st-b-i79)" opacity=".85"/>
 <circle cx="106" cy="74" r="6" fill="#082028"/><circle cx="132" cy="74" r="6" fill="#082028"/>
 <path d="M150 100h40c4 0 8 6 6 12l-8 20H150z" fill="#c0d0d4"/>
 <rect x="186" y="108" width="22" height="10" rx="2" fill="#c0d0d4"/>
-<circle cx="154" cy="118" r="8" fill="#8a9a9e"/><path d="M150 112h-16v8h16" fill="#c0d0d4"/></svg></span><span class="name">Soul Trigger</span></a>
+<circle cx="154" cy="118" r="8" fill="#8a9a9e"/><path d="M150 112h-16v8h16" fill="#c0d0d4"/></svg><span class="emblem" aria-hidden="true">👻</span><span class="what" aria-hidden="true">Ghost shooter</span></span><span class="name">Soul Trigger</span></a>
 <a class="g" href="time-cop-1986/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="tc-a-i80" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#083040"/><stop offset="1" stop-color="#0a1820"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#tc-a-i80)"/>
 <circle cx="120" cy="86" r="58" fill="none" stroke="#20e0c0" stroke-width="6"/>
@@ -931,12 +1063,12 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <path d="M120 86l22 14" stroke="#d8a020" stroke-width="3" stroke-linecap="round"/>
 <circle cx="120" cy="86" r="5" fill="#d8a020"/>
 <path d="M120 38v8M120 126v8M72 86h8M160 86h8" stroke="#20e0c0" stroke-width="3"/>
-<text x="120" y="168" text-anchor="middle" fill="#20e0c0" font-size="14" font-family="monospace" font-weight="700">1986</text></svg></span><span class="name">TIME COP 1986</span></a>
+<text x="120" y="168" text-anchor="middle" fill="#20e0c0" font-size="14" font-family="monospace" font-weight="700">1986</text></svg><span class="emblem" aria-hidden="true">🚔</span><span class="what" aria-hidden="true">80s time-cop action</span></span><span class="name">TIME COP 1986</span></a>
 <a class="g" href="star-swarm-defender/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ss-a-i81" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#040814"/><stop offset="1" stop-color="#0a1840"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#ss-a-i81)"/>
 <g fill="#9ad4ff"><circle cx="30" cy="30" r="1.5"/><circle cx="60" cy="50" r="1"/><circle cx="90" cy="24" r="1.4"/><circle cx="140" cy="36" r="1"/><circle cx="180" cy="22" r="1.6"/><circle cx="210" cy="48" r="1"/><circle cx="40" cy="80" r="1"/><circle cx="200" cy="90" r="1.2"/><circle cx="20" cy="120" r="1"/><circle cx="70" cy="140" r="1.3"/><circle cx="170" cy="130" r="1"/><circle cx="220" cy="150" r="1.4"/></g>
 <g fill="#ff6a7a"><polygon points="40,44 44,54 34,48 46,48 36,54"/><polygon points="200,60 204,70 194,64 206,64 196,70"/><polygon points="70,70 74,80 64,74 76,74 66,80"/><polygon points="160,50 164,60 154,54 166,54 156,60"/><polygon points="50,110 54,120 44,114 56,114 46,120"/><polygon points="190,110 194,120 184,114 196,114 186,120"/><polygon points="100,40 104,50 94,44 106,44 96,50"/><polygon points="130,28 134,38 124,32 136,32 126,38"/></g>
-<path d="M120 150l-16-28h10l6-16 6 16h10z" fill="#7af0ff"/><path d="M104 150h32l-4 10h-24z" fill="#3ecbff"/></svg></span><span class="name">Star Swarm Defender</span></a>
+<path d="M120 150l-16-28h10l6-16 6 16h10z" fill="#7af0ff"/><path d="M104 150h32l-4 10h-24z" fill="#3ecbff"/></svg><span class="emblem" aria-hidden="true">👾</span><span class="what" aria-hidden="true">Alien invader defense</span></span><span class="name">Star Swarm Defender</span></a>
 <a class="g" href="get-off-my-lawn/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="gl-a-i82" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#87c8ff"/><stop offset="1" stop-color="#3a8a30"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#gl-a-i82)"/>
 <path d="M0 110h240v70H0z" fill="#3a9a28"/><path d="M0 110h240" stroke="#2a7018" stroke-width="4"/>
@@ -944,23 +1076,23 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <path d="M16 96h80" stroke="#8a2010" stroke-width="4"/>
 <path d="M150 110V70l40-22 40 22v40" fill="#c05030"/><rect x="178" y="88" width="14" height="22" fill="#6a2010"/>
 <rect x="164" y="74" width="12" height="10" fill="#7ac8ff"/><rect x="192" y="74" width="12" height="10" fill="#7ac8ff"/>
-<circle cx="60" cy="140" r="10" fill="#f0e070"/></svg></span><span class="name">Get Off My Lawn</span></a>
+<circle cx="60" cy="140" r="10" fill="#f0e070"/></svg><span class="emblem" aria-hidden="true">👴</span><span class="what" aria-hidden="true">Lawn vs. outbreak</span></span><span class="name">Get Off My Lawn</span></a>
 <a class="g" href="blackout/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="bo-a-i83" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#04040a"/><stop offset="1" stop-color="#0a1020"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#bo-a-i83)"/>
 <path d="M0 150 30 90 46 110 70 70 90 100 120 40 150 90 170 60 200 110 220 80 240 130v50H0z" fill="#12151f"/>
 <rect x="116" y="86" width="8" height="6" fill="#ffe08a"/>
-<path d="M160 20l8 22 20-10-12 20 22 6-22 8 12 18-24-8-8 22-8-22-24 8 12-18-22-8 22-6-12-20 20 10z" fill="#c0d0e0" opacity=".5"/></svg></span><span class="name">BLACKOUT</span></a>
+<path d="M160 20l8 22 20-10-12 20 22 6-22 8 12 18-24-8-8 22-8-22-24 8 12-18-22-8 22-6-12-20 20 10z" fill="#c0d0e0" opacity=".5"/></svg><span class="emblem" aria-hidden="true">🔦</span><span class="what" aria-hidden="true">Something moved…</span></span><span class="name">BLACKOUT</span></a>
 <a class="g" href="starbreak/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="sb-a-i84" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a1030"/><stop offset="1" stop-color="#2a1060"/></linearGradient><radialGradient id="sb-b-i84" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fffce0"/><stop offset="1" stop-color="#ff6a00"/></radialGradient></defs>
 <rect width="240" height="180" fill="url(#sb-a-i84)"/>
 <path d="M120 16 136 70 192 70 148 104 164 160 120 128 76 160 92 104 48 70 104 70z" fill="url(#sb-b-i84)"/>
 <path d="M110 20 150 170M88 90 170 130M70 60 190 80" stroke="#0a1030" stroke-width="3"/>
-<circle cx="40" cy="40" r="2" fill="#fff"/><circle cx="200" cy="50" r="2" fill="#ffd060"/></svg></span><span class="name">STARBREAK</span></a>
+<circle cx="40" cy="40" r="2" fill="#fff"/><circle cx="200" cy="50" r="2" fill="#ffd060"/></svg><span class="emblem" aria-hidden="true">🛰️</span><span class="what" aria-hidden="true">Last-outpost defense</span></span><span class="name">STARBREAK</span></a>
 <a class="g" href="https://chrisvonderau.github.io/six-gun-showdown/Six-Gun%20Sundown.html"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="sg-a-i85" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0a030"/><stop offset="1" stop-color="#1a0808"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#sg-a-i85)"/>
 <circle cx="120" cy="50" r="24" fill="#ffe08a"/>
 <path d="M0 110c40-10 80 8 120-6 40-14 80 4 120-8v84H0z" fill="#2a1008"/>
 <path d="M40 120h50c4 0 6 4 6 8v6H50l-16 16H22l6-16h12z" fill="#c0b8a8"/><circle cx="48" cy="138" r="10" fill="#8a8070"/>
-<path d="M200 120h-50c-4 0-6 4-6 8v6h46l16 16h12l-6-16h-12z" fill="#c0b8a8"/><circle cx="192" cy="138" r="10" fill="#8a8070"/></svg></span><span class="name">Six-Gun Sundown</span></a>
+<path d="M200 120h-50c-4 0-6 4-6 8v6h46l16 16h12l-6-16h-12z" fill="#c0b8a8"/><circle cx="192" cy="138" r="10" fill="#8a8070"/></svg><span class="emblem" aria-hidden="true">🤠</span><span class="what" aria-hidden="true">Western shootout</span></span><span class="name">Six-Gun Sundown</span></a>
 <a class="g" href="https://chrisvonderau.github.io/chrono-spark/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="cs-a-i86" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1040"/><stop offset="1" stop-color="#081428"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#cs-a-i86)"/>
 <circle cx="110" cy="90" r="50" fill="none" stroke="#7aa0ff" stroke-width="6"/>
@@ -968,23 +1100,23 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <path d="M110 90V58M110 90l24 18" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
 <path d="M150 50l30-20M160 60l36-8M158 74l40 6" stroke="#ffe060" stroke-width="3" stroke-linecap="round"/>
 <circle cx="180" cy="30" r="6" fill="#ffe060"/><circle cx="196" cy="52" r="4" fill="#fff"/><circle cx="198" cy="80" r="5" fill="#ffb020"/>
-<circle cx="110" cy="90" r="5" fill="#7aa0ff"/></svg></span><span class="name">Chrono Spark</span></a>
+<circle cx="110" cy="90" r="5" fill="#7aa0ff"/></svg><span class="emblem" aria-hidden="true">⚡</span><span class="what" aria-hidden="true">Time-spark shooter</span></span><span class="name">Chrono Spark</span></a>
 <a class="g" href="https://chrisvonderau.github.io/hollow-light/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="hl-a-i87" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#08080e"/><stop offset="1" stop-color="#16101a"/></linearGradient><radialGradient id="hl-b-i87" cx="50%" cy="42%" r="55%"><stop offset="0" stop-color="#fff6c8"/><stop offset="1" stop-color="#181018"/></radialGradient></defs>
 <rect width="240" height="180" fill="url(#hl-a-i87)"/>
 <circle cx="120" cy="80" r="50" fill="url(#hl-b-i87)"/><circle cx="120" cy="80" r="22" fill="#08080e"/>
 <path d="M108 128c0 20 8 36 12 36s12-16 12-36" fill="#6a5030"/>
-<path d="M100 126h40l-4-10h-32z" fill="#c8a050"/></svg></span><span class="name">Hollow Light</span></a>
+<path d="M100 126h40l-4-10h-32z" fill="#c8a050"/></svg><span class="emblem" aria-hidden="true">🕯️</span><span class="what" aria-hidden="true">Haunted dark shooter</span></span><span class="name">Hollow Light</span></a>
 <a class="g" href="https://chrisvonderau.github.io/kill-switch/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ks-a-i88" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a0a0a"/><stop offset="1" stop-color="#2a1010"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#ks-a-i88)"/>
 <path d="M0 20h40l10 10H0zM200 20h40v10h-30zM0 150h50l-10 10H0zM190 160 240 150v10z" fill="#ffcc00"/>
 <rect x="70" y="40" width="100" height="110" rx="8" fill="#2a2a2a" stroke="#ffcc00" stroke-width="3"/>
 <rect x="88" y="70" width="64" height="64" rx="6" fill="#1a1a1a"/>
 <rect x="108" y="78" width="24" height="40" rx="4" fill="#e01010"/><circle cx="120" cy="86" r="6" fill="#ff8080"/>
-<path d="M80 52h80" stroke="#ffcc00" stroke-width="4"/></svg></span><span class="name">Kill Switch</span></a>
+<path d="M80 52h80" stroke="#ffcc00" stroke-width="4"/></svg><span class="emblem" aria-hidden="true">🤖</span><span class="what" aria-hidden="true">Robot uprising shooter</span></span><span class="name">Kill Switch</span></a>
 <a class="g" href="https://chrisvonderau.github.io/supernova/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="sn-a-i89" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#140020"/><stop offset="1" stop-color="#200810"/></linearGradient><radialGradient id="sn-b-i89" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#4a00a0"/></radialGradient></defs>
 <rect width="240" height="180" fill="url(#sn-a-i89)"/>
 <circle cx="120" cy="90" r="70" fill="url(#sn-b-i89)"/><circle cx="120" cy="90" r="24" fill="#fff"/>
-<path d="M120 20v20M120 140v20M40 90h20M180 90h20M58 36l14 14M168 36l-14 14M58 144l14-14M168 144l-14-14" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg></span><span class="name">Supernova</span></a>
+<path d="M120 20v20M120 140v20M40 90h20M180 90h20M58 36l14 14M168 36l-14 14M58 144l14-14M168 144l-14-14" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg><span class="emblem" aria-hidden="true">💥</span><span class="what" aria-hidden="true">Exploding-star shooter</span></span><span class="name">Supernova</span></a>
 </div>
 </section><section id="adventure" class="cat cat-adventure">
 <header class="banner">
@@ -1003,7 +1135,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <path d="M90 52h8v16h-8zM90 112h8v16h-8zM52 86h16v8H52zM112 86h16v8h-16z" fill="#f4d070"/>
 <circle cx="160" cy="110" r="32" fill="#d8a040" stroke="#f4d070" stroke-width="3"/><circle cx="160" cy="110" r="8" fill="#3a2408"/>
 <path d="M160 84h6v14h-6zM160 122h6v14h-6zM134 107h14v6h-14zM172 107h14v6h-14z" fill="#f4d070"/>
-<circle cx="150" cy="50" r="16" fill="#1a1008" stroke="#f4d070" stroke-width="3"/><circle cx="150" cy="50" r="6" fill="#000"/></svg></span><span class="name">Clockwork Heist</span></a>
+<circle cx="150" cy="50" r="16" fill="#1a1008" stroke="#f4d070" stroke-width="3"/><circle cx="150" cy="50" r="6" fill="#000"/></svg><span class="emblem" aria-hidden="true">🕰️</span><span class="what" aria-hidden="true">1920s time-loop heist</span></span><span class="name">Clockwork Heist</span></a>
 <a class="g" href="tender-titan/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="tt-a-i91" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0c8a0"/><stop offset="1" stop-color="#88b070"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#tt-a-i91)"/>
 <ellipse cx="120" cy="160" rx="90" ry="16" fill="#6a9048"/>
@@ -1013,7 +1145,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <path d="M112 56c6 6 12 6 16 0" fill="none" stroke="#c06040" stroke-width="2"/>
 <path d="M80 110c-20 0-30 16-36 30 16 0 28-6 40-4M160 110c20 0 30 16 36 30-16 0-28-6-40-4" fill="#e0a070"/>
 <circle cx="170" cy="96" r="10" fill="#e05070"/>
-<path d="M170 86c4-10 12-12 16-8" fill="none" stroke="#5a9040" stroke-width="2"/></svg></span><span class="name">Tender Titan</span></a>
+<path d="M170 86c4-10 12-12 16-8" fill="none" stroke="#5a9040" stroke-width="2"/></svg><span class="emblem" aria-hidden="true">🦖</span><span class="what" aria-hidden="true">Helpful giant kaiju</span></span><span class="name">Tender Titan</span></a>
 <a class="g" href="tinderhelm/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="th-a-i92" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a1008"/><stop offset="1" stop-color="#1a0808"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#th-a-i92)"/>
 <path d="M60 110c0-50 26-80 60-80s60 30 60 80c-16-10-36-16-60-16s-44 6-60 16z" fill="#c0c8d0"/>
@@ -1021,7 +1153,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <path d="M70 70c-10-30-4-50 10-58 8 16 10 30 4 50M170 70c10-30 4-50-10-58-8 16-10 30-4 50" fill="#c0c8d0"/>
 <path d="M90 118c10 16 50 16 60 0" fill="none" stroke="#c0c8d0" stroke-width="6"/>
 <path d="M100 40c-6-28 4-50 20-60 16 10 26 32 20 60" fill="#ff6a20"/>
-<path d="M108 20c0-16 8-28 12-32 4 4 12 16 12 32" fill="#ffe080"/></svg></span><span class="name">Tinderhelm</span></a>
+<path d="M108 20c0-16 8-28 12-32 4 4 12 16 12 32" fill="#ffe080"/></svg><span class="emblem" aria-hidden="true">🛡️</span><span class="what" aria-hidden="true">Armored knight quest</span></span><span class="name">Tinderhelm</span></a>
 <a class="g" href="tock/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="tk-a-i93" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8dcc8"/><stop offset="1" stop-color="#8a7a60"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#tk-a-i93)"/>
 <circle cx="120" cy="90" r="64" fill="#f4eee0" stroke="#2a2010" stroke-width="8"/><circle cx="120" cy="90" r="6" fill="#2a2010"/>
@@ -1029,7 +1161,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <path d="M120 90l36 20" stroke="#8a2010" stroke-width="4" stroke-linecap="round"/>
 <g fill="#2a2010" font-family="serif" font-size="14" font-weight="700" text-anchor="middle">
   <text x="120" y="42">12</text><text x="120" y="152">6</text><text x="174" y="96">3</text><text x="66" y="96">9</text>
-</g></svg></span><span class="name">Tock</span></a>
+</g></svg><span class="emblem" aria-hidden="true">⏰</span><span class="what" aria-hidden="true">Clockwork platformer</span></span><span class="name">Tock</span></a>
 <a class="g" href="the-idol-wakes/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="iw-a-i94" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a3018"/><stop offset="1" stop-color="#0a1808"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#iw-a-i94)"/>
 <ellipse cx="120" cy="160" rx="70" ry="12" fill="#1a4010"/>
@@ -1037,7 +1169,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <rect x="96" y="80" width="48" height="36" rx="4" fill="#8a7030"/>
 <circle cx="108" cy="96" r="8" fill="#1a1008"/><circle cx="132" cy="96" r="8" fill="#ffe080"/><circle cx="132" cy="96" r="3" fill="#1a1008"/>
 <path d="M100 130h40v10H100z" fill="#8a7030"/>
-<path d="M20 20c10 40 6 80 0 120M220 10c-12 40-8 90 0 140" fill="none" stroke="#0e2808" stroke-width="16"/></svg></span><span class="name">The Idol Wakes</span></a>
+<path d="M20 20c10 40 6 80 0 120M220 10c-12 40-8 90 0 140" fill="none" stroke="#0e2808" stroke-width="16"/></svg><span class="emblem" aria-hidden="true">🗿</span><span class="what" aria-hidden="true">Jungle idol adventure</span></span><span class="name">The Idol Wakes</span></a>
 <a class="g" href="castle-of-chaos/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="cc-a-i95" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1030"/><stop offset="1" stop-color="#0a0818"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#cc-a-i95)"/>
 <circle cx="180" cy="40" r="22" fill="#e8d8ff"/>
@@ -1046,25 +1178,25 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <rect x="110" y="120" width="20" height="30" fill="#0a0810"/>
 <path d="M20 150h200" stroke="#4a2080" stroke-width="6"/>
 <path d="M0 160c40-20 80 0 120-16 40-16 80 6 120-10v30H0z" fill="#2a1060" opacity=".7"/>
-<rect x="70" y="90" width="10" height="14" fill="#c084fc" opacity=".7"/><rect x="160" y="90" width="10" height="14" fill="#c084fc" opacity=".7"/></svg></span><span class="name">Castle of Chaos: The Midnight Curse</span></a>
+<rect x="70" y="90" width="10" height="14" fill="#c084fc" opacity=".7"/><rect x="160" y="90" width="10" height="14" fill="#c084fc" opacity=".7"/></svg><span class="emblem" aria-hidden="true">🏰</span><span class="what" aria-hidden="true">Midnight castle curse</span></span><span class="name">Castle of Chaos: The Midnight Curse</span></a>
 <a class="g" href="gemini-platformer/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ap-a-i96" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0c1838"/><stop offset="1" stop-color="#1a1048"/></linearGradient><linearGradient id="ap-b-i96" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7af0ff"/><stop offset="1" stop-color="#ff7ad9"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#ap-a-i96)"/>
 <polygon points="120,30 180,60 180,120 120,150 60,120 60,60" fill="url(#ap-b-i96)" opacity=".9"/>
 <polygon points="120,30 180,60 120,90 60,60" fill="#e8ffff" opacity=".5"/>
 <polygon points="120,90 180,60 180,120" fill="#7a40c0" opacity=".45"/>
 <polygon points="80,130 110,130 124,150 94,150" fill="#7af0ff"/>
-<polygon points="140,110 168,110 180,126 152,126" fill="#ff7ad9"/></svg></span><span class="name">Aether Prism 3D</span></a>
+<polygon points="140,110 168,110 180,126 152,126" fill="#ff7ad9"/></svg><span class="emblem" aria-hidden="true">🔷</span><span class="what" aria-hidden="true">3D prism platformer</span></span><span class="name">Aether Prism 3D</span></a>
 <a class="g" href="https://chrisvonderau.github.io/brasswind/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="bw-a-i97" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a80c0"/><stop offset="1" stop-color="#c07020"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#bw-a-i97)"/>
 <ellipse cx="80" cy="90" rx="36" ry="28" fill="none" stroke="#d4a020" stroke-width="10"/>
 <path d="M110 90h70c8 0 16 10 16 20s-6 16-16 16H150" fill="none" stroke="#d4a020" stroke-width="10" stroke-linecap="round"/>
 <circle cx="150" cy="126" r="10" fill="#f4d060"/>
-<path d="M0 70c40-20 70-8 110-18 30-8 50-24 90-16-20 20-50 16-80 28-40 16-70 4-120 20z" fill="#fff" opacity=".75"/></svg></span><span class="name">Brasswind: The Stolen Sky</span></a>
+<path d="M0 70c40-20 70-8 110-18 30-8 50-24 90-16-20 20-50 16-80 28-40 16-70 4-120 20z" fill="#fff" opacity=".75"/></svg><span class="emblem" aria-hidden="true">🎈</span><span class="what" aria-hidden="true">Steampunk sky quest</span></span><span class="name">Brasswind: The Stolen Sky</span></a>
 <a class="g" href="https://chrisvonderau.github.io/horizon-wake-up/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="hw-a-i98" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1040"/><stop offset="1" stop-color="#f0c070"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#hw-a-i98)"/>
 <circle cx="120" cy="86" r="32" fill="#ffe08a"/>
 <path d="M0 100c40-16 80-8 120-16s80-8 120-16v112H0z" fill="#2a1848"/>
-<path d="M0 124c30-10 70 6 110-8 40-14 80 4 130-10v74H0z" fill="#1a1028"/></svg></span><span class="name">Horizon: Wake Up</span></a>
+<path d="M0 124c30-10 70 6 110-8 40-14 80 4 130-10v74H0z" fill="#1a1028"/></svg><span class="emblem" aria-hidden="true">🌅</span><span class="what" aria-hidden="true">Wake-up adventure</span></span><span class="name">Horizon: Wake Up</span></a>
 </div>
 </section><section id="racing" class="cat cat-racing">
 <header class="banner">
@@ -1087,19 +1219,19 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <path d="M96 96h40v16H96z" fill="#3a1008"/>
 <path d="M150 40h8v50h-8z" fill="#2a2a2a"/>
 <path d="M154 40l20-20M154 40l-16-20" stroke="#e02020" stroke-width="3"/>
-<circle cx="154" cy="40" r="10" fill="#1a1a1a" stroke="#e02020" stroke-width="2"/></svg></span><span class="name">Redline and Rust</span></a>
+<circle cx="154" cy="40" r="10" fill="#1a1a1a" stroke="#e02020" stroke-width="2"/></svg><span class="emblem" aria-hidden="true">🏎️</span><span class="what" aria-hidden="true">Street racing</span></span><span class="name">Redline and Rust</span></a>
 <a class="g" href="https://chrisvonderau.github.io/midnight-break/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="mb-a-i100" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a0528"/><stop offset="1" stop-color="#1a0a40"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#mb-a-i100)"/>
 <path d="M0 70h40v80H0zM50 50h24v100H50zM90 30h20v120H90zM130 44h28v106h-28zM180 20h30v130h-30z" fill="#1a1048"/>
 <rect x="96" y="50" width="8" height="8" fill="#ff4cff"/><rect x="188" y="36" width="8" height="8" fill="#00f0ff"/><rect x="58" y="70" width="8" height="8" fill="#ffe060"/>
 <path d="M0 150h240" stroke="#ff4cff" stroke-width="4"/><path d="M0 158h240" stroke="#00f0ff" stroke-width="2"/>
 <path d="M70 134h50l10 8H80z" fill="#00f0ff"/>
-<circle cx="84" cy="146" r="6" fill="#222"/><circle cx="120" cy="146" r="6" fill="#222"/></svg></span><span class="name">Midnight Break: Neon Gambit</span></a>
+<circle cx="84" cy="146" r="6" fill="#222"/><circle cx="120" cy="146" r="6" fill="#222"/></svg><span class="emblem" aria-hidden="true">🌃</span><span class="what" aria-hidden="true">Neon night racer</span></span><span class="name">Midnight Break: Neon Gambit</span></a>
 <a class="g" href="https://chrisvonderau.github.io/the-last-ten-seconds/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="lt-a-i101" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#200808"/><stop offset="1" stop-color="#100808"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#lt-a-i101)"/>
 <text x="120" y="120" text-anchor="middle" font-size="110" font-weight="800" font-family="Impact, Arial Black, sans-serif" fill="#ff2a2a">10</text>
 <path d="M0 40h20v20H0zM20 20h20v20H20zM40 40h20v20H40zM60 20h20v20H60zM80 40h20v20H80zM100 20h20v20H100zM120 40h20v20h-20zM140 20h20v20h-20zM160 40h20v20h-20zM180 20h20v20h-20zM200 40h20v20h-20zM220 20h20v20h-20z" fill="#f0f0f0"/>
-<path d="M0 140h20v20H0zM20 160h20v20H20zM40 140h20v20H40zM60 160h20v20H60zM80 140h20v20H80zM100 160h20v20H100zM120 140h20v20h-20zM140 160h20v20h-20zM160 140h20v20h-20zM180 160h20v20h-20zM200 140h20v20h-20zM220 160h20v20h-20z" fill="#f0f0f0"/></svg></span><span class="name">The Last Ten Seconds</span></a>
+<path d="M0 140h20v20H0zM20 160h20v20H20zM40 140h20v20H40zM60 160h20v20H60zM80 140h20v20H80zM100 160h20v20H100zM120 140h20v20h-20zM140 160h20v20h-20zM160 140h20v20h-20zM180 160h20v20h-20zM200 140h20v20h-20zM220 160h20v20h-20z" fill="#f0f0f0"/></svg><span class="emblem" aria-hidden="true">⏱️</span><span class="what" aria-hidden="true">Beat-the-clock race</span></span><span class="name">The Last Ten Seconds</span></a>
 <a class="g" href="https://chrisvonderau.github.io/redline-afterimage/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ra-a-i102" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#140810"/><stop offset="1" stop-color="#2a0810"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#ra-a-i102)"/>
 <path d="M0 90h240" stroke="#3a1020" stroke-width="40"/>
@@ -1109,7 +1241,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <path d="M110 70h90c8 0 16 8 18 16l8 4v12H126l-8-10h-8z" fill="#ff2a3a"/>
 <circle cx="140" cy="108" r="8" fill="#1a1a1a" stroke="#ddd" stroke-width="2"/>
 <circle cx="196" cy="108" r="8" fill="#1a1a1a" stroke="#ddd" stroke-width="2"/>
-<path d="M126 80h30v10h-30z" fill="#ff90a0"/></svg></span><span class="name">REDLINE: Afterimage</span></a>
+<path d="M126 80h30v10h-30z" fill="#ff90a0"/></svg><span class="emblem" aria-hidden="true">🏁</span><span class="what" aria-hidden="true">High-speed racer</span></span><span class="name">REDLINE: Afterimage</span></a>
 </div>
 </section><section id="puzzles" class="cat cat-puzzles">
 <header class="banner">
@@ -1127,14 +1259,14 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <circle cx="120" cy="90" r="64" fill="url(#eh-b-i103)"/>
 <circle cx="120" cy="90" r="22" fill="#000"/>
 <ellipse cx="120" cy="90" rx="70" ry="18" fill="none" stroke="#ffb060" stroke-width="4" opacity=".8"/>
-<g fill="#ffd080" font-family="serif" font-size="12"><text x="40" y="40">12</text><text x="190" y="60">3</text><text x="30" y="130">9</text><text x="170" y="150">6</text></g></svg></span><span class="name">Event Horizon: Chrono-Drift</span></a>
+<g fill="#ffd080" font-family="serif" font-size="12"><text x="40" y="40">12</text><text x="190" y="60">3</text><text x="30" y="130">9</text><text x="170" y="150">6</text></g></svg><span class="emblem" aria-hidden="true">🕳️</span><span class="what" aria-hidden="true">Black-hole puzzler</span></span><span class="name">Event Horizon: Chrono-Drift</span></a>
 <a class="g" href="chroma-resonance/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="cr-a-i104" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#100820"/><stop offset="1" stop-color="#180c30"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#cr-a-i104)"/>
 <circle cx="120" cy="90" r="16" fill="#fff"/>
 <circle cx="120" cy="90" r="32" fill="none" stroke="#ff4ecd" stroke-width="4"/>
 <circle cx="120" cy="90" r="48" fill="none" stroke="#7aa0ff" stroke-width="4"/>
 <circle cx="120" cy="90" r="64" fill="none" stroke="#3ee89a" stroke-width="4"/>
-<circle cx="120" cy="90" r="78" fill="none" stroke="#ffd34d" stroke-width="3" opacity=".7"/></svg></span><span class="name">Chroma Resonance</span></a>
+<circle cx="120" cy="90" r="78" fill="none" stroke="#ffd34d" stroke-width="3" opacity=".7"/></svg><span class="emblem" aria-hidden="true">🎨</span><span class="what" aria-hidden="true">Color-match puzzler</span></span><span class="name">Chroma Resonance</span></a>
 <a class="g" href="bioluminescent-abyss/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ba-a-i105" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#020818"/><stop offset="1" stop-color="#031820"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#ba-a-i105)"/>
 <ellipse cx="120" cy="80" rx="28" ry="36" fill="#0a4a50"/><ellipse cx="120" cy="80" rx="18" ry="26" fill="#1a8078"/>
@@ -1142,7 +1274,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <path d="M100 50c-16-10-20-4-16 10M140 50c16-10 20-4 16 10" fill="#1a8078"/>
 <circle cx="110" cy="76" r="4" fill="#7afff0"/><circle cx="130" cy="76" r="4" fill="#7afff0"/>
 <circle cx="40" cy="130" r="8" fill="#3ee0d0" opacity=".7"/><circle cx="50" cy="40" r="5" fill="#7affb0" opacity=".6"/>
-<circle cx="200" cy="60" r="10" fill="#40c8ff" opacity=".55"/><circle cx="180" cy="140" r="6" fill="#7afff0" opacity=".7"/></svg></span><span class="name">Bioluminescent Abyss</span></a>
+<circle cx="200" cy="60" r="10" fill="#40c8ff" opacity=".55"/><circle cx="180" cy="140" r="6" fill="#7afff0" opacity=".7"/></svg><span class="emblem" aria-hidden="true">🪼</span><span class="what" aria-hidden="true">Deep-sea glow puzzler</span></span><span class="name">Bioluminescent Abyss</span></a>
 <a class="g" href="prism-hop/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="pr-a-i106" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1048"/><stop offset="1" stop-color="#0a1830"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#pr-a-i106)"/>
 <polygon points="50,130 80,130 65,104" fill="#ff5a7a"/>
@@ -1151,21 +1283,21 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <polygon points="108,70 142,70 125,44" fill="#7aa0ff"/>
 <polygon points="160,70 196,70 178,42" fill="#c084fc"/>
 <circle cx="125" cy="36" r="7" fill="#fff"/>
-<path d="M65 104 109 80 125 44" fill="none" stroke="#fff" stroke-width="1.5" opacity=".4" stroke-dasharray="3 3"/></svg></span><span class="name">Prism Hop</span></a>
+<path d="M65 104 109 80 125 44" fill="none" stroke="#fff" stroke-width="1.5" opacity=".4" stroke-dasharray="3 3"/></svg><span class="emblem" aria-hidden="true">🌈</span><span class="what" aria-hidden="true">Prism-hopping puzzler</span></span><span class="name">Prism Hop</span></a>
 <a class="g" href="https://chrisvonderau.github.io/tilt-maze/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="tm-a-i107" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a2030"/><stop offset="1" stop-color="#101820"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#tm-a-i107)"/>
 <g transform="rotate(-12 120 90)">
   <rect x="40" y="30" width="160" height="120" rx="6" fill="#152030" stroke="#7af0ff" stroke-width="3"/>
   <path d="M60 30v80h40V70h40v60h40" fill="none" stroke="#7af0ff" stroke-width="8" stroke-linecap="square"/>
   <circle cx="70" cy="50" r="8" fill="#ff6a3c"/><rect x="176" y="126" width="16" height="16" fill="#3ee89a"/>
-</g></svg></span><span class="name">Tilt Maze</span></a>
+</g></svg><span class="emblem" aria-hidden="true">🌀</span><span class="what" aria-hidden="true">Wooden tilt labyrinth</span></span><span class="name">Tilt Maze</span></a>
 <a class="g" href="https://chrisvonderau.github.io/clockwork-kinetics/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ck-a-i108" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#201808"/><stop offset="1" stop-color="#3a2a10"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#ck-a-i108)"/>
 <circle cx="90" cy="90" r="50" fill="#c89428" stroke="#f4d070" stroke-width="5"/><circle cx="90" cy="90" r="12" fill="#3a2408"/>
 <g fill="#f4d070"><rect x="84" y="40" width="12" height="20"/><rect x="84" y="120" width="12" height="20"/><rect x="40" y="84" width="20" height="12"/><rect x="120" y="84" width="20" height="12"/></g>
 <circle cx="168" cy="64" r="34" fill="#d8a040" stroke="#f4d070" stroke-width="4"/><circle cx="168" cy="64" r="8" fill="#3a2408"/>
 <g fill="#f4d070"><rect x="162" y="32" width="12" height="14"/><rect x="162" y="82" width="12" height="14"/><rect x="136" y="58" width="14" height="12"/><rect x="186" y="58" width="14" height="12"/></g>
-<circle cx="160" cy="130" r="24" fill="#b88020" stroke="#f4d070" stroke-width="3"/><circle cx="160" cy="130" r="6" fill="#3a2408"/></svg></span><span class="name">Clockwork Kinetics</span></a>
+<circle cx="160" cy="130" r="24" fill="#b88020" stroke="#f4d070" stroke-width="3"/><circle cx="160" cy="130" r="6" fill="#3a2408"/></svg><span class="emblem" aria-hidden="true">⚙️</span><span class="what" aria-hidden="true">Gear-chain puzzler</span></span><span class="name">Clockwork Kinetics</span></a>
 </div>
 </section><section id="strategy" class="cat cat-strategy">
 <header class="banner">
@@ -1189,7 +1321,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <rect x="194" y="112" width="12" height="40" fill="#bdbdbd"/><ellipse cx="200" cy="104" rx="10" ry="16" fill="url(#lhg-b-i201)"/>
 <g fill="#eee" stroke="#555"><rect x="150" y="96" width="26" height="36" rx="3" transform="rotate(12 163 114)"/><rect x="62" y="96" width="26" height="36" rx="3" transform="rotate(-12 75 114)"/></g>
 <text x="75" y="120" text-anchor="middle" font-family="Georgia,serif" font-size="13" fill="#222" transform="rotate(-12 75 114)">A&#9824;</text><text x="163" y="120" text-anchor="middle" font-family="Georgia,serif" font-size="13" fill="#222" transform="rotate(12 163 114)">K&#9824;</text>
-<text x="120" y="172" text-anchor="middle" font-family="Georgia,serif" font-size="12" letter-spacing="3" fill="#e8e8e8">THE LAST HOURGLASS</text></svg></span><span class="name">The Last Hourglass</span></a>
+<text x="120" y="172" text-anchor="middle" font-family="Georgia,serif" font-size="12" letter-spacing="3" fill="#e8e8e8">THE LAST HOURGLASS</text></svg><span class="emblem" aria-hidden="true">⏳</span><span class="what" aria-hidden="true">Race-the-sand strategy</span></span><span class="name">The Last Hourglass</span></a>
 <a class="g" href="habeas-corpse/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><radialGradient id="hc-a-i200" cx=".5" cy=".35" r=".75"><stop offset="0" stop-color="#2e2a22"/><stop offset="1" stop-color="#0a0907"/></radialGradient></defs>
 <rect width="240" height="180" fill="url(#hc-a-i200)"/>
 <path d="M0 30h240M0 46h240M0 62h240" stroke="#000" stroke-width="7" opacity=".35"/>
@@ -1200,7 +1332,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <g fill="#7fe0c8" opacity=".85"><circle cx="34" cy="128" r="9"/><circle cx="56" cy="128" r="9"/><circle cx="184" cy="128" r="9"/></g>
 <g fill="#d9583b" opacity=".85"><circle cx="206" cy="128" r="9"/></g>
 <g transform="rotate(-30 196 52)"><rect x="176" y="40" width="40" height="18" rx="4" fill="#8a6234"/><rect x="194" y="56" width="5" height="34" fill="#6a4a24"/></g>
-<text x="120" y="172" text-anchor="middle" font-family="Georgia,serif" font-size="13" letter-spacing="3" fill="#d8b25a">HABEAS CORPSE</text></svg></span><span class="name">Habeas Corpse</span></a>
+<text x="120" y="172" text-anchor="middle" font-family="Georgia,serif" font-size="13" letter-spacing="3" fill="#d8b25a">HABEAS CORPSE</text></svg><span class="emblem" aria-hidden="true">⚰️</span><span class="what" aria-hidden="true">Ghost courtroom cards</span></span><span class="name">Habeas Corpse</span></a>
 <a class="g" href="port-city-tycoon/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="pc-a-i109" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0b060"/><stop offset="1" stop-color="#204060"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#pc-a-i109)"/>
 <path d="M0 110h240v70H0z" fill="#1a3a58"/>
@@ -1210,7 +1342,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <path d="M110 110V40h8v20h20v8h-20v42z" fill="#8a8a90"/>
 <rect x="200" y="86" width="40" height="16" fill="#c05020"/><rect x="200" y="102" width="40" height="16" fill="#2060a0"/>
 <path d="M0 128c40 8 80-8 120 0s80-8 120 0" fill="none" stroke="#e8f0f8" stroke-width="3"/>
-<path d="M40 140h50v8H40z" fill="#d8d0c0"/></svg></span><span class="name">Port City Tycoon</span></a>
+<path d="M40 140h50v8H40z" fill="#d8d0c0"/></svg><span class="emblem" aria-hidden="true">⚓</span><span class="what" aria-hidden="true">Harbor trading tycoon</span></span><span class="name">Port City Tycoon</span></a>
 <a class="g" href="jade-star-checkers/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="js-a-i110" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a3028"/><stop offset="1" stop-color="#082018"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#js-a-i110)"/>
 <g>
@@ -1227,31 +1359,31 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <circle cx="177" cy="71" r="12" fill="#e8f8e8" stroke="#f4e080" stroke-width="2"/>
 <circle cx="63" cy="109" r="12" fill="#145a40" stroke="#f4e080" stroke-width="2"/>
 <circle cx="139" cy="147" r="12" fill="#145a40" stroke="#f4e080" stroke-width="2"/>
-<path d="M101 28l2 6h6l-5 4 2 6-5-4-5 4 2-6-5-4h6z" fill="#f4e080"/></svg></span><span class="name">Jade Star Checkers</span></a>
+<path d="M101 28l2 6h6l-5 4 2 6-5-4-5 4 2-6-5-4h6z" fill="#f4e080"/></svg><span class="emblem" aria-hidden="true">⭐</span><span class="what" aria-hidden="true">Chinese checkers</span></span><span class="name">Jade Star Checkers</span></a>
 <a class="g" href="marble-mayhem/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="mm-a-i111" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#201040"/><stop offset="1" stop-color="#301858"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#mm-a-i111)"/>
 <circle cx="80" cy="90" r="32" fill="#ff5a7a"/><circle cx="68" cy="78" r="10" fill="#fff" opacity=".4"/>
 <circle cx="150" cy="70" r="28" fill="#3ecbff"/><circle cx="140" cy="60" r="8" fill="#fff" opacity=".4"/>
 <circle cx="130" cy="120" r="24" fill="#ffd34d"/><circle cx="122" cy="112" r="7" fill="#fff" opacity=".4"/>
 <circle cx="50" cy="130" r="18" fill="#3ee89a"/><circle cx="44" cy="124" r="5" fill="#fff" opacity=".4"/>
-<circle cx="190" cy="120" r="20" fill="#c084fc"/><circle cx="184" cy="112" r="6" fill="#fff" opacity=".4"/></svg></span><span class="name">Marble Mayhem</span></a>
+<circle cx="190" cy="120" r="20" fill="#c084fc"/><circle cx="184" cy="112" r="6" fill="#fff" opacity=".4"/></svg><span class="emblem" aria-hidden="true">🔮</span><span class="what" aria-hidden="true">Marble strategy duel</span></span><span class="name">Marble Mayhem</span></a>
 <a class="g" href="knight-shift/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="kn-a-i112" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f0e0c0"/><stop offset="1" stop-color="#1a1830"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#kn-a-i112)"/>
 <path d="M88 150h64v10H88zM96 140h48l-4-16c8-8 16-24 12-44-2-10-10-16-20-18 0-12 8-22 8-22s-18 4-24 16c-10-4-22 2-26 16-2 10 4 22 12 30l-6 38z" fill="#1a1830"/>
-<path d="M150 90c16-4 30 6 28 20" fill="none" stroke="#1a1830" stroke-width="6"/></svg></span><span class="name">Knight Shift</span></a>
+<path d="M150 90c16-4 30 6 28 20" fill="none" stroke="#1a1830" stroke-width="6"/></svg><span class="emblem" aria-hidden="true">🐴</span><span class="what" aria-hidden="true">Living 3D chess</span></span><span class="name">Knight Shift</span></a>
 <a class="g" href="tide-table/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="td-a-i113" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a3048"/><stop offset="1" stop-color="#0a2030"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#td-a-i113)"/>
 <circle cx="186" cy="34" r="16" fill="#e8f0ff"/>
 <path d="M0 80c30 16 50-16 80 0s50-16 80 0 50-16 80 0v40c-30-16-50 16-80 0s-50 16-80 0-50 16-80 0z" fill="#2a80a0" opacity=".7"/>
 <path d="M0 110c30 16 50-16 80 0s50-16 80 0 50-16 80 0v70H0z" fill="#1a6080"/>
-<g stroke="#d0e8f0" stroke-width="2" fill="none" opacity=".6"><path d="M40 40h160v100H40z"/><path d="M40 70h160M40 100h160M80 40v100M120 40v100M160 40v100"/></g></svg></span><span class="name">Tide Table</span></a>
+<g stroke="#d0e8f0" stroke-width="2" fill="none" opacity=".6"><path d="M40 40h160v100H40z"/><path d="M40 70h160M40 100h160M80 40v100M120 40v100M160 40v100"/></g></svg><span class="emblem" aria-hidden="true">🌊</span><span class="what" aria-hidden="true">Tide strategy</span></span><span class="name">Tide Table</span></a>
 <a class="g" href="https://chrisvonderau.github.io/bathtub-admirals/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="bt-a-i114" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d8f0f8"/><stop offset="1" stop-color="#6ab0c8"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#bt-a-i114)"/>
 <ellipse cx="120" cy="120" rx="90" ry="36" fill="#f0f4f8" stroke="#c0c8d0" stroke-width="6"/>
 <ellipse cx="120" cy="116" rx="70" ry="22" fill="#4aa0c8"/>
 <path d="M70 116h40l-6-16H80z" fill="#c04030"/><rect x="86" y="90" width="4" height="16" fill="#eee"/><path d="M86 90h16" stroke="#c04030" stroke-width="3"/>
 <path d="M130 118h36l-6-14h-24z" fill="#2060a0"/><rect x="144" y="94" width="4" height="14" fill="#eee"/><path d="M144 94h14" stroke="#2060a0" stroke-width="3"/>
-<circle cx="200" cy="50" r="16" fill="#ffe080"/><circle cx="50" cy="50" r="10" fill="#fff" opacity=".8"/></svg></span><span class="name">Bathtub Admirals</span></a>
+<circle cx="200" cy="50" r="16" fill="#ffe080"/><circle cx="50" cy="50" r="10" fill="#fff" opacity=".8"/></svg><span class="emblem" aria-hidden="true">🛁</span><span class="what" aria-hidden="true">Bathtub battleship</span></span><span class="name">Bathtub Admirals</span></a>
 <a class="g" href="https://chrisvonderau.github.io/lively-chess/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="lc-a-i115" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4e8d0"/><stop offset="1" stop-color="#8a6a40"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#lc-a-i115)"/>
 <g>
@@ -1265,7 +1397,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
   <rect x="120" y="140" width="40" height="40" fill="#2a2010"/><rect x="160" y="140" width="40" height="40" fill="#f4eee0"/>
 </g>
 <path d="M60 70c0-16 12-24 20-24 4 0 8 4 10 8 6-10 16-8 18 0 8 4 12 16 4 28H58c-2-6 0-10 2-12z" fill="#1a1a1a"/>
-<path d="M140 130c8-20 4-36 20-48 6 14 4 28-4 40 16-4 28 8 24 24h-48c0-6 2-12 8-16z" fill="#f4eee0" stroke="#2a2010" stroke-width="2"/></svg></span><span class="name">Lively Chess</span></a>
+<path d="M140 130c8-20 4-36 20-48 6 14 4 28-4 40 16-4 28 8 24 24h-48c0-6 2-12 8-16z" fill="#f4eee0" stroke="#2a2010" stroke-width="2"/></svg><span class="emblem" aria-hidden="true">♟️</span><span class="what" aria-hidden="true">Chess</span></span><span class="name">Lively Chess</span></a>
 <a class="g" href="https://chrisvonderau.github.io/capital-tycoon/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ct-a-i116" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#204068"/><stop offset="1" stop-color="#0a2038"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#ct-a-i116)"/>
 <rect x="20" y="80" width="28" height="80" fill="#c0c8d0"/><rect x="54" y="50" width="36" height="110" fill="#d8c070"/>
@@ -1273,7 +1405,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <rect x="172" y="60" width="32" height="100" fill="#c8d0d8"/><rect x="208" y="90" width="22" height="70" fill="#a0a8b0"/>
 <circle cx="146" cy="28" r="14" fill="#f4d060"/><path d="M146 18v20M138 28h16" stroke="#8a6010" stroke-width="3"/>
 <rect x="136" y="60" width="8" height="8" fill="#7ac8ff"/><rect x="150" y="60" width="8" height="8" fill="#7ac8ff"/>
-<rect x="136" y="76" width="8" height="8" fill="#7ac8ff"/><rect x="150" y="76" width="8" height="8" fill="#7ac8ff"/></svg></span><span class="name">Capital Tycoon</span></a>
+<rect x="136" y="76" width="8" height="8" fill="#7ac8ff"/><rect x="150" y="76" width="8" height="8" fill="#7ac8ff"/></svg><span class="emblem" aria-hidden="true">🏦</span><span class="what" aria-hidden="true">Property trading</span></span><span class="name">Capital Tycoon</span></a>
 <a class="g" href="https://chrisvonderau.github.io/world-domination/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="wd-a-i117" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a1a30"/><stop offset="1" stop-color="#081018"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#wd-a-i117)"/>
 <circle cx="120" cy="90" r="62" fill="#1a4a78"/><circle cx="120" cy="90" r="62" fill="none" stroke="#d8a020" stroke-width="4"/>
@@ -1281,7 +1413,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <path d="M140 100c16-4 28 8 36 4 4 16-8 28-20 32-12-8-20-20-16-36z" fill="#3a8a50"/>
 <path d="M70 110c8 8 8 20 0 28-12 0-20-12-16-24z" fill="#3a8a50"/>
 <circle cx="108" cy="74" r="5" fill="#e02020"/><circle cx="156" cy="116" r="5" fill="#e02020"/><circle cx="76" cy="120" r="4" fill="#e02020"/>
-<path d="M40 90h160M120 28v124M60 50c40 20 80 20 120 0M60 130c40-20 80-20 120 0" fill="none" stroke="#7ab0d0" stroke-width="1" opacity=".5"/></svg></span><span class="name">World Domination: Grand Conquest</span></a>
+<path d="M40 90h160M120 28v124M60 50c40 20 80 20 120 0M60 130c40-20 80-20 120 0" fill="none" stroke="#7ab0d0" stroke-width="1" opacity=".5"/></svg><span class="emblem" aria-hidden="true">🌍</span><span class="what" aria-hidden="true">World conquest</span></span><span class="name">World Domination: Grand Conquest</span></a>
 </div>
 </section><section id="party" class="cat cat-party">
 <header class="banner">
@@ -1300,7 +1432,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <circle cx="46" cy="96" r="5" fill="#000"/><circle cx="120" cy="94" r="5" fill="#000"/><circle cx="194" cy="96" r="5" fill="#000"/><circle cx="46" cy="162" r="5" fill="#000"/><circle cx="120" cy="164" r="5" fill="#000"/><circle cx="194" cy="162" r="5" fill="#000"/>
 <circle cx="150" cy="122" r="5" fill="#f2c200"/><circle cx="158" cy="117" r="5" fill="#d0261c"/><circle cx="158" cy="127" r="5" fill="#121212"/><circle cx="166" cy="112" r="5" fill="#1446b8"/><circle cx="166" cy="122" r="5" fill="#0f7a3e"/><circle cx="166" cy="132" r="5" fill="#f06a12"/><circle cx="84" cy="129" r="5" fill="#f4f1e6"/>
 <text x="120" y="48" text-anchor="middle" font-family="Brush Script MT,Segoe Script,cursive" font-style="italic" font-size="34" fill="#ff5fc8" stroke="#ff9ee0" stroke-width=".6">Byrnes</text>
-<text x="120" y="74" text-anchor="middle" font-family="Trebuchet MS,sans-serif" font-weight="900" font-size="17" letter-spacing="3" fill="#7fd8ff">POOL HALL</text></svg></span><span class="name">Byrnes Pool Hall</span></a>
+<text x="120" y="74" text-anchor="middle" font-family="Trebuchet MS,sans-serif" font-weight="900" font-size="17" letter-spacing="3" fill="#7fd8ff">POOL HALL</text></svg><span class="emblem" aria-hidden="true">🎱</span><span class="what" aria-hidden="true">8-ball pool</span></span><span class="name">Byrnes Pool Hall</span></a>
 <a class="g" href="hall-pass/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="hp-a-i202" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b2350"/><stop offset="1" stop-color="#151026"/></linearGradient><radialGradient id="hp-b-i202" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff2b8" stop-opacity=".55"/><stop offset="1" stop-color="#fff2b8" stop-opacity="0"/></radialGradient></defs>
 <rect width="240" height="180" fill="url(#hp-a-i202)"/>
 <circle cx="196" cy="34" r="16" fill="#ffe8a3"/><circle cx="190" cy="30" r="3" fill="#e8d088"/>
@@ -1315,7 +1447,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <path d="M30 120h-16M30 128h-22M30 136h-14" stroke="#ffe8a3" stroke-width="3" stroke-linecap="round"/>
 <rect x="150" y="84" width="34" height="26" rx="6" fill="#fff6e4" stroke="#2b2233" stroke-width="3"/><path d="M156 84q11-12 22 0" fill="#ffc145" stroke="#2b2233" stroke-width="3"/>
 <path d="M190 70l18-10" stroke="#ffc145" stroke-width="4" stroke-linecap="round"/>
-<text x="120" y="60" text-anchor="middle" font-family="Trebuchet MS,sans-serif" font-weight="900" font-size="30" fill="#ffe08a" stroke="#2b2233" stroke-width="2" paint-order="stroke">HALL PASS</text></svg></span><span class="name">Hall Pass</span></a>
+<text x="120" y="60" text-anchor="middle" font-family="Trebuchet MS,sans-serif" font-weight="900" font-size="30" fill="#ffe08a" stroke="#2b2233" stroke-width="2" paint-order="stroke">HALL PASS</text></svg><span class="emblem" aria-hidden="true">🏫</span><span class="what" aria-hidden="true">School-day party game</span></span><span class="name">Hall Pass</span></a>
 <a class="g" href="docket-dojo/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="dd-a-i118" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a1010"/><stop offset="1" stop-color="#1a0808"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#dd-a-i118)"/>
 <path d="M20 80 120 30 220 80v16H20z" fill="#2a0a0a"/>
@@ -1323,7 +1455,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <rect x="50" y="96" width="140" height="60" fill="#f0e0c0"/><rect x="50" y="96" width="140" height="10" fill="#8a2010"/>
 <path d="M150 70v54" stroke="#c0a060" stroke-width="8" stroke-linecap="round"/>
 <path d="M128 124h44c4 0 6 6 2 10H132c-6 0-8-6-4-10z" fill="#3a2a10"/>
-<circle cx="150" cy="66" r="8" fill="#e0b060"/></svg></span><span class="name">Docket Dojo</span></a>
+<circle cx="150" cy="66" r="8" fill="#e0b060"/></svg><span class="emblem" aria-hidden="true">🥋</span><span class="what" aria-hidden="true">Law-trivia dojo</span></span><span class="name">Docket Dojo</span></a>
 <a class="g" href="neon-wheel/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ne-a-i119" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#120028"/><stop offset="1" stop-color="#1a0830"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#ne-a-i119)"/>
 <g transform="translate(120 90)">
@@ -1336,7 +1468,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
   <path d="M0 0 L-55.4-32 A64 64 0 0 1 0-64z" fill="#ffd34d"/>
   <circle r="14" fill="#120028" stroke="#fff" stroke-width="3"/>
 </g>
-<path d="M120 20l8 16h-16z" fill="#fff"/></svg></span><span class="name">Wheel of Fortune: Neon Edition</span></a>
+<path d="M120 20l8 16h-16z" fill="#fff"/></svg><span class="emblem" aria-hidden="true">🎡</span><span class="what" aria-hidden="true">Spin-the-wheel puzzles</span></span><span class="name">Wheel of Fortune: Neon Edition</span></a>
 <a class="g" href="legal-jeopardy/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="lj-a-i120" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a1850"/><stop offset="1" stop-color="#081030"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#lj-a-i120)"/>
 <rect x="30" y="36" width="180" height="80" rx="6" fill="#102070" stroke="#d8a020" stroke-width="3"/>
@@ -1344,7 +1476,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <rect x="50" y="130" width="40" height="30" fill="#1a2870"/>
 <rect x="100" y="122" width="40" height="38" fill="#d8a020"/>
 <rect x="150" y="130" width="40" height="30" fill="#1a2870"/>
-<path d="M110 28h20v-12h-8l-2-8-2 8h-8z" fill="#d8a020"/></svg></span><span class="name">Legal Jeopardy</span></a>
+<path d="M110 28h20v-12h-8l-2-8-2 8h-8z" fill="#d8a020"/></svg><span class="emblem" aria-hidden="true">❓</span><span class="what" aria-hidden="true">Legal quiz show</span></span><span class="name">Legal Jeopardy</span></a>
 <a class="g" href="truth-factory/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="tf-a-i121" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a8088"/><stop offset="1" stop-color="#2a3840"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#tf-a-i121)"/>
 <rect x="30" y="80" width="120" height="70" fill="#c0c8d0"/>
@@ -1353,7 +1485,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <path d="M156 20c8 8 8 20 0 30 12-4 20 6 16 20" fill="none" stroke="#c0c8d0" stroke-width="8"/>
 <path d="M194 36c8 8 8 20 0 28" fill="none" stroke="#c0c8d0" stroke-width="7"/>
 <circle cx="200" cy="130" r="22" fill="#3ee89a"/>
-<path d="M190 130l8 8 16-16" fill="none" stroke="#0a3018" stroke-width="5" stroke-linecap="round"/></svg></span><span class="name">The Truth Factory</span></a>
+<path d="M190 130l8 8 16-16" fill="none" stroke="#0a3018" stroke-width="5" stroke-linecap="round"/></svg><span class="emblem" aria-hidden="true">🤥</span><span class="what" aria-hidden="true">Truth-or-lie party</span></span><span class="name">The Truth Factory</span></a>
 <a class="g" href="lexfury/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="lx-a-i122" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a0820"/><stop offset="1" stop-color="#100810"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#lx-a-i122)"/>
 <g font-family="Impact, Arial Black, sans-serif" font-weight="800" text-anchor="middle">
@@ -1362,12 +1494,12 @@ section{margin:0 0 56px;scroll-margin-top:78px}
   <text x="170" y="80" font-size="58" fill="#ff4cff" transform="rotate(16 170 80)">X</text>
   <text x="80" y="140" font-size="52" fill="#00f0ff" transform="rotate(10 80 140)">F</text>
   <text x="150" y="150" font-size="60" fill="#ff6a20" transform="rotate(-12 150 150)">!</text>
-</g></svg></span><span class="name">LEXFURY</span></a>
+</g></svg><span class="emblem" aria-hidden="true">🔤</span><span class="what" aria-hidden="true">Word-blast frenzy</span></span><span class="name">LEXFURY</span></a>
 <a class="g" href="https://chrisvonderau.github.io/Sketch-showdown/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="sk-a-i123" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f0e8"/><stop offset="1" stop-color="#d0c8b8"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#sk-a-i123)"/>
 <path d="M40 130 90 40 110 48 60 138z" fill="#2a2a2a"/><path d="M90 40l8-8 20 8-8 8z" fill="#e05040"/>
 <path d="M200 130 150 40 130 48 180 138z" fill="#2a2a2a"/><path d="M150 40l-8-8-20 8 8 8z" fill="#2060c0"/>
-<path d="M70 150c20-20 40-16 50-4 10-20 40-16 50 4" fill="none" stroke="#2a2a2a" stroke-width="2" stroke-dasharray="4 3"/></svg></span><span class="name">Sketch Showdown</span></a>
+<path d="M70 150c20-20 40-16 50-4 10-20 40-16 50 4" fill="none" stroke="#2a2a2a" stroke-width="2" stroke-dasharray="4 3"/></svg><span class="emblem" aria-hidden="true">✏️</span><span class="what" aria-hidden="true">Drawing showdown</span></span><span class="name">Sketch Showdown</span></a>
 <a class="g" href="https://chrisvonderau.github.io/hung-jury/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="hj-a-i124" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2a28"/><stop offset="1" stop-color="#101010"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#hj-a-i124)"/>
 <path d="M60 50h120v8H60z" fill="#c0a060"/><path d="M120 58v70" stroke="#c0a060" stroke-width="6"/>
@@ -1375,7 +1507,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <circle cx="86" cy="148" r="14" fill="#c0a060"/><circle cx="154" cy="148" r="14" fill="#c0a060"/>
 <path d="M120 58l-40 70M120 58l40 70" stroke="#c0a060" stroke-width="4"/>
 <rect x="20" y="70" width="16" height="40" fill="#e8e0d0"/><rect x="204" y="70" width="16" height="40" fill="#e8e0d0"/>
-<path d="M20 70h16l-8-16zM204 70h16l-8-16z" fill="#8a2010"/></svg></span><span class="name">Hung Jury</span></a>
+<path d="M20 70h16l-8-16zM204 70h16l-8-16z" fill="#8a2010"/></svg><span class="emblem" aria-hidden="true">🧑‍⚖️</span><span class="what" aria-hidden="true">Courtroom bluffing</span></span><span class="name">Hung Jury</span></a>
 <a class="g" href="https://chrisvonderau.github.io/wordstorm/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="ws-a-i125" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#102040"/><stop offset="1" stop-color="#1a3058"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#ws-a-i125)"/>
 <path d="M40 40c40 20 40 40 0 60 50-10 80-6 110 10-10-30 10-50 40-50-20 30-10 60 16 80-40 4-80-10-120 0 10-30-10-70-46-100z" fill="#d0d8e8" opacity=".85"/>
@@ -1385,7 +1517,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
   <text x="150" y="90" transform="rotate(18 150 90)">R</text>
   <text x="90" y="120" transform="rotate(8 90 120)">D</text>
   <text x="160" y="130">S</text>
-</g></svg></span><span class="name">WORDSTORM</span></a>
+</g></svg><span class="emblem" aria-hidden="true">🌪️</span><span class="what" aria-hidden="true">Word storm</span></span><span class="name">WORDSTORM</span></a>
 <a class="g" href="https://chrisvonderau.github.io/million-dollar-vault/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="mv-a-i126" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1a18"/><stop offset="1" stop-color="#0a0a0a"/></linearGradient><radialGradient id="mv-b-i126" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ffe080"/><stop offset="1" stop-color="#8a6010"/></radialGradient></defs>
 <rect width="240" height="180" fill="url(#mv-a-i126)"/>
 <circle cx="120" cy="90" r="66" fill="#3a3a38" stroke="#c0a060" stroke-width="8"/>
@@ -1393,7 +1525,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <circle cx="120" cy="90" r="16" fill="url(#mv-b-i126)"/>
 <path d="M120 90h44" stroke="#e0c070" stroke-width="6"/><circle cx="168" cy="90" r="8" fill="#e0c070"/>
 <path d="M120 50v8M120 122v8M80 90h8M152 50l6 6M88 50l-6 6M88 130l-6-6M152 130l6-6" stroke="#e0c070" stroke-width="3"/>
-<text x="120" y="96" text-anchor="middle" fill="#3a2408" font-size="18" font-weight="800" font-family="Georgia, serif">$</text></svg></span><span class="name">The Million-Dollar Vault</span></a>
+<text x="120" y="96" text-anchor="middle" fill="#3a2408" font-size="18" font-weight="800" font-family="Georgia, serif">$</text></svg><span class="emblem" aria-hidden="true">💰</span><span class="what" aria-hidden="true">Million-dollar quiz</span></span><span class="name">The Million-Dollar Vault</span></a>
 <a class="g" href="https://chrisvonderau.github.io/whisperchain/"><span class="art" aria-hidden="true"><svg class="cover" viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="wc-a-i127" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0c1020"/><stop offset="1" stop-color="#141028"/></linearGradient></defs>
 <rect width="240" height="180" fill="url(#wc-a-i127)"/>
 <circle cx="54" cy="90" r="22" fill="#3a4060"/><circle cx="120" cy="90" r="26" fill="#4a5080"/><circle cx="190" cy="90" r="22" fill="#3a4060"/>
@@ -1404,7 +1536,7 @@ section{margin:0 0 56px;scroll-margin-top:78px}
 <path d="M46 100c6 6 12 6 16 0" fill="none" stroke="#c0c8e0" stroke-width="2"/>
 <path d="M110 102c8 7 16 7 20 0" fill="none" stroke="#c0c8e0" stroke-width="2"/>
 <path d="M182 100c6 6 12 6 16 0" fill="none" stroke="#c0c8e0" stroke-width="2"/>
-<path d="M36 70c-16-10-20-4-10 8M204 70c16-10 20-4 10 8" fill="none" stroke="#8a90b0" stroke-width="2"/></svg></span><span class="name">Whisperchain</span></a>
+<path d="M36 70c-16-10-20-4-10 8M204 70c16-10 20-4 10 8" fill="none" stroke="#8a90b0" stroke-width="2"/></svg><span class="emblem" aria-hidden="true">🤫</span><span class="what" aria-hidden="true">Telephone party game</span></span><span class="name">Whisperchain</span></a>
 </div>
 </section>
 </main>
