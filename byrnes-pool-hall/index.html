@@ -2090,6 +2090,22 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     play(pick(S.tip), N.sfx, 0.25, 0.55, t + 0.25, 1500);   // wooden triangle lifted off
   }
   function chalk() { if (!live()) return; if (!S.chalk) force('chalk'); play(S.chalk, N.sfx, 0.35, rnd(0.9, 1.1), ctx.currentTime); }
+  // splintering wood snap (Dean's cue over his knee)
+  function crack() {
+    if (!live()) return;
+    if (!S.crack) S.crack = buf(0.55, 1, function (d, sr) {
+      var i, seed = 7, rnd2 = function () { seed = (seed * 16807) % 2147483647; return seed / 2147483647 * 2 - 1; };
+      for (i = 0; i < d.length; i++) {
+        var t = i / sr, env = t < 0.004 ? t / 0.004 : Math.exp(-(t - 0.004) * 38);
+        var spl = 0; if (t > 0.03 && t < 0.25 && rnd2() > 0.985) spl = rnd2() * 0.8 * Math.exp(-t * 9);
+        d[i] = rnd2() * env + spl;
+      }
+      bqArr(d, 'bp', 1900, 0.9, sr);
+      addMode(d, sr, 210, 0.35, 0.03, 0, 0); addMode(d, sr, 520, 0.25, 0.02, 0, 0);
+      normalize(d, 0.95); fade(d, sr, 0.0005, 0.05);
+    });
+    play(S.crack, N.sfx, 0.9, rnd(0.95, 1.05), ctx.currentTime);
+  }
   function coin(n) {
     if (!live()) return;
     n = Math.round(clamp(num(n, 1), 1, 8));
@@ -2708,7 +2724,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
   BPH.Audio = {
     unlock: guard(unlock),
     ballHit: guard(ballHit), cushion: guard(cushion), pocket: guard(pocket), cueStrike: guard(cueStrike),
-    rack: guard(rack), chalk: guard(chalk), coin: guard(coin), crowd: guard(crowd), sting: guard(sting),
+    rack: guard(rack), chalk: guard(chalk), crack: guard(crack), coin: guard(coin), crowd: guard(crowd), sting: guard(sting),
     neonBuzz: guard(neonBuzz),
     uiMove: guard(function () { blip(1250, 0, 0.07); }),
     uiOk: guard(function () { blip(660, 990, 0.12); }),
@@ -3200,11 +3216,24 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
   function buildCues() {
     cueGroup = new THREE.Group(); scene.add(cueGroup);
     ['classic', 'carbon', 'inlay', 'dean'].forEach(function (s) { cues[s] = buildCue(s); cueGroup.add(cues[s]); });
+    cues.rod = buildRodCue(); cueGroup.add(cues.rod);
+  }
+  // Dean's curtain rod (after he snaps his cue): brass rod with round finials, slightly longer than a cue; tip end at local y = 0
+  function buildRodCue() {
+    var grp = new THREE.Group(), brass = std({ color: 0xd4a640, metalness: 1, roughness: 0.28 });
+    var rg = new THREE.CylinderGeometry(0.0085, 0.0085, 1.52, 16); rg.translate(0, 0.79, 0);
+    var m = new THREE.Mesh(rg, brass); m.castShadow = true; grp.add(m);
+    var kg = new THREE.SphereGeometry(0.022, 16, 12);
+    m = new THREE.Mesh(kg, brass); m.position.y = 0.022; grp.add(m);
+    m = new THREE.Mesh(kg, brass); m.position.y = 1.57; grp.add(m);
+    grp.visible = false;
+    return grp;
   }
   function updateCue(G) {
     var mode = G.mode, aim = G.aim || {}, src = aim, show = false, style = 'classic';
     var p = G.players && G.players[G.activePlayer];
     if (p && p.cue && cues[p.cue]) style = p.cue; else if (p && p.isCPU && G.dean && G.dean.present) style = 'dean';
+    if (style === 'dean' && cues.rod && deanRodActive(G)) style = 'rod';
     var sa = G.strikeAnim || 0;
     if (mode === 'aim') show = true;
     else if (mode === 'cpu' && G.cpuAim) { show = true; src = G.cpuAim; }
@@ -3814,32 +3843,42 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
   }
 
   // ---------- Dean Humphrey, in person ----------
-  var dean = { g: null, head: null, armR: null, foreR: null, armL: null, faces: [], faceMat: null, brows: [], t: 0, raise: 0, shake: 0, droop: 0, yaw: 0, vis: false };
+  // Original goofy beanpole cartoon: bald shiny dome, jug ears, googly eyes, buck-toothed grin,
+  // a noodle neck with an Adam's apple you can see from Mars, and the odd string of drool.
+  var dean = { g: null, upper: null, head: null, armR: null, armL: null, bottle: null, faces: [], faceMat: null, brows: [], eyes: [], lids: [],
+    apple: null, appleY: 0.56, drool: null, droolStrand: null, droolDrop: null, droolMat: null,
+    t: 0, raise: 0, shake: 0, droop: 0, smug: 0, yaw: 0, vis: false, lastMood: '', lastTalk: 0,
+    sipT: -1, nextSip: 6, gulpT: -1, nextGulp: 4, rollT: -1, nextRoll: 3, blinkT: -1, nextBlink: 2.5, droolT: -1, nextDrool: 12 };
   function deanFace(open) {
-    var c = mkCanvas(1024, 512), g = c.getContext('2d'), cx = 256;
-    g.fillStyle = '#efc29c'; g.fillRect(0, 0, 1024, 512);
-    // hair: gray band around the back and sides, sparse comb-over on top
-    g.fillStyle = '#a19b92'; g.fillRect(440, 70, 600, 190); g.fillRect(0, 70, 70, 190);
-    g.fillStyle = '#efc29c'; g.beginPath(); g.ellipse(512, 250, 70, 50, 0, 0, PI * 2); g.fill(); g.beginPath(); g.ellipse(0, 250, 70, 50, 0, 0, PI * 2); g.fill(); g.beginPath(); g.ellipse(1024, 250, 70, 50, 0, 0, PI * 2); g.fill();
-    g.strokeStyle = 'rgba(150,145,135,0.9)'; g.lineWidth = 3;
-    for (var s = 0; s < 14; s++) { g.beginPath(); var y = 20 + s * 4; g.moveTo(560, y + 30); g.bezierCurveTo(400, y, 250, y + 10, 120, y + 40); g.stroke(); }
-    g.strokeStyle = 'rgba(80,70,60,0.25)'; for (s = 0; s < 80; s++) { g.beginPath(); var hx2 = 450 + rnd() * 580, hy2 = 80 + rnd() * 170; g.moveTo(hx2, hy2); g.lineTo(hx2 + rnd() * 6, hy2 + 14); g.stroke(); }
-    // rosy cheeks + freckles
-    [-1, 1].forEach(function (sd) { var gr = g.createRadialGradient(cx + sd * 100, 290, 2, cx + sd * 100, 290, 52); gr.addColorStop(0, 'rgba(230,90,90,0.45)'); gr.addColorStop(1, 'rgba(230,90,90,0)'); g.fillStyle = gr; g.fillRect(cx + sd * 100 - 60, 230, 120, 120); });
-    for (var f = 0; f < 70; f++) { var fx = cx + (rnd() - 0.5) * 260, fy = 236 + rnd() * 70; if (Math.abs(fx - cx) < 20) continue; g.fillStyle = 'rgba(150,80,40,' + (0.35 + rnd() * 0.4).toFixed(2) + ')'; g.beginPath(); g.arc(fx, fy, 1.6 + rnd() * 2.2, 0, PI * 2); g.fill(); }
-    // forehead wrinkles (late 50s)
-    g.strokeStyle = 'rgba(150,90,60,0.35)'; g.lineWidth = 2; for (s = 0; s < 3; s++) { g.beginPath(); g.moveTo(cx - 60, 150 + s * 12); g.quadraticCurveTo(cx, 144 + s * 12, cx + 60, 150 + s * 12); g.stroke(); }
-    // the huge goofy grin
-    var L = cx - 112, Rr = cx + 112, yC = 300, top = 330, bot = 352 + open * 34;
-    g.beginPath(); g.moveTo(L, yC); g.quadraticCurveTo(cx, top, Rr, yC); g.quadraticCurveTo(cx, bot + 40, L, yC); g.closePath();
-    g.fillStyle = '#5a1416'; g.fill();
-    g.save(); g.clip();
-    g.fillStyle = '#fbf6ea'; g.beginPath(); g.moveTo(L - 10, yC - 6); g.quadraticCurveTo(cx, top - 8, Rr + 10, yC - 6); g.lineTo(Rr + 10, yC + 18); g.quadraticCurveTo(cx, top + 22, L - 10, yC + 18); g.closePath(); g.fill();
-    g.strokeStyle = 'rgba(160,140,120,0.7)'; g.lineWidth = 2; for (var tx = L + 20; tx < Rr; tx += 20) { g.beginPath(); g.moveTo(tx, yC - 20); g.lineTo(tx, yC + 30); g.stroke(); }
-    if (open > 0) { g.fillStyle = '#c0504a'; g.beginPath(); g.ellipse(cx, bot + 18, 46, 16 + open * 6, 0, 0, PI * 2); g.fill(); }
+    var c = mkCanvas(1024, 512), g = c.getContext('2d'), cx = 256, s, gr;
+    g.fillStyle = '#f1c6a0'; g.fillRect(0, 0, 1024, 512);
+    // shiny bald dome: soft sheen over the top and a bright cartoon glint up front (no hair anywhere)
+    gr = g.createLinearGradient(0, 0, 0, 190); gr.addColorStop(0, 'rgba(255,238,220,0.9)'); gr.addColorStop(1, 'rgba(255,238,220,0)'); g.fillStyle = gr; g.fillRect(0, 0, 1024, 190);
+    gr = g.createRadialGradient(cx - 34, 66, 4, cx - 34, 66, 92); gr.addColorStop(0, 'rgba(255,255,255,0.95)'); gr.addColorStop(0.3, 'rgba(255,250,240,0.55)'); gr.addColorStop(1, 'rgba(255,250,240,0)');
+    g.fillStyle = gr; g.fillRect(cx - 130, 0, 200, 170);
+    g.fillStyle = 'rgba(190,120,90,0.10)'; g.fillRect(600, 60, 330, 380);                       // a touch of shade round the back
+    // raised, surprised forehead wrinkles
+    g.strokeStyle = 'rgba(160,95,65,0.35)'; g.lineWidth = 3;
+    for (s = 0; s < 3; s++) { g.beginPath(); g.moveTo(cx - 70, 122 + s * 13); g.quadraticCurveTo(cx, 110 + s * 13, cx + 70, 122 + s * 13); g.stroke(); }
+    // rosy cheeks
+    [-1, 1].forEach(function (sd) { var r = g.createRadialGradient(cx + sd * 98, 292, 2, cx + sd * 98, 292, 46); r.addColorStop(0, 'rgba(235,95,90,0.42)'); r.addColorStop(1, 'rgba(235,95,90,0)'); g.fillStyle = r; g.fillRect(cx + sd * 98 - 50, 240, 100, 104); });
+    // the ear-to-ear goofy grin (big buck teeth are 3D, added in buildDean)
+    var L = cx - 150, Rr = cx + 150, yE = 262, uc = 318, lc = 398 + open * 56;
+    function lips() { g.beginPath(); g.moveTo(L, yE); g.quadraticCurveTo(cx, uc, Rr, yE); g.quadraticCurveTo(cx, lc, L, yE); g.closePath(); }
+    lips(); g.fillStyle = '#4a0f14'; g.fill();
+    g.save(); lips(); g.clip();
+    if (open > 0) { g.fillStyle = '#c4504c'; g.beginPath(); g.ellipse(cx, (yE + lc) / 2 - 4, 70, 10 + open * 7, 0, 0, PI * 2); g.fill(); }
+    g.fillStyle = '#fdf8ec';
+    g.beginPath(); g.moveTo(L - 10, yE - 4); g.quadraticCurveTo(cx, uc - 6, Rr + 10, yE - 4); g.lineTo(Rr + 10, yE + 16); g.quadraticCurveTo(cx, uc + 34, L - 10, yE + 16); g.closePath(); g.fill();
+    if (open > 0) { g.beginPath(); g.moveTo(L, yE + 14); g.quadraticCurveTo(cx, lc - 40, Rr, yE + 14); g.lineTo(Rr, yE + 40); g.quadraticCurveTo(cx, lc + 6, L, yE + 40); g.closePath(); g.fill(); }
+    g.strokeStyle = 'rgba(150,130,110,0.7)'; g.lineWidth = 2;
+    for (var tx = L + 22; tx < Rr; tx += 22) { if (Math.abs(tx - cx) < 26) continue; g.beginPath(); g.moveTo(tx, yE - 30); g.lineTo(tx, yE + 70); g.stroke(); }
     g.restore();
-    g.strokeStyle = '#a24a40'; g.lineWidth = 5; g.beginPath(); g.moveTo(L, yC); g.quadraticCurveTo(cx, top, Rr, yC); g.quadraticCurveTo(cx, bot + 40, L, yC); g.stroke();
-    g.strokeStyle = 'rgba(150,80,60,0.6)'; g.lineWidth = 3; g.beginPath(); g.arc(L - 8, yC - 6, 10, -0.3, 1.5); g.stroke(); g.beginPath(); g.arc(Rr + 8, yC - 6, 10, 1.6, 3.4); g.stroke();
+    g.strokeStyle = '#9c3f36'; g.lineWidth = 6; lips(); g.stroke();
+    // dimples and laugh lines at the up-turned corners
+    g.strokeStyle = 'rgba(150,80,60,0.6)'; g.lineWidth = 4;
+    g.beginPath(); g.arc(L - 10, yE - 8, 13, -0.4, 1.5); g.stroke(); g.beginPath(); g.arc(Rr + 10, yE - 8, 13, 1.6, 3.5); g.stroke();
+    g.lineWidth = 3; g.beginPath(); g.arc(L + 6, yE + 6, 40, 2.2, 3.4); g.stroke(); g.beginPath(); g.arc(Rr - 6, yE + 6, 40, -0.25, 0.95); g.stroke();
     return texOf(c);
   }
   function hawaiianTex() {
@@ -3856,81 +3895,227 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
   function buildDean() {
     var g = new THREE.Group(); g.rotation.order = 'YXZ';
     var x = WX - 0.42, y = 1.3; at(g, x, y, FLOOR); faceTo(g, x, y, -1.0, -0.2); dean.baseYaw = g.rotation.y; scene.add(g); dean.g = g;
-    var skin = std({ color: 0xefc29c, roughness: 0.6 }), shirt = std({ map: hawaiianTex(), roughness: 0.75 }), khaki = std({ color: 0xb7a27a, roughness: 0.85 });
-    var shoe = std({ color: 0x3a2214, roughness: 0.5 }), dark = std({ color: 0x222222, roughness: 0.6 });
+    var skin = std({ color: 0xf1c6a0, roughness: 0.5 }), shirt = std({ map: hawaiianTex(), roughness: 0.75 }), khaki = std({ color: 0xb7a27a, roughness: 0.85 });
+    var shoe = std({ color: 0x3a2214, roughness: 0.5 }), dark = std({ color: 0x222222, roughness: 0.6 }), gold = std({ color: 0xd8b04a, metalness: 1, roughness: 0.3 });
+    var white = std({ color: 0xffffff, roughness: 0.15 }), pupil = std({ color: 0x15100c, roughness: 0.15 }), brow = std({ color: 0x4a443e, roughness: 0.9 });
+    var lidMat = std({ color: 0xeab894, roughness: 0.55, side: THREE.DoubleSide }), tooth = std({ color: 0xfbf6e6, roughness: 0.2 });
     function add(par, geo, mat, px, py, pz) { var m = new THREE.Mesh(geo, mat); m.position.set(px, py, pz); par.add(m); return m; }
-    [-1, 1].forEach(function (s) {
-      add(g, new THREE.BoxGeometry(0.1, 0.07, 0.28), shoe, s * 0.085, 0.035, 0.05);
-      add(g, new THREE.CylinderGeometry(0.056, 0.05, 0.86, 12), khaki, s * 0.085, 0.5, 0);
-    });
-    add(g, new THREE.CylinderGeometry(0.135, 0.135, 0.05, 16), dark, 0, 0.93, 0).scale.z = 0.72;
-    add(g, new THREE.BoxGeometry(0.05, 0.035, 0.02), std({ color: 0xd8b04a, metalness: 1, roughness: 0.3 }), 0, 0.93, 0.1);
-    var torso = add(g, new THREE.CapsuleGeometry(0.135, 0.42, 6, 16), shirt, 0, 1.25, 0); torso.scale.set(1, 1, 0.7);
-    add(g, new THREE.CylinderGeometry(0.038, 0.045, 0.16, 12), skin, 0, 1.6, 0.01);
-    add(g, new THREE.SphereGeometry(0.018, 8, 6), skin, 0, 1.58, 0.045);                // Adam's apple
+    // stick legs in hiked-up khakis, clown-long shoes
+    function leg(s) {
+      var hip = new THREE.Group(); hip.position.set(s * 0.06, 0.96, 0); g.add(hip);
+      add(hip, new THREE.CylinderGeometry(0.033, 0.035, 0.48, 10), khaki, 0, -0.24, 0);
+      var knee = new THREE.Group(); knee.position.set(0, -0.47, 0); hip.add(knee);
+      add(knee, new THREE.CylinderGeometry(0.035, 0.04, 0.46, 10), khaki, 0, -0.23, 0);
+      add(knee, new THREE.BoxGeometry(0.085, 0.06, 0.33), shoe, s * 0.005, -0.46, 0.07);
+      return { hip: hip, knee: knee };
+    }
+    dean.legR = leg(-1); dean.legL = leg(1);
+    add(g, new THREE.CylinderGeometry(0.1, 0.09, 0.14, 14), khaki, 0, 0.92, 0).scale.z = 0.68;
+    add(g, new THREE.CylinderGeometry(0.103, 0.103, 0.035, 14), dark, 0, 0.99, 0).scale.z = 0.68;
+    add(g, new THREE.BoxGeometry(0.045, 0.032, 0.02), gold, 0, 0.99, 0.07);
+    // everything above the hips pivots here (shimmy, smug lean, sulk slump)
+    var up = new THREE.Group(); up.position.set(0, 0.95, 0); g.add(up); dean.upper = up;
+    add(up, new THREE.CapsuleGeometry(0.1, 0.27, 6, 14), shirt, 0, 0.24, 0).scale.set(1, 1, 0.66);
+    add(up, new THREE.CylinderGeometry(0.045, 0.06, 0.04, 12), shirt, 0, 0.47, 0);                     // open collar
+    add(up, new THREE.CylinderGeometry(0.021, 0.025, 0.3, 10), skin, 0, 0.58, 0.004);                  // noodle neck
+    var apple = new THREE.Group(); apple.position.set(0, dean.appleY, 0.016); up.add(apple); dean.apple = apple;
+    add(apple, new THREE.SphereGeometry(0.02, 14, 10), skin, 0, 0, 0.008).scale.set(1, 1.35, 1.1);  // THE Adam's apple
     // head
-    var head = new THREE.Group(); head.position.set(0, 1.735, 0.01); g.add(head); dean.head = head;
+    var head = new THREE.Group(); head.position.set(0, 0.805, 0.012); up.add(head); dean.head = head;
     dean.faces = [deanFace(0), deanFace(1), deanFace(2)];
-    dean.faceMat = std({ map: dean.faces[0], roughness: 0.6 });
-    var skull = add(head, new THREE.SphereGeometry(1, 40, 28), dean.faceMat, 0, 0, 0); skull.scale.set(0.098, 0.128, 0.108);
-    var white = std({ color: 0xffffff, roughness: 0.2 }), pupil = std({ color: 0x1a120c, roughness: 0.2 }), brow = std({ color: 0x8a837a, roughness: 0.9 });
+    dean.faceMat = std({ map: dean.faces[0], roughness: 0.3 });
+    add(head, new THREE.SphereGeometry(1, 40, 28), dean.faceMat, 0, 0, 0).scale.set(0.1, 0.13, 0.108);
     [-1, 1].forEach(function (s) {
-      add(head, new THREE.SphereGeometry(0.025, 16, 12), white, s * 0.038, 0.03, 0.086);
-      add(head, new THREE.SphereGeometry(0.0115, 12, 8), pupil, s * 0.036, 0.03, 0.109);
-      var b = add(head, new THREE.BoxGeometry(0.04, 0.009, 0.012), brow, s * 0.04, 0.066, 0.096); b.rotation.z = -s * 0.25; dean.brows.push(b);
-      var ear = add(head, new THREE.SphereGeometry(0.052, 16, 12), skin, s * 0.104, 0.0, -0.008); ear.scale.set(0.3, 1, 0.72); ear.rotation.y = s * 0.45;
+      var eye = new THREE.Group(); eye.position.set(s * 0.04, 0.03, 0.082); head.add(eye); dean.eyes.push(eye);
+      add(eye, new THREE.SphereGeometry(0.03, 16, 12), white, 0, 0, 0);
+      add(eye, new THREE.SphereGeometry(0.012, 12, 8), pupil, 0, 0, 0.025).scale.z = 0.5;
+      var lid = add(head, new THREE.SphereGeometry(0.032, 16, 8, 0, PI * 2, 0, PI / 2), lidMat, s * 0.04, 0.03, 0.082); lid.rotation.x = -1.15; dean.lids.push(lid);
+      dean.brows.push(add(head, new THREE.BoxGeometry(0.052, 0.013, 0.014), brow, s * 0.043, 0.076, 0.09));
+      var ear = add(head, new THREE.SphereGeometry(1, 16, 12), skin, s * 0.118, 0.005, -0.008); ear.scale.set(0.016, 0.066, 0.05); ear.rotation.y = -s * 0.9;   // jug ears
+      add(head, new THREE.BoxGeometry(0.016, 0.022, 0.01), tooth, s * 0.0085, -0.035, 0.103).rotation.x = -0.2;                                            // buck teeth
     });
-    var nose = add(head, new THREE.SphereGeometry(0.027, 16, 12), std({ color: 0xf0a888, roughness: 0.55 }), 0, -0.004, 0.112); nose.scale.set(0.9, 1.2, 1.25);
-    // arms: right holds the beer, left hand in pocket
+    add(head, new THREE.SphereGeometry(1, 16, 12), std({ color: 0xf2a080, roughness: 0.45 }), 0, 0.006, 0.118).scale.set(0.022, 0.026, 0.036);
+    // drool: one strand + one drop, reused every time
+    var dm = dean.droolMat = std({ color: 0xdcecf4, roughness: 0.04, metalness: 0.1, transparent: true, opacity: 0.75, depthWrite: false });
+    var drool = new THREE.Group(); drool.position.set(0.034, -0.052, 0.094); head.add(drool); dean.drool = drool; drool.visible = false;
+    var sg = new THREE.CylinderGeometry(0.0022, 0.0016, 1, 6); sg.translate(0, -0.5, 0);
+    dean.droolStrand = add(drool, sg, dm, 0, 0, 0);
+    dean.droolDrop = add(drool, new THREE.SphereGeometry(0.0055, 10, 8), dm, 0, 0, 0);
+    // stick arms: right holds the beer, left fist on the hip
     function arm(s) {
-      var sh = new THREE.Group(); sh.position.set(s * 0.165, 1.5, 0); g.add(sh);
-      add(sh, new THREE.CylinderGeometry(0.05, 0.046, 0.15, 12), shirt, 0, -0.07, 0);
-      add(sh, new THREE.CylinderGeometry(0.034, 0.03, 0.28, 10), skin, 0, -0.16, 0);
+      var sh = new THREE.Group(); sh.position.set(s * 0.1, 0.45, 0); up.add(sh);
+      add(sh, new THREE.CylinderGeometry(0.036, 0.03, 0.13, 10), shirt, 0, -0.055, 0);
+      add(sh, new THREE.CylinderGeometry(0.016, 0.016, 0.2, 8), skin, 0, -0.2, 0);
       var el = new THREE.Group(); el.position.set(0, -0.3, 0); sh.add(el);
-      add(el, new THREE.CylinderGeometry(0.03, 0.027, 0.25, 10), skin, 0, -0.125, 0);
-      add(el, new THREE.SphereGeometry(0.036, 12, 10), skin, 0, -0.27, 0);
+      add(el, new THREE.SphereGeometry(0.023, 10, 8), skin, 0, 0, 0);                                  // knobby elbow
+      add(el, new THREE.CylinderGeometry(0.016, 0.015, 0.25, 8), skin, 0, -0.125, 0);
+      add(el, new THREE.SphereGeometry(0.03, 12, 10), skin, 0, -0.27, 0);
       return { sh: sh, el: el };
     }
-    var aR = arm(-1), aL = arm(1); dean.armR = aR; dean.armL = aL;
-    var bottle = new THREE.Group(); bottle.position.set(0, -0.27, 0.02); aR.el.add(bottle); dean.bottle = bottle;
+    dean.armR = arm(-1); dean.armL = arm(1);
+    var bottle = new THREE.Group(); bottle.position.set(0, -0.27, 0.02); dean.armR.el.add(bottle); dean.bottle = bottle;
     var glass = std({ color: 0x6a3a10, roughness: 0.12, metalness: 0.1, transparent: true, opacity: 0.88 });
     add(bottle, new THREE.CylinderGeometry(0.032, 0.032, 0.14, 16), glass, 0, 0.0, 0);
     add(bottle, new THREE.CylinderGeometry(0.012, 0.03, 0.06, 16), glass, 0, 0.1, 0);
     add(bottle, new THREE.CylinderGeometry(0.0125, 0.0125, 0.04, 12), glass, 0, 0.15, 0);
     add(bottle, new THREE.CylinderGeometry(0.0335, 0.0335, 0.06, 16), std({ color: 0xf2e6c0, roughness: 0.6 }), 0, 0.0, 0);
-    add(bottle, new THREE.CylinderGeometry(0.014, 0.014, 0.008, 12), std({ color: 0xd8b04a, metalness: 1, roughness: 0.3 }), 0, 0.172, 0);
+    add(bottle, new THREE.CylinderGeometry(0.014, 0.014, 0.008, 12), gold, 0, 0.172, 0);
+    // cue-break gag props: two cue halves (they stay on the floor once tossed) and the curtain rod he pulls out
+    var fg = new THREE.Group(); at(fg, x, y, FLOOR); fg.rotation.y = g.rotation.y; scene.add(fg); dean.floorG = fg; fg.visible = false;
+    var ga = new THREE.CylinderGeometry(0.0065, 0.0105, 0.735, 12); ga.translate(0, 0.3675, 0); ga.rotateZ(-PI / 2);   // shaft half, broken end at origin, along +x
+    var gb = new THREE.CylinderGeometry(0.0108, 0.0145, 0.735, 12); gb.translate(0, 0.3675, 0); gb.rotateZ(PI / 2);     // butt half, along -x
+    dean.halfA = add(fg, ga, std({ color: 0xff3fa8, roughness: 0.38 }), 0, 0, 0);
+    dean.halfB = add(fg, gb, std({ map: wrapTex('zebra'), roughness: 0.6 }), 0, 0, 0);
+    var brass = std({ color: 0xd4a640, metalness: 1, roughness: 0.28 });
+    var rod = new THREE.Group(); rod.position.set(0, -0.27, 0); dean.armL.el.add(rod); dean.rod = rod; rod.visible = false;
+    add(rod, new THREE.CylinderGeometry(0.009, 0.009, 1.55, 10), brass, 0, -0.025, 0);
+    add(rod, new THREE.SphereGeometry(0.024, 12, 10), brass, 0, 0.75, 0);
+    add(rod, new THREE.SphereGeometry(0.024, 12, 10), brass, 0, -0.8, 0);
     g.visible = false;
     var sc = new THREE.PointLight(0xffd0a0, 0.9, 2.6, 2); at(sc, WX - 0.9, 1.0, 1.05); scene.add(sc); dean.light = sc;
   }
+  function deanSmooth(v) { v = clamp(v, 0, 1); return v * v * (3 - 2 * v); }
+  // seconds since main.js started the cue-break gag (G.dean.cueBreak, performance.now()/1000); -1 = no gag, 99 = long done
+  function deanGagE(G) {
+    var D = G && G.dean; if (!D) return -1;
+    var cb = +D.cueBreak;
+    if (!(cb > 0)) return D.brokenCue === true ? 99 : -1;
+    var now = (typeof performance !== 'undefined' && performance && performance.now) ? performance.now() : Date.now();
+    var e = now / 1000 - cb; return e > 0 && isFinite(e) ? e : 0;
+  }
+  function deanRodActive(G) { return deanGagE(G) >= 1.6; }
   function updateDean(G, dt, t) {
     var D = G.dean || {}, vis = !!D.present;
     dean.g.visible = vis; dean.light.visible = vis;
-    if (!vis) return;
-    var mood = D.mood || 'smug', talk = clamp(+D.talking || 0, 0, 1), k = 1 - Math.exp(-dt * 6);
-    dean.t += dt;
+    if (!vis) { if (dean.floorG) dean.floorG.visible = false; return; }
+    var mood = D.mood || 'smug', talk = clamp(+D.talking || 0, 0, 1), d = Math.min(dt, 0.1), k = 1 - Math.exp(-d * 6), i, s;
+    var e = deanGagE(G), gag = e >= 0 && e < 2.6, rodOn = e >= 1.6;
+    var gw = gag ? deanSmooth(e / 0.25) * (e > 2.35 ? deanSmooth((2.6 - e) / 0.25) : 1) : 0, nw = 1 - gw;
+    if (rodOn && +D.cueBreak > 0 && D.brokenCue !== true && G.dean) G.dean.brokenCue = true;
+    if (gag) dean.sipT = -1;
+    var T0 = (dean.t += d);
     dean.raise += ((mood === 'gloat' ? 1 : 0) - dean.raise) * k;
     dean.shake += ((mood === 'flub' ? 1 : 0) - dean.shake) * k;
     dean.droop += ((mood === 'sulk' ? 1 : 0) - dean.droop) * k;
-    var g = dean.g;
-    g.rotation.x = -0.09 + dean.droop * 0.04 - dean.raise * 0.03;
-    g.rotation.z = 0.04 + Math.sin(dean.t * 0.9) * 0.012;
-    g.position.y = FLOOR + Math.sin(dean.t * 1.7) * 0.003 + talk * Math.abs(Math.sin(dean.t * 9)) * 0.008;
-    // look straight at the player (camera), always grinning
+    dean.smug += ((mood === 'smug' ? 1 : 0) - dean.smug) * k;
+    if (mood !== dean.lastMood) { if (mood === 'flub' || mood === 'smug') dean.nextRoll = Math.min(dean.nextRoll, 0.6 + Math.random() * 0.8); dean.lastMood = mood; }
+    // little timers: blink, eye-roll, beer sip, gulp, drool
+    if (dean.blinkT >= 0) { dean.blinkT += d; if (dean.blinkT > 0.16) dean.blinkT = -1; }
+    else if ((dean.nextBlink -= d) <= 0) { dean.blinkT = 0; dean.nextBlink = 1.8 + Math.random() * 3.5; }
+    if (dean.rollT >= 0) { dean.rollT += d; if (dean.rollT > 1.1) dean.rollT = -1; }
+    else if ((mood === 'smug' || mood === 'flub') && (dean.nextRoll -= d) <= 0) { dean.rollT = 0; dean.nextRoll = 4 + Math.random() * 5; }
+    var ps = dean.sipT;
+    if (dean.sipT >= 0) { dean.sipT += d; if (dean.sipT > 2.4 || mood === 'gloat') dean.sipT = -1; }
+    else if (!gag && talk < 0.05 && mood !== 'gloat' && (dean.nextSip -= d) <= 0) { dean.sipT = 0; dean.nextSip = 7 + Math.random() * 6; }
+    var sipGulp = dean.sipT >= 0 && ((ps < 0.95 && dean.sipT >= 0.95) || (ps < 1.6 && dean.sipT >= 1.6));
+    if (dean.gulpT >= 0) { dean.gulpT += d; if (dean.gulpT > 0.5) dean.gulpT = -1; }
+    else if (sipGulp || (dean.nextGulp -= d) <= 0) { dean.gulpT = 0; dean.nextGulp = 3.5 + Math.random() * 5; }
+    if (dean.lastTalk > 0.3 && talk < 0.05 && Math.random() < 0.45) dean.nextDrool = Math.min(dean.nextDrool, 0.4 + Math.random() * 0.8);   // drools after a good cackle
+    dean.lastTalk = talk;
+    if (dean.droolT >= 0) { dean.droolT += d; if (dean.droolT > 3.0) { dean.droolT = -1; dean.drool.visible = false; } }
+    else if (dean.sipT < 0 && (dean.nextDrool -= d) <= 0) { dean.droolT = 0; dean.nextDrool = 10 + Math.random() * 10; dean.drool.visible = true; }
+    var sip = dean.sipT < 0 ? 0 : deanSmooth(dean.sipT < 0.5 ? dean.sipT / 0.5 : dean.sipT > 1.9 ? (2.4 - dean.sipT) / 0.5 : 1);
+    var roll = dean.rollT < 0 ? 0 : Math.sin(dean.rollT / 1.1 * PI);
+    var dance = dean.raise, w = Math.sin(T0 * 8);
+    // body: hip wiggle + shoulder shimmy when gloating, smug side-lean, sulky slump
+    var g = dean.g, u = dean.upper;
+    g.rotation.x = (-0.05 + dean.droop * 0.03) * nw;
+    g.rotation.z = (0.03 + Math.sin(T0 * 0.9) * 0.012 - w * 0.05 * dance) * nw;
+    g.position.y = FLOOR + (Math.abs(w) * 0.022 * dance + talk * Math.abs(Math.sin(T0 * 9)) * 0.006) * nw;
+    u.rotation.z = (w * 0.13 * dance + dean.smug * (0.07 + Math.sin(T0 * 0.7) * 0.02)) * nw;
+    u.rotation.x = (dean.droop * 0.16 - dean.smug * 0.06 - dance * 0.04 + talk * Math.sin(T0 * 4.5) * 0.02) * nw;
+    // head: always looking at the player, chicken-bobbing on that noodle neck
     var cx = camera.position.x - g.position.x, cz = camera.position.z - g.position.z;
-    var want = clamp(angDiff(Math.atan2(cx, cz), g.rotation.y), -0.8, 0.8) + dean.shake * Math.sin(dean.t * 15) * 0.38;
-    dean.yaw += (want - dean.yaw) * Math.min(1, dt * 5);
-    dean.head.rotation.y = dean.yaw;
-    dean.head.rotation.x = dean.droop * 0.32 - dean.raise * 0.15 + talk * Math.sin(dean.t * 7) * 0.05;
-    dean.head.rotation.z = Math.sin(dean.t * 1.3) * 0.05 + (mood === 'smug' ? 0.08 : 0);
-    var open = talk > 0.05 ? (Math.sin(dean.t * 17) > 0.2 ? 2 : Math.sin(dean.t * 17) > -0.5 ? 1 : 0) : 0;
+    var want = clamp(angDiff(Math.atan2(cx, cz), g.rotation.y), -0.8, 0.8) + dean.shake * Math.sin(T0 * 15) * 0.38;
+    dean.yaw += (want - dean.yaw) * Math.min(1, d * 5);
+    var h = dean.head;
+    h.rotation.y = dean.yaw;
+    h.rotation.x = dean.droop * 0.4 - dance * 0.18 + talk * Math.sin(T0 * 7) * 0.07 - roll * 0.12 - sip * 0.35 + Math.sin(T0 * 2.1) * 0.03;
+    h.rotation.z = Math.sin(T0 * 1.3) * 0.05 + dean.smug * 0.12 + w * 0.1 * dance;
+    h.position.z = 0.012 + Math.sin(T0 * 2.1) * 0.01 + talk * Math.sin(T0 * 9) * 0.008;
+    h.position.y = 0.805 + talk * Math.abs(Math.sin(T0 * 7)) * 0.006;
+    var open = talk > 0.05 ? (Math.sin(T0 * 17) > 0.2 ? 2 : Math.sin(T0 * 17) > -0.5 ? 1 : 0) : (dance > 0.5 ? 1 : 0);
     if (dean.faceMat.map !== dean.faces[open]) dean.faceMat.map = dean.faces[open];
-    var browUp = 0.004 + (mood === 'smug' || mood === 'gloat' ? 0.008 : 0) + talk * 0.004 * Math.abs(Math.sin(dean.t * 5));
-    dean.brows[0].position.y = 0.066 + browUp; dean.brows[1].position.y = 0.066 + browUp * (mood === 'smug' ? 1.8 : 1);
-    // right arm: beer at chest height, raised high when gloating
-    var up = -0.25 - dean.raise * 1.9, fore = -1.25 - dean.raise * 0.5 + Math.sin(dean.t * 1.1) * 0.05;
-    dean.armR.sh.rotation.x = up; dean.armR.el.rotation.x = fore; dean.armR.sh.rotation.z = -0.08;
-    dean.bottle.rotation.x = -(up + fore) + (mood === 'gloat' ? Math.sin(dean.t * 6) * 0.1 : 0);
-    dean.armL.sh.rotation.z = 0.12 + dean.droop * 0.05; dean.armL.sh.rotation.x = 0.05; dean.armL.el.rotation.x = -0.25;
+    // googly eyes: idle drift, eye-roll sweeps up and over, downcast when sulking
+    var ex = -roll * 0.75 + dean.droop * 0.35 + Math.sin(T0 * 0.6) * 0.06, ey = dean.rollT < 0 ? Math.sin(T0 * 0.37) * 0.12 : Math.cos(dean.rollT / 1.1 * PI) * 0.7;
+    var lid = -1.15 + dean.smug * 0.85 + dean.droop * 0.7 - roll * 0.4 - dance * 0.1;
+    if (dean.blinkT >= 0) lid += (1.35 - lid) * Math.sin(dean.blinkT / 0.16 * PI);
+    var bu = 0.004 + dance * 0.012 + talk * 0.005 * Math.abs(Math.sin(T0 * 5)) + roll * 0.006;
+    for (i = 0; i < 2; i++) {
+      s = i ? 1 : -1;
+      dean.eyes[i].rotation.set(ex, ey, 0);
+      dean.lids[i].rotation.x = lid;
+      var b = dean.brows[i];
+      b.position.y = 0.076 + bu + dean.smug * (i ? 0.017 : -0.002) - dean.droop * 0.006;           // smug: one brow way up
+      b.rotation.z = s * (0.06 + dean.smug * (i ? 0.2 : 0.02) - dean.shake * 0.34 + dean.droop * 0.3);
+    }
+    // Adam's apple: bobs with every word, big gulp now and then (and on each swig)
+    var gp = dean.gulpT < 0 ? 0 : dean.gulpT / 0.5, gul = dean.gulpT < 0 ? 0 : Math.sin(gp * PI * 2) * (1 - gp * 0.4);
+    dean.apple.position.y = dean.appleY + talk * Math.sin(T0 * 11) * 0.016 + gul * 0.034 + Math.sin(T0 * 1.7) * 0.002;
+    dean.apple.scale.y = 1 + Math.abs(gul) * 0.2;
+    // drool: bead forms at the lip, stretches down, snaps and drops
+    if (dean.droolT >= 0) {
+      var dtm = dean.droolT, len, dropY, a = 0.75;
+      if (dtm < 0.6) { len = 0; dean.droolDrop.scale.setScalar(0.2 + dtm / 0.6 * 0.8); dropY = 0; }
+      else if (dtm < 2.2) { len = deanSmooth((dtm - 0.6) / 1.6) * 0.05; dean.droolDrop.scale.setScalar(1 + len * 6); dropY = -len; }
+      else { var f = dtm - 2.2; len = Math.max(0, 0.05 - f * 0.2); dropY = Math.max(-1.6, -0.05 - 4.9 * f * f); a = 0.75 * Math.max(0, 1 - f / 0.55); }
+      dean.droolStrand.visible = len > 0.002; dean.droolStrand.scale.y = Math.max(len, 0.001);
+      dean.droolDrop.position.y = dropY; dean.droolMat.opacity = a;
+    }
+    // right arm: beer at chest, hoisted for a toast when gloating, brought to the lips for a swig
+    var upA = -0.25 - dance * 1.9, fore = -1.25 - dance * 0.5 + Math.sin(T0 * 1.1) * 0.05;
+    upA += (-1.5 - upA) * sip; fore += (-1.98 - fore) * sip;
+    var rz = -0.08 + sip * 0.5 + w * 0.15 * dance;
+    // left arm: fist on the hip (chicken-flaps when gloating), hangs limp when sulking; holds the curtain rod after the gag
+    var hipZ = (0.55 + dance * Math.max(0, w) * 0.35) * (1 - dean.droop) + 0.08 * dean.droop, hipEZ = -1.1 * (1 - dean.droop);
+    var lz = hipZ, lez = hipEZ, lx = 0.05 + dean.droop * 0.1, lex = 0, py = 1.02, q;
+    if (rodOn) { lz = 0.22 + dean.droop * 0.04; lez = -0.05; lx = 0.05; lex = -0.1; }
+    if (gag) {
+      if (e < 0.95) {            // grab the cue, hoist it level, slam it down over the raised right knee (snaps at 0.8 s)
+        py = e < 0.45 ? lerp(1.25, 1.62, deanSmooth(e / 0.45)) : e < 0.8 ? lerp(1.62, 1.02, Math.pow((e - 0.45) / 0.35, 2)) : 1.02;
+        var pa = lerp(-0.85, -1.9, (py - 1.02) / 0.6);
+        upA = lerp(upA, pa, gw); fore = lerp(fore, -0.15, gw); rz = lerp(rz, 0, gw);
+        lx = lerp(lx, pa, gw); lex = lerp(lex, -0.15, gw); lz = lerp(lz, 0, gw); lez = lerp(lez, 0, gw);
+      } else if (e < 1.6) {      // fling both halves away, then settle
+        var uu = (e - 0.95) / 0.65, fl = Math.sin(uu * PI), back = deanSmooth((uu - 0.55) / 0.45), pb = -0.85 - 1.1 * fl;
+        upA = lerp(pb, upA, back); fore = lerp(-0.15, fore, back); rz = lerp(-0.6 * fl, rz, back);
+        lx = lerp(pb, lx, back); lex = lerp(-0.15, lex, back); lz = lerp(0.6 * fl, lz, back); lez = lerp(0, lez, back);
+      } else {                   // reach behind the back and twirl out a curtain rod
+        var v = (e - 1.6) / 1.0;
+        if (v < 0.3) { q = deanSmooth(v / 0.3); lx = lerp(0.05, 0.75, q); lz = lerp(hipZ, 0.2, q); lez = lerp(hipEZ, -0.4, q); lex = 0; }
+        else { q = deanSmooth((v - 0.3) / 0.5); lx = lerp(0.75, lx, q); lz = lerp(0.2, lz, q); lez = lerp(-0.4, lez, q); lex = lerp(0, lex, q); }
+      }
+    }
+    dean.armR.sh.rotation.x = upA; dean.armR.el.rotation.x = fore; dean.armR.sh.rotation.z = rz;
+    dean.bottle.rotation.x = -(upA + fore) + dance * Math.sin(T0 * 6) * 0.15 - sip * 1.0;
+    dean.bottle.visible = !(gag && e > 0.1 && e < 1.55);
+    dean.armL.sh.rotation.z = lz; dean.armL.el.rotation.z = lez; dean.armL.sh.rotation.x = lx; dean.armL.el.rotation.x = lex;
+    // right knee comes up for the snap
+    var kw = gag ? (e < 1.0 ? deanSmooth((e - 0.3) / 0.35) : 1 - deanSmooth((e - 1.0) / 0.35)) : 0;
+    if (dean.legR) { dean.legR.hip.rotation.x = -1.35 * kw; dean.legR.knee.rotation.x = 1.5 * kw; }
+    // the two cue halves: held level, snapped into a V, tumbled through the air, then left lying on the floor
+    if (dean.floorG && dean.halfA && dean.halfB) {
+      dean.floorG.visible = e >= 0;
+      if (e >= 0) {
+        var A = dean.halfA, B = dean.halfB;
+        if (e < 0.95) {
+          var bend = e < 0.8 ? 0 : 0.45 * deanSmooth((e - 0.8) / 0.1);
+          A.position.set(-0.06, py, 0.47); A.rotation.set(0, 0, bend);
+          B.position.set(-0.06, py, 0.47); B.rotation.set(0, 0, -bend);
+        } else {
+          var uf = Math.min(1, (e - 0.95) / 0.65), us = deanSmooth(uf), hgt = Math.sin(uf * PI) * 0.35;
+          A.position.set(lerp(-0.06, 0.28, uf), lerp(1.02, 0.011, uf) + hgt, lerp(0.47, 0.32, uf)); A.rotation.set(0, lerp(0, 0.35, us), lerp(0.45, PI * 2, us));
+          B.position.set(lerp(-0.06, -0.38, uf), lerp(1.02, 0.015, uf) + hgt, lerp(0.47, 0.26, uf)); B.rotation.set(0, lerp(0, -0.25, us), lerp(-0.45, -PI * 2, us));
+        }
+      }
+    }
+    // the curtain rod: appears behind his back, twirls out, then he holds it upright like a staff
+    if (dean.rod) {
+      var rv = (e - 1.6) / 1.0;
+      dean.rod.visible = e >= 1.6 && (rv >= 0.25 || !gag);
+      dean.rod.rotation.x = gag && rv < 0.9 ? (1 - deanSmooth((rv - 0.3) / 0.6)) * PI * 2 : 0;
+      dean.rod.rotation.z = -(lz + lez);
+    }
   }
 
   // ---------- aim guide, ball in hand, called pocket ----------
@@ -4015,6 +4200,112 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
   }
 
   // ---------- camera ----------
+  // ---------- extra neon signs: "BYRNES POOL RULES / APPLY. ALWAYS." (green, right wall) + "I'd rather be lucky than good." (pink, left wall) ----------
+  var CAPS_FONT = '"Bebas Neue", "Arial Black", Impact, "Helvetica Neue", sans-serif';
+  var rules = { W: 1024, H: 368, c: null, tex: null, top: null, bot: null, halo: null, nextDip: 8, dipEnd: 0, dbl: 0, dblT: 0, ok: false };
+  var lucky = { W: 1024, H: 360, c: null, tex: null, mesh: null, halo: null, cyc: 0, dblAt: 0, ok: false };
+  function signGlow(g, color, core, fn) {      // same layered-glow approach as the main sign
+    g.save(); g.globalCompositeOperation = 'lighter'; g.shadowColor = color; g.fillStyle = color; g.strokeStyle = color;
+    g.globalAlpha = 0.55; g.shadowBlur = 40; fn();
+    g.globalAlpha = 0.8; g.shadowBlur = 16; fn();
+    g.globalAlpha = 1; g.shadowBlur = 6; fn();
+    g.shadowBlur = 2; g.fillStyle = core; g.strokeStyle = core; fn();
+    g.restore();
+  }
+  function fitFont(g, text, size, maxW, fam, wt) {
+    g.font = (wt || '') + ' ' + size + 'px ' + fam; var w = g.measureText(text).width;
+    if (w > maxW) { size = Math.floor(size * maxW / w); g.font = (wt || '') + ' ' + size + 'px ' + fam; }
+    return size;
+  }
+  function paintRules() {
+    if (!rules.c) return;
+    var g = rules.c.getContext('2d'), W = rules.W, H = rules.H, c = '#39ff6a', k = '#dcffe6';
+    g.clearRect(0, 0, W, H); g.textAlign = 'center'; g.textBaseline = 'middle';
+    // thin neon border tube around each half
+    signGlow(g, c, k, function () { g.lineWidth = 5; g.strokeRect(18, 14, W - 36, H / 2 - 22); });
+    fitFont(g, 'BYRNES POOL RULES', 132, W - 110, CAPS_FONT, 'bold');
+    signGlow(g, c, k, function () { g.fillText('BYRNES POOL RULES', W / 2, H * 0.25 + 4); });
+    fitFont(g, 'APPLY. ALWAYS.', 140, W - 160, CAPS_FONT, 'bold');
+    signGlow(g, c, k, function () { g.fillText('APPLY. ALWAYS.', W / 2, H * 0.75); });
+    signGlow(g, c, k, function () { g.lineWidth = 5; g.beginPath(); g.moveTo(W * 0.16, H - 20); g.lineTo(W * 0.84, H - 20); g.stroke(); });
+    if (rules.tex) rules.tex.needsUpdate = true;
+  }
+  function paintLucky() {
+    if (!lucky.c) return;
+    var g = lucky.c.getContext('2d'), W = lucky.W, H = lucky.H, c = '#ff2fa0', k = '#ffe0f2';
+    g.clearRect(0, 0, W, H); g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+    fitFont(g, "I'd rather be lucky", 150, W - 90, NEON_FONT);
+    signGlow(g, c, k, function () { g.fillText("I'd rather be lucky", W / 2, H * 0.44); });
+    fitFont(g, 'than good.', 150, W - 90, NEON_FONT);
+    signGlow(g, c, k, function () { g.fillText('than good.', W / 2, H * 0.86); });
+    if (lucky.tex) lucky.tex.needsUpdate = true;
+  }
+  function paintSigns() { try { paintRules(); paintLucky(); } catch (e) { /* ignore */ } }
+  function halfPlane(w, h, top) {              // plane showing the top or bottom half of a texture
+    var geo = new THREE.PlaneGeometry(w, h), uv = geo.attributes.uv;
+    for (var i = 0; i < uv.count; i++) uv.setY(i, top ? 0.5 + uv.getY(i) * 0.5 : uv.getY(i) * 0.5);
+    uv.needsUpdate = true; return geo;
+  }
+  function haloTex() {
+    var hc = mkCanvas(128, 64), hg = hc.getContext('2d'), gr = hg.createRadialGradient(64, 32, 2, 64, 32, 63);
+    gr.addColorStop(0, 'rgba(255,255,255,0.5)'); gr.addColorStop(0.5, 'rgba(255,255,255,0.16)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+    hg.fillStyle = gr; hg.fillRect(0, 0, 128, 64); return texOf(hc, false);
+  }
+  function signBoard(wall, u, z, w, h) {
+    var board = new THREE.Mesh(new THREE.PlaneGeometry(w * 1.04, h * 1.06), std({ color: 0x08090b, roughness: 0.3, metalness: 0.2 }));
+    onWall(board, wall, u, z, 0.018); scene.add(board);
+    box('metal', w * 1.06, h * 1.08, 0.02, 0x15161a, 0, 0, 0.004, 0, 0, 0, wallMatrix(wall, u, z, 0));   // edge frame
+  }
+  function buildSigns() {
+    var ht;
+    try { ht = haloTex(); } catch (e) { ht = null; }
+    // rules sign: right (+y) wall, above the plaque at the foot end, left of the big window's drapes
+    try {
+      var rw = 1.4, rh = rw * rules.H / rules.W, ru = -2.47, rz = 1.56;
+      rules.c = mkCanvas(rules.W, rules.H); rules.tex = texOf(rules.c); paintRules();
+      signBoard('right', ru, rz, rw, rh);
+      var mo = { map: rules.tex, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false };
+      rules.top = new THREE.Mesh(halfPlane(rw, rh / 2, true), basic(mo)); onWall(rules.top, 'right', ru, rz + rh / 4, 0.03); rules.top.renderOrder = 3; scene.add(rules.top);
+      rules.bot = new THREE.Mesh(halfPlane(rw, rh / 2, false), basic(mo)); onWall(rules.bot, 'right', ru, rz - rh / 4, 0.03); rules.bot.renderOrder = 3; scene.add(rules.bot);
+      if (ht) { rules.halo = new THREE.Mesh(new THREE.PlaneGeometry(rw * 1.7, rh * 2.0), basic({ map: ht, color: 0x3aff70, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0.4 })); onWall(rules.halo, 'right', ru, rz, 0.012); rules.halo.renderOrder = 2; scene.add(rules.halo); }
+      rules.ok = true;
+    } catch (e) { rules.ok = false; }
+    // lucky sign: left (-y) wall, foot end above the jukebox, clear of the armory plaques and bazookas
+    try {
+      var lw = 1.2, lh = lw * lucky.H / lucky.W, lu = 2.55, lz = 1.26;
+      lucky.c = mkCanvas(lucky.W, lucky.H); lucky.tex = texOf(lucky.c); paintLucky();
+      signBoard('left', lu, lz, lw, lh);
+      lucky.mesh = new THREE.Mesh(new THREE.PlaneGeometry(lw, lh), basic({ map: lucky.tex, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+      onWall(lucky.mesh, 'left', lu, lz, 0.03); lucky.mesh.renderOrder = 3; scene.add(lucky.mesh);
+      if (ht) { lucky.halo = new THREE.Mesh(new THREE.PlaneGeometry(lw * 1.8, lh * 2.1), basic({ map: ht, color: 0xff3aa8, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0.45 })); onWall(lucky.halo, 'left', lu, lz, 0.012); lucky.halo.renderOrder = 2; scene.add(lucky.halo); }
+      lucky.ok = true;
+    } catch (e) { lucky.ok = false; }
+  }
+  function updateSigns(t) {
+    try {
+      var hi = quality === 'high';
+      if (rules.ok) {
+        var a = 1, b = 1;
+        if (t >= rules.nextDip) {                      // schedule a dip; sometimes only "ALWAYS." stutters twice
+          rules.dbl = rnd() < 0.3 ? 1 : 0; rules.dipEnd = t + 0.08 + rnd() * 0.12; rules.dblT = t;
+          rules.nextDip = t + 6 + rnd() * 8;
+        }
+        if (t < rules.dipEnd) { if (!rules.dbl) a = b = 0.3; else b = 0.12; }
+        else if (rules.dbl && t < rules.dblT + 0.5) { var d = t - rules.dblT; if (d > 0.26 && d < 0.26 + (rules.dipEnd - rules.dblT)) b = 0.12; }
+        rules.top.material.color.setScalar(a); rules.bot.material.color.setScalar(b);
+        if (rules.halo) { rules.halo.visible = hi; rules.halo.material.opacity = 0.4 * (a + b) * 0.5; }
+      }
+      if (lucky.ok) {
+        // blink: on 1.2 s, off 0.25 s; every ~4th cycle a quick double-blink
+        var per = 1.45, cyc = Math.floor(t / per), ph = t - cyc * per, on = ph < 1.2;
+        if (on && (cyc % 4 === 3) && ph > 0.55 && ph < 0.67) on = false;
+        var s = on ? 1 : 0.07;
+        lucky.mesh.material.color.setScalar(s);
+        if (lucky.halo) { lucky.halo.visible = hi && on; }
+      }
+    } catch (e) { /* ignore */ }
+  }
+
   var cam = { eye: null, tgt: null, up: null, dEye: null, dTgt: null, dUp: null, fov: 50, angle: 0, kind: '', settle: 1, init: false, shotDir: 1, act: null };
   function setW(v, x, y, z) { return v.set(x, z, y); }
   function vfovFor(hfovDeg, minV, maxV, aspect) { var v = 2 * Math.atan(Math.tan(hfovDeg * PI / 360) / aspect) * 180 / PI; return clamp(v, minV, maxV); }
@@ -4115,7 +4406,8 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
   var perf = { acc: 0, n: 0, lastNow: 0, since: 0, switched: false };
   function applyQuality() {
     if (!renderer) return;
-    var cap = quality === 'high' ? (isPhone ? 1.5 : 2) : (isPhone ? 1.0 : 1.25);
+    var tablet = !isPhone && ((window.navigator && navigator.maxTouchPoints) || 0) > 1;   // iPad: big retina screen, keep it smooth
+    var cap = quality === 'high' ? (isPhone || tablet ? 1.5 : 2) : (isPhone ? 1.0 : 1.25);
     renderer.setPixelRatio(Math.min(dprIn || 1, cap));
     renderer.setSize(cssW, cssH, true);
     var sz = quality === 'high' ? 2048 : 1024;
@@ -4156,7 +4448,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     scene = new THREE.Scene(); scene.background = new THREE.Color(0x0b0806);
     camera = new THREE.PerspectiveCamera(50, cssW / cssH, 0.02, 40); scene.add(camera);
     buildRoom(); buildTable(); buildLamp(); buildBalls(); buildCues(); buildGuide();
-    buildGuns(); buildSeating(); buildPosters(); buildChalk(); buildJukebox(); buildNeon(); buildDean();
+    buildGuns(); buildSeating(); buildPosters(); buildChalk(); buildJukebox(); buildNeon(); buildDean(); try { buildSigns(); } catch (e) { /* ignore */ }
     flushBucket('wood', std({ vertexColors: true, roughness: 0.42, metalness: 0.02, envMapIntensity: 0.7 }));
     flushBucket('metal', std({ vertexColors: true, roughness: 0.38, metalness: 0.7, envMapIntensity: 1.0 }));
     flushBucket('leather', std({ vertexColors: true, roughness: 0.5, metalness: 0, envMapIntensity: 0.7 }));
@@ -4165,7 +4457,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     // fonts may arrive after the first paint: redraw the script/caps textures when they do
     try {
       if (document.fonts) {
-        var pend = 0, redo = function () { if (pend) return; pend = setTimeout(function () { pend = 0; neonRebuild(); drawPosters(); chalk.key = ''; }, 60); };
+        var pend = 0, redo = function () { if (pend) return; pend = setTimeout(function () { pend = 0; neonRebuild(); drawPosters(); paintSigns(); chalk.key = ''; }, 60); };
         document.fonts.load('64px "Yellowtail"').then(redo, function () {});
         document.fonts.load('64px "Bebas Neue"').then(redo, function () {});
         document.fonts.ready.then(redo, function () {});
@@ -4191,6 +4483,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     updateGuide(G, ownTime);
     updateCamera(G, dt);
     updateNeon(G, dt, ownTime);
+    updateSigns(ownTime);
     updateLights(G, ownTime);
     updateJukebox(G, dt, ownTime);
     updateDean(G, dt, ownTime);
@@ -4282,7 +4575,40 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
   var strokeOwner = null;
   var fire = null; // {from, t, dur, power, dev, pad} forward stroke animation before calling shoot
   function setStroke(s) { var a = aimObj(); if (a) a.stroke = clamp(s, 0, 1); }
-  function cancelStroke() { strokeOwner = null; fire = null; padStroke.armed = false; }
+  function cancelStroke() { strokeOwner = null; fire = null; padStroke.armed = false; charge = null; }
+
+  // Hold-to-draw: A / Space / Enter / SHOOT button / right trigger draw the cue back while held;
+  // release strikes at that power. Visible on the power meter and the cue on screen.
+  var charge = null; // {src, t0, pad, s}
+  var CHARGE_TIME = 1.5; // seconds from 0 to full power
+  var hintShown = 0;
+  function startCharge(src, pad) {
+    if (!canAim() || fire) return;
+    if (strokeOwner && strokeOwner !== src) return;
+    charge = { src: src, t0: now(), pad: pad || null, s: 0 };
+    strokeOwner = 'charge';
+  }
+  function releaseCharge(src) {
+    if (!charge || charge.src !== src) return;
+    var c = charge; charge = null;
+    if (!canAim()) { strokeOwner = null; setStroke(0); return; }
+    if (c.s < 0.04) {
+      strokeOwner = null; setStroke(0);
+      if (now() - hintShown > 4) { hintShown = now(); call(BPH.UI, 'toast', 'Hold to draw the cue back, release to shoot', 'info'); }
+      return;
+    }
+    if (c.pad) rumble(c.pad, c.s * 0.3);
+    startFire(c.s, src);
+  }
+  function chargeUpdate(dt) {
+    if (!charge) return;
+    if (!canAim()) { charge = null; strokeOwner = null; setStroke(0); return; }
+    var a = aimObj(); if (!a) return;
+    if (charge.src === 'rt') return; // trigger depth drives it directly
+    var u = clamp((now() - charge.t0 - 0.06) / CHARGE_TIME, 0, 1);
+    charge.s = Math.max(0, u);
+    setStroke(charge.s); a.power = Math.max(0.02, charge.s);
+  }
 
   function doShoot(power, dev, pad) {
     var g = G(), a = aimObj();
@@ -4577,12 +4903,12 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
         break;
       case ' ': case 'Enter':
         if (first) {
-          if (canAim()) { var a2 = aimObj(); doShoot(a2.power > 0.02 ? a2.power : 0.5, 'key'); }
+          if (canAim()) startCharge('key');
           else if (canPlace()) commitPlace();
         }
         break;
       case 'Escape':
-        if (strokeOwner === 'mouse' || strokeOwner === 'slider') { cancelStroke(); setStroke(0); }
+        if (strokeOwner === 'mouse' || strokeOwner === 'slider' || strokeOwner === 'charge') { cancelStroke(); setStroke(0); }
         else if (m !== 'title') pause();
         break;
       default:
@@ -4614,6 +4940,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
   }
   function onKeyUp(e) {
     delete keys[e.key];
+    if (e.key === ' ' || e.key === 'Enter') releaseCharge('key');
     if (!isTyping(e) && (e.key === ' ' || e.key === 'Enter') && uiOpen()) e.preventDefault();
   }
   function keyHold(dt) {
@@ -4787,24 +5114,26 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     // D-pad up/down: power meter
     if (pressed(p, s, 12)) a.power = clamp(Math.round(((a.power || 0) + 0.05) * 20) / 20, 0.05, 1);
     if (pressed(p, s, 13)) a.power = clamp(Math.round(((a.power || 0) - 0.05) * 20) / 20, 0.05, 1);
-    // RT analog power meter (keeps the peak of the last 0.2 s when released)
+    // RT: squeeze to draw the cue back (depth = power), let go to shoot at the deepest point of the last 0.25 s
     var rt = btn(p, 7);
-    if (rt > 0.04) {
-      s.rtHist.push([t, rt]); while (s.rtHist.length && t - s.rtHist[0][0] > 0.2) s.rtHist.shift();
-      a.power = clamp(rt, 0.03, 1);
-    } else if (s.rtWas > 0.04) {
-      var pk = 0; for (var h = 0; h < s.rtHist.length; h++) pk = Math.max(pk, s.rtHist[h][1]);
-      a.power = clamp(pk, 0.03, 1); s.rtHist.length = 0;
+    if (rt > 0.06 && !charge && (!strokeOwner || strokeOwner === 'charge')) startCharge('rt', p);
+    if (charge && charge.src === 'rt' && charge.pad && charge.pad.index === p.index) {
+      s.rtHist.push([t, rt]); while (s.rtHist.length && t - s.rtHist[0][0] > 0.25) s.rtHist.shift();
+      if (rt > 0.06) { charge.s = clamp((rt - 0.06) / 0.9, 0, 1); setStroke(charge.s); a.power = Math.max(0.02, charge.s); }
+      else {
+        var pk = 0; for (var h = 0; h < s.rtHist.length; h++) pk = Math.max(pk, s.rtHist[h][1]);
+        charge.s = clamp((pk - 0.06) / 0.9, 0, 1); s.rtHist.length = 0;
+        releaseCharge('rt');
+      }
     }
     s.rtWas = rt;
     // X = cycle called pocket
     if (pressed(p, s, 2) && g.callPocket && g.callPocket.needed) call(BPH.Main, 'cyclePocket', 1);
-    // A = shoot at power meter
-    if (pressed(p, s, 0) && !(padStroke.armed && strokeOwner === 'pad')) {
-      doShoot(a.power > 0.02 ? a.power : 0.5, 'pad', p); return;
-    }
+    // A = hold to draw the cue back, release to shoot
+    if (pressed(p, s, 0) && !(padStroke.armed && strokeOwner === 'pad')) startCharge('padA', p);
+    if (charge && charge.src === 'padA' && charge.pad && charge.pad.index === p.index && !down(p, 0)) { releaseCharge('padA'); return; }
     // B (outside spin mode) cancels a stroke
-    if (!I.spinMode && pressed(p, s, 1) && strokeOwner === 'pad') { cancelStroke(); setStroke(0); padStroke.lock = true; }
+    if (!I.spinMode && pressed(p, s, 1) && (strokeOwner === 'pad' || strokeOwner === 'charge')) { cancelStroke(); setStroke(0); padStroke.lock = true; call(BPH.Audio, 'uiBack'); }
     padStrokeUpdate(p, ry, dt, t);
   }
 
@@ -4828,7 +5157,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     if (pull > 0.02) a.power = Math.max(0.03, pull);
     if (ry < -0.3) {
       var dtp = t - S.deepT;
-      if (dtp < 0.3 && S.peak > 0.06) {
+      if (dtp < 0.6 && S.peak > 0.06) {
         var v = (S.deepY - ry) / Math.max(dtp, 1 / 120);     // stick units per second
         var sf = clamp((v - 3) / 14, 0, 1);                  // 0 = gentle push, 1 = flick
         var power = clamp(S.peak * (0.72 + 0.4 * sf), 0.02, 1);
@@ -4993,11 +5322,16 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     wireSlider(); wireFine(); wireSpin();
     W.view.addEventListener('pointerdown', function (e) { e.stopPropagation(); setDevice(e.pointerType === 'touch' ? 'touch' : 'mouse'); unlockAudio(); });
     W.view.addEventListener('click', function (e) { e.preventDefault(); toggleView(); W.view.blur(); });
-    W.shoot.addEventListener('pointerdown', function (e) { e.stopPropagation(); unlockAudio(); });
+    W.shoot.addEventListener('pointerdown', function (e) {
+      e.stopPropagation(); e.preventDefault(); unlockAudio();
+      if (canAim()) { startCharge('btn'); try { W.shoot.setPointerCapture(e.pointerId); } catch (er) {} }
+    });
+    var shootUp = function (e) { if (charge && charge.src === 'btn') { e.preventDefault(); releaseCharge('btn'); } };
+    W.shoot.addEventListener('pointerup', shootUp);
+    W.shoot.addEventListener('pointercancel', function () { if (charge && charge.src === 'btn') { cancelStroke(); setStroke(0); } });
     W.shoot.addEventListener('click', function (e) {
       e.preventDefault(); W.shoot.blur();
-      if (canAim()) { var a = aimObj(); doShoot(a.power > 0.02 ? a.power : 0.5, 'touch'); }
-      else if (canPlace()) commitPlace();
+      if (canPlace()) commitPlace();
     });
   }
 
@@ -5190,6 +5524,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
       a.stroke = Math.max(0, a.stroke - dt * 5);
     }
     keyHold(dt);
+    chargeUpdate(dt);
     pollPads(dt);
     updateWidgets();
   }
@@ -5297,42 +5632,44 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
   ];
   var DEAN_SVG =
     '<svg viewBox="0 0 64 64" aria-hidden="true">' +
+    // bald, jug-eared, buck-toothed Dean; .bphAdam = the giant Adam's apple (bobs while he talks)
     '<defs><radialGradient id="bphDeanBg" cx="50%" cy="40%" r="65%"><stop offset="0" stop-color="#2b5f99"/><stop offset="1" stop-color="#0b1a2c"/></radialGradient>' +
-    '<linearGradient id="bphDeanSkin" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#f6d2ae"/><stop offset="1" stop-color="#e2a982"/></linearGradient></defs>' +
+    '<radialGradient id="bphDeanSkin" cx="40%" cy="30%" r="75%"><stop offset="0" stop-color="#ffe2c4"/><stop offset=".6" stop-color="#f2c09a"/><stop offset="1" stop-color="#d9976f"/></radialGradient></defs>' +
+    '<g>' +
     '<circle cx="32" cy="32" r="32" fill="url(#bphDeanBg)"/>' +
-    // skinny neck + bowling shirt
-    '<path d="M27 46h10v10H27z" fill="#e2a982"/>' +
-    '<path d="M10 64c2-9 9-12 17-13l5 6 5-6c8 1 15 4 17 13z" fill="#7b1f2a"/>' +
-    '<path d="M27 51l5 6 5-6-2-2-3 3-3-3z" fill="#f3efe4"/>' +
-    // big ears
-    '<ellipse cx="13.5" cy="29" rx="6.2" ry="9" fill="url(#bphDeanSkin)" stroke="#b9805e" stroke-width=".8"/>' +
-    '<ellipse cx="50.5" cy="29" rx="6.2" ry="9" fill="url(#bphDeanSkin)" stroke="#b9805e" stroke-width=".8"/>' +
-    '<ellipse cx="13.8" cy="29.5" rx="3" ry="5.2" fill="#d99573"/>' +
-    '<ellipse cx="50.2" cy="29.5" rx="3" ry="5.2" fill="#d99573"/>' +
-    // long skinny face
-    '<ellipse cx="32" cy="28.5" rx="13.5" ry="19" fill="url(#bphDeanSkin)" stroke="#b9805e" stroke-width=".8"/>' +
-    // thinning grey hair tufts
-    '<path d="M21 15c2-6 8-8 11-7 3-2 9 0 11 6-3-3-6-3-8-2-2-2-6-2-8 0-2-1-4 0-6 3z" fill="#b8b4ad"/>' +
-    '<path d="M31 9c1-3 3-4 5-4-1 2-1 3 0 5z" fill="#b8b4ad"/>' +
-    // raised eyebrows
-    '<path d="M22 19.5q4-3 8-.5M34 19q4-2.5 8 .5" stroke="#8f8a83" stroke-width="1.6" fill="none" stroke-linecap="round"/>' +
-    // happy squinty eyes
-    '<path d="M23 24.5q3.2-3 6.4 0M34.6 24.5q3.2-3 6.4 0" stroke="#2a1a12" stroke-width="1.8" fill="none" stroke-linecap="round"/>' +
-    // long nose
-    '<path d="M32 24c-1 5-2.6 8-1.2 9.6 1 .8 2.4.8 3.4.1" stroke="#b9805e" stroke-width="1.2" fill="none" stroke-linecap="round"/>' +
-    // rosy cheeks + freckles
-    '<ellipse cx="22.5" cy="33" rx="3.6" ry="2.2" fill="#ef8f86" opacity=".45"/><ellipse cx="41.5" cy="33" rx="3.6" ry="2.2" fill="#ef8f86" opacity=".45"/>' +
-    '<g fill="#b8653f" opacity=".75"><circle cx="21" cy="30" r=".7"/><circle cx="23.5" cy="31" r=".6"/><circle cx="25.6" cy="29.6" r=".55"/><circle cx="22.4" cy="32.4" r=".5"/>' +
-    '<circle cx="43" cy="30" r=".7"/><circle cx="40.5" cy="31" r=".6"/><circle cx="38.4" cy="29.6" r=".55"/><circle cx="41.6" cy="32.4" r=".5"/><circle cx="30" cy="27" r=".45"/><circle cx="34" cy="27.4" r=".45"/></g>' +
-    // huge goofy grin
-    '<path d="M20.5 36.5q11.5 13 23 0q-11.5 4-23 0z" fill="#5a1414" stroke="#7a3a2a" stroke-width=".8"/>' +
-    '<path d="M22 37.4q10 3 20 0l-1 2.2q-9 2.4-18 0z" fill="#fbf7ee"/>' +
-    '<path d="M27 38.3v2.1M32 38.7v2.2M37 38.3v2.1" stroke="#d8d0c0" stroke-width=".5"/>' +
-    '<path d="M19.6 36.2q.8-1.4 1.8-.4M44.4 36.2q-.8-1.4-1.8-.4" stroke="#b9805e" stroke-width=".9" fill="none" stroke-linecap="round"/>' +
-    // beer bottle in hand
-    '<g transform="translate(48 44) rotate(14)"><rect x="0" y="5" width="6" height="13" rx="2" fill="#8a4a12"/><rect x="1.8" y="0" width="2.4" height="6" fill="#8a4a12"/>' +
-    '<rect x=".6" y="9" width="4.8" height="4" fill="#e9dcc0"/><rect x="1.4" y="6.5" width="1" height="10" fill="#e8b46a" opacity=".5"/></g>' +
-    '<ellipse cx="50" cy="60" rx="5" ry="3.5" fill="url(#bphDeanSkin)"/>' +
+    '<path d="M29 34h6v26h-6z" fill="#e8b089" stroke="#a8694a" stroke-width=".7"/>' +
+    '<path d="M33.3 36v22" stroke="#cf9470" stroke-width="1.2"/>' +
+    '<path d="M7 64c1-6 7-9.5 15-10.3l7-1.2 3 5.5 3-5.5 7 1.2c8 .8 14 4.3 15 10.3z" fill="#e0407a" stroke="#7d1838" stroke-width=".7"/>' +
+    '<g fill="#ffd43b"><circle cx="15" cy="59" r="2"/><circle cx="23" cy="62" r="1.7"/><circle cx="44" cy="58.5" r="1.8"/><circle cx="20" cy="56.5" r="1.3"/><circle cx="38" cy="62.5" r="1.6"/></g>' +
+    '<g fill="#fff"><circle cx="15" cy="59" r=".7"/><circle cx="23" cy="62" r=".6"/><circle cx="44" cy="58.5" r=".6"/><circle cx="38" cy="62.5" r=".55"/></g>' +
+    '<path d="M28.6 52l-5.6 3.4 7.4 3.8zM35.4 52l5.6 3.4-7.4 3.8z" fill="#ffe8a3" stroke="#7d1838" stroke-width=".6"/>' +
+    '<g class="bphAdam"><ellipse cx="32" cy="45" rx="5.6" ry="4.6" fill="#f0bb93" stroke="#a8694a" stroke-width=".8"/>' +
+    '<path d="M27.6 47.4q4.4 3.2 8.8 0" stroke="#b97752" stroke-width=".8" fill="none"/>' +
+    '<ellipse cx="30.4" cy="43.4" rx="2.1" ry="1.3" fill="#fff" opacity=".7"/></g>' +
+    '<g transform="rotate(-18 14 21)"><ellipse cx="14" cy="21" rx="5.6" ry="8.6" fill="url(#bphDeanSkin)" stroke="#a8694a" stroke-width=".8"/><ellipse cx="14.6" cy="21.4" rx="2.7" ry="5.4" fill="#d9876a"/></g>' +
+    '<g transform="rotate(18 50 21)"><ellipse cx="50" cy="21" rx="5.6" ry="8.6" fill="url(#bphDeanSkin)" stroke="#a8694a" stroke-width=".8"/><ellipse cx="49.4" cy="21.4" rx="2.7" ry="5.4" fill="#d9876a"/></g>' +
+    '<path d="M32 3C41.5 3 46 9 46 16.5 46 24.5 43 30.5 39 34.5 36.5 37 34.5 38.4 32 38.4 29.5 38.4 27.5 37 25 34.5 21 30.5 18 24.5 18 16.5 18 9 22.5 3 32 3z" fill="url(#bphDeanSkin)" stroke="#a8694a" stroke-width=".9"/>' +
+    '<ellipse cx="26.5" cy="7.6" rx="4.2" ry="2.2" transform="rotate(-24 26.5 7.6)" fill="#fff" opacity=".75"/>' +
+    '<circle cx="31.6" cy="5.6" r=".9" fill="#fff" opacity=".8"/>' +
+    '<path d="M27 10.4q5-1.6 10 0M28.5 12.4q3.5-1 7 0" stroke="#c98a66" stroke-width=".6" fill="none" stroke-linecap="round"/>' +
+    '<path d="M22.4 13.6q3.6-3 7.2-.6M34.4 13q3.6-2.4 7.2.6" stroke="#7a5a44" stroke-width="1.1" fill="none" stroke-linecap="round"/>' +
+    '<circle cx="26.3" cy="17.6" r="3.8" fill="#fff" stroke="#3a2618" stroke-width=".8"/><circle cx="37.7" cy="17.6" r="3.8" fill="#fff" stroke="#3a2618" stroke-width=".8"/>' +
+    '<circle cx="27.6" cy="18.2" r="1.5" fill="#1d120b"/><circle cx="36.4" cy="18.2" r="1.5" fill="#1d120b"/>' +
+    '<circle cx="28.1" cy="17.6" r=".45" fill="#fff"/><circle cx="36.9" cy="17.6" r=".45" fill="#fff"/>' +
+    '<path d="M31.5 18.5c-.2 2.6-.8 3.8-1.2 4.4" stroke="#b97752" stroke-width=".8" fill="none" stroke-linecap="round"/>' +
+    '<ellipse cx="32.4" cy="23.6" rx="2.9" ry="2.3" fill="#eea585" stroke="#a8694a" stroke-width=".7"/>' +
+    '<ellipse cx="31.6" cy="22.9" rx=".9" ry=".55" fill="#fff" opacity=".6"/>' +
+    '<ellipse cx="21.8" cy="25" rx="2.6" ry="1.6" fill="#ef7f78" opacity=".45"/><ellipse cx="42.2" cy="25" rx="2.6" ry="1.6" fill="#ef7f78" opacity=".45"/>' +
+    '<path d="M20.2 26Q32 30 43.8 26Q39.5 36 32 35.6Q24.5 36 20.2 26z" fill="#4a0f12" stroke="#7a2e22" stroke-width=".8" stroke-linejoin="round"/>' +
+    '<ellipse cx="32" cy="33.6" rx="4.8" ry="1.7" fill="#e5707a"/>' +
+    '<path d="M22.3 27.4Q32 31 41.7 27.4L41 28.9Q32 32.4 23 28.9z" fill="#fbf6e8"/>' +
+    '<path d="M28.9 29.6h3v4.4q-1.5 1-3 0zM32.1 29.6h3v4.4q-1.5 1-3 0z" fill="#fffdf4" stroke="#8a6a52" stroke-width=".5"/>' +
+    '<path d="M19.2 25.4q.6-1.7 2-.8M44.8 25.4q-.6-1.7-2-.8" stroke="#a8694a" stroke-width=".8" fill="none" stroke-linecap="round"/>' +
+    '<g transform="rotate(12 49 50)"><rect x="46.4" y="41" width="6" height="15" rx="2" fill="#7a3f10" stroke="#3d1f08" stroke-width=".5"/><rect x="48.2" y="35.5" width="2.4" height="6.5" fill="#7a3f10" stroke="#3d1f08" stroke-width=".5"/><rect x="47.9" y="34.8" width="3" height="1.4" fill="#e3c25a"/>' +
+    '<rect x="46.9" y="45" width="5" height="4.4" fill="#f1e4c4"/><rect x="48.6" y="46.3" width="1.6" height="1.8" fill="#c0392b"/><rect x="47.4" y="42" width=".9" height="12" fill="#e8b46a" opacity=".5"/></g>' +
+    '<path d="M45.5 52.5c0-2 2-3 4-3s4.8 1 4.8 3-1.6 3.6-4.4 3.6-4.4-1.4-4.4-3.6z" fill="#f0bb93" stroke="#a8694a" stroke-width=".7"/>' +
+    '<path d="M46.6 51.6q1.6.8 3.2 0M46.6 53.6q1.6.8 3.2 0" stroke="#a8694a" stroke-width=".55" fill="none"/>' +
+    '</g>' +
     '</svg>';
 
   var TRASH = {
@@ -5487,44 +5824,97 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
   }
 
   // ---------------------------------------------------------------- speech (Dean's voice)
-  var SS = window.speechSynthesis || null, voice = null, speechUnlocked = false, speakTimer = 0;
-  var PREF_VOICES = ['Daniel', 'Fred', 'Alex', 'Aaron', 'Arthur', 'Google UK English Male', 'Microsoft Guy', 'Microsoft David', 'Microsoft Mark', 'Tom', 'Oliver', 'Rishi', 'Gordon', 'Lee'];
+  // Goofy, bland monotone with out-of-place giggles. Browsers only allow speech after a real tap/click/key,
+  // so unlock happens on the first genuine gesture and is retried until it sticks.
+  var SS = window.speechSynthesis || null, voice = null, voiceGoofy = false, speechUnlocked = false, speakTimer = 0, speakSeq = 0, liveU = [], unlockHinted = false;
+  var GOOFY_VOICES = ['Fred', 'Albert', 'Ralph', 'Junior', 'Bahh', 'Boing'];
+  var PREF_VOICES = ['Daniel', 'Alex', 'Aaron', 'Arthur', 'Google UK English Male', 'Microsoft Guy', 'Microsoft David', 'Microsoft Mark', 'Tom', 'Oliver', 'Rishi', 'Gordon', 'Lee', 'Google US English'];
+  function findVoice(vs, list) {
+    for (var j = 0; j < list.length; j++)
+      for (var i = 0; i < vs.length; i++) if (vs[i].name && vs[i].name.indexOf(list[j]) === 0 && /^en/i.test(vs[i].lang || 'en')) return vs[i];
+    return null;
+  }
   function pickVoice() {
     if (!SS || !SS.getVoices) return;
     var vs; try { vs = SS.getVoices() || []; } catch (e) { return; }
     if (!vs.length) return;
-    var best = null, i, j;
-    for (j = 0; j < PREF_VOICES.length && !best; j++)
-      for (i = 0; i < vs.length; i++) if (vs[i].name && vs[i].name.indexOf(PREF_VOICES[j]) === 0 && /^en/i.test(vs[i].lang || 'en')) { best = vs[i]; break; }
+    var best = findVoice(vs, GOOFY_VOICES.slice(0, 2)), i;
+    voiceGoofy = !!best;
+    if (!best) best = findVoice(vs, PREF_VOICES);
     if (!best) for (i = 0; i < vs.length; i++) if (/^en/i.test(vs[i].lang || '') && /\bmale\b/i.test(vs[i].name) && !/female/i.test(vs[i].name)) { best = vs[i]; break; }
     if (!best) for (i = 0; i < vs.length; i++) if (/^en[-_](US|GB)/i.test(vs[i].lang || '')) { best = vs[i]; break; }
+    if (!best) for (i = 0; i < vs.length; i++) if (/^en/i.test(vs[i].lang || '')) { best = vs[i]; break; }
     voice = best;
   }
   function deanState() { var g = BPH.G; if (!g) return null; if (!g.dean) g.dean = { present: false, talking: 0, mood: 'smug', shooting: false }; return g.dean; }
   function setTalking(v) { var d = deanState(); if (d) d.talking = v; }
-  function speak(text, dur) {
+  var GIGGLES = ['hee hee hee hee', 'heh heh hee hee hee', 'tee hee hee', 'hee hee hyuk', 'hee hee heeee'];
+  var GIGGLE_SHOW = ['hee-hee-hee!', 'heh-heh-hee-hee!', 'tee-hee!', 'hee-hee-hyuk!', 'hee-hee-heeee!'];
+  // Split a line into spoken parts with giggles dropped in where nobody would laugh.
+  function giggleize(text, mood) {
+    var parts = [{ t: text }];
+    if (/hee hee|hee-hee|heh heh/i.test(text)) return { parts: parts, show: text };
+    var p = (mood === 'flub' || mood === 'sulk') ? 0.75 : 0.5;
+    if (Math.random() >= p) return { parts: parts, show: text };
+    var k = Math.floor(Math.random() * GIGGLES.length);
+    var g = { t: GIGGLES[k], giggle: true }, show = GIGGLE_SHOW[k];
+    var cuts = [], re = /[,.!?;:—] +/g, m;
+    while ((m = re.exec(text))) if (m.index > 6 && m.index < text.length - 6) cuts.push(m.index + m[0].length);
+    if (cuts.length && Math.random() < 0.7) {
+      var c = cuts[Math.floor(Math.random() * cuts.length)];
+      return { parts: [{ t: text.slice(0, c) }, g, { t: text.slice(c) }], show: text.slice(0, c) + show + ' ' + text.slice(c) };
+    }
+    if (Math.random() < 0.3) return { parts: [g, { t: text }], show: show[0].toUpperCase() + show.slice(1) + ' ' + text };
+    return { parts: [{ t: text }, g], show: text + ' ' + show[0].toUpperCase() + show.slice(1) };
+  }
+  function utter(part, last, seq) {
+    var u = new SpeechSynthesisUtterance(part.giggle ? part.t : spokenText(part.t));
+    if (!voice) pickVoice();
+    if (voice) { u.voice = voice; u.lang = voice.lang; } else u.lang = 'en-US';
+    if (part.giggle) { u.pitch = 2; u.rate = voiceGoofy ? 1.5 : 1.7; }
+    else if (voiceGoofy) { u.pitch = 0.9; u.rate = 0.95; }
+    else { u.pitch = 0.55; u.rate = 0.88; }
+    u.volume = Math.max(0.05, Math.min(1, S.sfxVol || 0.8));
+    u.onstart = function () { if (seq !== speakSeq) return; clearTimeout(speakTimer); setTalking(1); };
+    u.onend = u.onerror = function () {
+      var i = liveU.indexOf(u); if (i >= 0) liveU.splice(i, 1);
+      if (last && seq === speakSeq) { clearTimeout(speakTimer); speakTimer = setTimeout(function () { setTalking(0); }, 120); }
+    };
+    liveU.push(u); if (liveU.length > 12) liveU.shift();   // keep references (Chrome drops events on collected utterances)
+    return u;
+  }
+  function speak(text, dur, parts) {
     clearTimeout(speakTimer);
     setTalking(1);
     speakTimer = setTimeout(function () { setTalking(0); }, dur || 3500);
     if (!SS || !S.deanVoice || !window.SpeechSynthesisUtterance) return;
-    try {
-      SS.cancel();
-      var u = new SpeechSynthesisUtterance(spokenText(text));
-      if (!voice) pickVoice();
-      if (voice) { u.voice = voice; u.lang = voice.lang; } else u.lang = 'en-US';
-      u.pitch = 1.15; u.rate = 1.0; u.volume = Math.max(0, Math.min(1, S.sfxVol));
-      u.onstart = function () { clearTimeout(speakTimer); setTalking(1); };
-      u.onend = u.onerror = function () { clearTimeout(speakTimer); speakTimer = setTimeout(function () { setTalking(0); }, 120); };
-      SS.speak(u);
-    } catch (e) { }
+    if (!speechUnlocked && !unlockHinted) { unlockHinted = true; try { toast('Tap the screen once to hear Dean talk', 'info'); } catch (e) { } }
+    parts = parts || [{ t: text }];
+    var seq = ++speakSeq;
+    function go() {
+      if (seq !== speakSeq) return;
+      try {
+        if (SS.paused) SS.resume();
+        for (var i = 0; i < parts.length; i++) if (parts[i].t && /\S/.test(parts[i].t)) SS.speak(utter(parts[i], i === parts.length - 1, seq));
+      } catch (e) { }
+    }
+    var busy = false;
+    try { busy = SS.speaking || SS.pending; } catch (e) { }
+    if (busy) { try { SS.cancel(); } catch (e) { } setTimeout(go, 70); }   // Chrome drops a speak() issued right after cancel()
+    else go();
   }
   function unlockSpeech() {
-    if (speechUnlocked) return; speechUnlocked = true;
+    if (speechUnlocked) return;
+    var nv = window.navigator || {}, ua = nv.userActivation;
     A('unlock');
+    if (ua && !ua.isActive) return;          // not inside a real gesture (e.g. a controller press): try again on the next tap
+    speechUnlocked = true;
     if (!SS || !window.SpeechSynthesisUtterance) return;
-    try { var u = new SpeechSynthesisUtterance(' '); u.volume = 0; SS.speak(u); } catch (e) { }
+    try { if (!voice) pickVoice(); var u = new SpeechSynthesisUtterance('.'); u.volume = 0; u.rate = 2; liveU.push(u); SS.speak(u); if (SS.resume) SS.resume(); } catch (e) { }
   }
   if (SS) { try { pickVoice(); if (SS.addEventListener) SS.addEventListener('voiceschanged', pickVoice); else SS.onvoiceschanged = pickVoice; } catch (e) { } }
+  // Chrome sometimes pauses the speech queue on its own; nudge it.
+  if (SS && typeof window.setInterval === "function") window.setInterval(function () { try { if (SS.paused && (SS.pending || SS.speaking)) SS.resume(); } catch (e) { } }, 2000);
 
   // ---------------------------------------------------------------- general pool-hall lines
   var LINES = {
@@ -5563,6 +5953,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
   var CSS = [
     "#bph-ui{position:fixed;inset:0;z-index:40;pointer-events:none;font-family:'Bebas Neue','Oswald','Impact','Arial Narrow',sans-serif;color:#f3efe4;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;letter-spacing:.04em;--blue:#1d5fa6;--blue2:#4da3ff;--brass:#c9a24a;--brass2:#f2d78a;--chalk:#f3efe4;--wood1:#3a1f10;--wood2:#24130a;--leather:#1a100b;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);--sal:env(safe-area-inset-left,0px);--sar:env(safe-area-inset-right,0px);font-size:16px;line-height:1.15}",
     "#bph-ui *{box-sizing:border-box}",
+    "#bph-ui .ptsLine{margin:10px auto 0;max-width:560px;text-align:center;font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;letter-spacing:0;font-size:15px;line-height:1.35;color:#e8e2d0}#bph-ui .ptsLine b{display:block;margin-top:4px;color:#ffd76a;font-size:17px}",
     "#bph-ui .bph-sans{font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;letter-spacing:0}",
     // screens
     "#bph-ui .scr{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:calc(var(--sat) + 10px) calc(var(--sar) + 12px) calc(var(--sab) + 10px) calc(var(--sal) + 12px);opacity:0;visibility:hidden;transition:opacity .35s ease,visibility 0s linear .35s;pointer-events:none}",
@@ -5680,6 +6071,8 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     "#bph-ui .plate .av{flex:0 0 auto;width:clamp(30px,5.6vmin,44px);height:clamp(30px,5.6vmin,44px);border-radius:50%;overflow:hidden;border:1.5px solid var(--brass);background:#1d5fa6;display:flex;align-items:center;justify-content:center;font-size:clamp(17px,3.2vmin,24px);color:#fff}",
     "#bph-ui .plate .av.talk svg{animation:bphTalk .26s ease-in-out infinite alternate}",
     "@keyframes bphTalk{from{transform:translateY(0) rotate(-1.5deg)}to{transform:translateY(-1.5px) rotate(1.5deg)}}",
+    "#bph-ui .plate .av.talk svg .bphAdam,#bph-ui .bubble.on .pic svg .bphAdam{animation:bphGulp .3s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:50% 50%}",
+    "@keyframes bphGulp{from{transform:translateY(.6px)}to{transform:translateY(-2px)}}",
     "#bph-ui .plate .info{min-width:0;flex:1 1 auto}",
     "#bph-ui .plate .nm{font-size:clamp(16px,3vmin,22px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.06em}",
     "#bph-ui .plate .grp{font-size:clamp(11px,1.9vmin,13px);color:var(--brass2);letter-spacing:.14em;opacity:.9;white-space:nowrap}",
@@ -5852,7 +6245,8 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     var tag = h('div', 'tag'); el.titleTag = tag;
     var led = h('div', 'tLedger');
     var gate = h('div', 'gate');
-    add(gate, h('div', 'g1', 'Tap to Enter'), h('div', 'g2', 'Click \u00B7 Any key \u00B7 Press \u24B6 on the controller'));
+    var touchDev = ('ontouchstart' in window) || ((window.navigator || {}).maxTouchPoints > 0);
+    add(gate, h('div', 'g1', 'Tap to Enter'), h('div', 'g2', touchDev ? 'Tap the screen once to start (that turns the sound on)' : 'Click \u00B7 Any key \u00B7 Press \u24B6 on the controller'));
     add(left, box, gate, tag, led);
     on(s, 'pointerdown', function () { if (introState !== 'done') gateInput(); });
     var menu = h('div', 'tMenu'), panel = h('div', 'panel');
@@ -6041,7 +6435,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
   var HOWTO = {
     mouse: [
       ['Aim', 'Move the mouse left/right (3D view) or point at the spot (top view). Hold <span class="kb">Shift</span> for fine aim; arrow keys or the wheel nudge.'],
-      ['Shoot', 'Press, drag <b>back</b> toward you to pull the cue, then release to stroke. Drag back to zero to cancel. Or set the power slider and press <span class="kb">Space</span>.'],
+      ['Shoot', 'Press, drag <b>back</b> toward you to pull the cue, then release to stroke. Drag back to zero to cancel. Or hold <span class="kb">Space</span>: the longer you hold, the harder the shot; let go to shoot. <span class="kb">Esc</span> cancels.'],
       ['Spin', 'Drag the red dot on the cue-ball diagram (bottom right). High = follow, low = draw, sides = English.'],
       ['Ball in hand', 'Drag the cue ball where you want it, release to place.'],
       ['Call the 8', 'Click the pocket you want when the prompt shows.'],
@@ -6051,7 +6445,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     ],
     touch: [
       ['Aim', 'Drag one finger anywhere on the table to swing the cue. Use the fine-aim strip on the right edge for tiny nudges.'],
-      ['Shoot', 'Pull the power slider (left edge) down, then let go to stroke. Or use the Shoot button.'],
+      ['Shoot', 'Pull the power slider (left edge) down, then let go to stroke. Or press and hold the Shoot button: the longer you hold, the harder the shot; let go to shoot.'],
       ['Spin', 'Drag the red dot on the cue-ball diagram (bottom right).'],
       ['Ball in hand', 'Drag the cue ball, lift your finger to place it.'],
       ['Call the 8', 'Tap the pocket, or use the arrows on the prompt.'],
@@ -6061,7 +6455,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     ],
     pad: [
       ['Aim', 'Left stick (push farther to swing faster). <span class="kb">LB</span>/<span class="kb">RB</span> or D-pad \u25C0 \u25B6 for fine nudges.'],
-      ['Shoot', 'Right stick: pull down to draw the cue back, push up to stroke. Or squeeze <span class="kb">RT</span> to set power and press <span class="kb">A</span>.'],
+      ['Shoot', 'Squeeze <span class="kb">RT</span>: how far you squeeze is how hard you hit; let go to shoot. Or pull the right stick down to draw the cue back and push it up to stroke. Or hold <span class="kb">A</span> and let go. <span class="kb">B</span> cancels.'],
       ['Spin', '<span class="kb">Y</span> = spin mode: left stick moves the tip dot, <span class="kb">Y</span>/<span class="kb">B</span> to exit, <span class="kb">R3</span> recenters.'],
       ['Ball in hand', 'Left stick moves the cue ball, <span class="kb">A</span> places it.'],
       ['Call the 8', '<span class="kb">X</span> cycles the called pocket.'],
@@ -6081,12 +6475,16 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
       tb.forEach(function (b, i) { b.classList.toggle('sel', keys[i][0] === k); });
       var html = '<table class="keys">';
       HOWTO[k].forEach(function (r) { html += '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>'; });
-      html += '</table><h3>House Rules \u00B7 8-Ball</h3><ul class="rulesTxt">' +
+      html += '</table><h3>Byrnes Rules \u00B7 8-Ball</h3><ul class="rulesTxt">' +
+        '<li>Break from behind the line (the second diamond). The cue ball has to go past the line.</li>' +
         '<li>Table is open after the break. Your first legal ball sets your group: solids (1\u20137) or stripes (9\u201315).</li>' +
         '<li>Hit your own group first. Something must hit a rail or drop after contact, or it\u2019s a foul.</li>' +
         '<li>Scratch or foul = ball in hand for your opponent.</li>' +
         '<li>Clear your group, then sink the 8' + (S.call8 ? ' in the pocket you call' : '') + '. 8 early or 8 with a scratch loses.</li>' +
-        '<li>' + money(S.perGame) + ' a game. ' + money(S.bonus) + ' for running the table or the 8 on the break. Loser breaks.</li></ul>';
+        '<li>' + money(S.perGame) + ' a game. ' + money(S.bonus) + ' for running the table or the 8 on the break. Loser breaks.</li>' +
+        '<li>Points: 1 for each of your balls you sink, 3 for the 8, so winning a game is 10. Five games a night; most points wins the night.</li>' +
+        '<li>Then the final game: King of the World. The winner of game five breaks. 8 on the break or a run-out from the break: the other player pays ' + money(S.bonus) + ' and you play King of the World again.</li>' +
+        '<li>Byrnes Pool Rules apply. Always.</li></ul>';
       body.innerHTML = html;
     }
     keys.forEach(function (k) {
@@ -6380,6 +6778,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
   }
   var bubTimer = 0;
   function bubble(text, mood) {
+    var gz = giggleize(text, mood); text = gz.show;
     el.bubTxt.innerHTML = '';
     add(el.bubTxt, h('b', null, DEAN_NAME), doc.createTextNode(text));
     el.bubble.classList.remove('on'); void el.bubble.offsetWidth; el.bubble.classList.add('on');
@@ -6387,7 +6786,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     var dur = Math.max(3500, Math.min(6000, 1200 + text.length * 55));
     bubTimer = setTimeout(function () { el.bubble.classList.remove('on'); }, dur);
     var d = deanState(); if (d && mood) d.mood = mood;
-    speak(text, dur);
+    speak(text, dur, gz.parts);
   }
   function deanPresent() {
     var g = G(); if (g.dean && g.dean.present) return true;
@@ -6441,7 +6840,12 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
   }
   function nav(dir) {
     if (!cur) return false;
-    if (cur === screens.title && introState !== 'done') return gateInput();
+    if (cur === screens.title && introState !== 'done') {
+      // On iPad/iPhone a controller press is not a real tap, so sound and Dean's voice would stay off: ask for one tap first.
+      var td = ('ontouchstart' in window) || ((window.navigator || {}).maxTouchPoints > 0);
+      if (td && !speechUnlocked && introState === 'gate') { toast('Tap the screen once to start \u2014 that turns the sound on', 'info'); return true; }
+      return gateInput();
+    }
     var rows = visibleRows(cur); if (!rows.length) return false;
     var r = Math.min(focusIdx.r, rows.length - 1), c = Math.min(focusIdx.c, rows[r].length - 1);
     var f = rows[r][c];
@@ -6582,6 +6986,26 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
         x.led.appendChild(le);
       }
     }
+    var srs = info.series, ptsEl = x.pts;
+    if (!ptsEl) { ptsEl = x.pts = h('div', 'ptsLine'); var lp = x.led.parentNode; if (lp && lp.insertBefore && x.led.nextSibling !== undefined) lp.insertBefore(ptsEl, x.led.nextSibling || null); else if (lp) lp.appendChild(ptsEl); }
+    ptsEl.textContent = '';
+    if (srs && srs.games && srs.games.length && gm !== 'practice' && gm !== 'trick') {
+      var nm = function (i) { return lastNameOf((players[i] && players[i].name) || (lg && lg.names && lg.names[i]) || ''); };
+      var gp = info.points || [0, 0], L = info.seriesLen || 5, n = srs.games.length;
+      var cw = srs.pts[0] === srs.pts[1] ? -1 : (srs.pts[0] > srs.pts[1] ? 0 : 1);
+      var nightLine = (cw < 0 ? 'Dead even on points' : nm(cw) + ' wins the night on points') + ', ' + srs.pts[0] + ' to ' + srs.pts[1] + ' (games ' + srs.wins[0] + '\u2013' + srs.wins[1] + ').';
+      var line1, line2;
+      if (info.king) {
+        line1 = nightLine;
+        line2 = info.kingNote === 'again' ? '\u265B King of the World! ' + nm(w) + ' did it from the break. ' + nm(1 - w) + ' pays $2, and ' + nm(w) + ' breaks again.'
+          : '\u265B ' + nm(w) + ' wins King of the World. That\u2019s the night. Byrnes Pool Rules apply. Always.';
+      } else {
+        line1 = 'This game: ' + nm(0) + ' ' + gp[0] + ', ' + nm(1) + ' ' + gp[1] + ' points.';
+        if (srs.done) line2 = 'Five games done! ' + nightLine + ' Next: \u265B KING OF THE WORLD. ' + nm(srs.kingBreaker) + ' breaks.';
+        else line2 = 'Game ' + n + ' of ' + L + ' done. Night so far: ' + nm(0) + ' ' + srs.pts[0] + ', ' + nm(1) + ' ' + srs.pts[1] + ' points.';
+      }
+      add(ptsEl, h('div', null, line1), h('b', null, line2));
+    }
     hideAll(); open('over', true);
     setFocus(screens.over, 0, 1);
     hideReplayBtn();
@@ -6707,6 +7131,64 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     if (!G.dean.present) return;
     if (mood) G.dean.mood = mood;
     call(UI(), 'trash', sit);
+  }
+  // First miss of the rack: Dean snaps his cue over his right knee, tosses the pieces and plays on with a curtain rod.
+  function cueBreakGag() {
+    if (!G.dean.present || G.dean.cueBreak || G.replaying) return false;
+    G.dean.cueBreak = (window.performance && performance.now ? performance.now() : Date.now()) / 1000;
+    G.dean.brokenCue = false; G.dean.mood = 'flub';
+    setTimeout(function () { if (G.dean.cueBreak) call(A(), 'crack'); }, 800);
+    setTimeout(function () { if (G.dean.cueBreak) G.dean.brokenCue = true; }, 1600);
+    setTimeout(function () { if (G.dean.cueBreak && G.dean.present) call(UI(), 'say', "That stick had a crooked soul. Hee hee! Good thing I brought my backup.", 'flub'); }, 1000);
+    return true;
+  }
+  // Dean is terrible but thinks he's a legend: calls big shots, blames everything, brags about luck.
+  var COCKY = {
+    call: [
+      "Watch this. Off two rails, corner pocket. Write it down.",
+      "Bank shot. I don't even need to look. Pros don't look.",
+      "This one's for the highlight reel, {L}. Get your phone out.",
+      "Side pocket, with draw. Easy. I've made this shot a thousand times.",
+      "Stand back, {L}. You're about to see why they call me the Professor.",
+      "Calling it now: combination, then the cue ball stops dead. Physics.",
+      "Little masse action here. You wouldn't understand it."
+    ],
+    blame: [
+      "That table's not level. I've been saying it for years.",
+      "Bad chalk. Who bought this chalk? {L}, did you buy this chalk?",
+      "The light's in my eyes. Totally the light.",
+      "You jinxed me, {L}. You were breathing too loud.",
+      "That ball had a flat spot. I felt it.",
+      "The cloth is slow tonight. Humidity. Pros notice these things.",
+      "My cue's warped. It's the only explanation.",
+      "I meant to leave it there. It's a strategy. You wouldn't get it.",
+      "Somebody bumped the table. I felt it, {L}."
+    ],
+    legend: [
+      "And THAT is why they put my picture on the wall.",
+      "Textbook. They should teach that one at the academy.",
+      "Did you see that, {L}? Of course you did. Everybody did.",
+      "Smooth as butter. Like I always say, it's all in the wrist.",
+      "Hall of Fame, baby. Hall. Of. Fame.",
+      "I don't miss. Well, I rarely miss. Okay, I made that one."
+    ]
+  };
+  var cockyLast = {};
+  function humanLast() {
+    var h = G.players.filter(function (p) { return !p.isCPU; })[0]; if (!h) return 'pal';
+    var n = String(h.name || '').trim(), k = n.toLowerCase().split(/\s+/)[0];
+    if (k === 'christopher' || k === 'chris') return 'Vonderau';
+    if (k === 'john') return 'Byrnes';
+    var parts = n.split(/\s+/); return parts[parts.length - 1] || 'pal';
+  }
+  function cocky(kind, mood) {
+    if (!G.dean.present) return false;
+    var arr = COCKY[kind], i, tries = 0;
+    do { i = Math.floor(Math.random() * arr.length); } while (i === cockyLast[kind] && tries++ < 5);
+    cockyLast[kind] = i;
+    if (mood) G.dean.mood = mood;
+    call(UI(), 'say', arr[i].replace(/\{L\}/g, humanLast()), mood);
+    return true;
   }
   function legalTargets() {
     if (!G.state || !Rules.legalTargets) return null;
@@ -6894,17 +7376,17 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     // feedback
     if (res.foul) {
       toast(res.foulText || 'Foul. Ball in hand.', 'bad');
-      if (G.dean.present) { if (human) dean(s.cuePocketed ? 'scratch' : 'foul', 'gloat'); else dean(s.cuePocketed ? 'cpuScratch' : 'cpuFoul', 'flub'); }
+      if (G.dean.present) { if (human) dean(s.cuePocketed ? 'scratch' : 'foul', 'gloat'); else if (!cueBreakGag()) dean(s.cuePocketed ? 'cpuScratch' : 'cpuFoul', 'flub'); }
     } else if (s.pocketed.length) {
       if (res.keepTurn) {
         if (s.isBreak) toast(s.pocketed.length > 1 ? s.pocketed.length + ' down on the break!' : 'One down on the break.', 'good');
         else if (s.bank) toast(pick(['Bank shot! Beautiful.', 'Off the rail and in. Pro.', 'Banked it!']), 'good');
         else if (s.combo) toast(pick(['Combo! Fancy.', 'Kiss and tell. Nice combo.']), 'good');
         else if (s.pocketed.length > 1) toast('Two for one!', 'good');
-        if (G.dean.present) { if (human) { if (Math.random() < 0.45) dean('humanMakes', 'smug'); } else dean('cpuMakes', 'gloat'); }
+        if (G.dean.present) { if (human) { if (Math.random() < 0.45) dean('humanMakes', 'smug'); } else if (!(Math.random() < 0.5 && cocky('legend', 'gloat'))) dean('cpuMakes', 'gloat'); }
       } else if (G.dean.present && human && Math.random() < 0.5) dean('miss', 'smug');
     } else {
-      if (G.dean.present) { if (human) dean(cpuAhead() && Math.random() < 0.4 ? 'cpuAhead' : 'miss', 'smug'); else dean('cpuMiss', 'flub'); }
+      if (G.dean.present) { if (human) dean(cpuAhead() && Math.random() < 0.4 ? 'cpuAhead' : 'miss', 'smug'); else if (!cueBreakGag() && !(Math.random() < 0.65 && cocky('blame', 'flub'))) dean('cpuMiss', 'flub'); }
     }
     var next = (G.state && typeof G.state.turn === 'number') ? G.state.turn : (res.keepTurn ? shooter : 1 - shooter);
     var go = function () { G.activePlayer = next; beginTurn(!!res.ballInHand, !!res.kitchen); };
@@ -6925,14 +7407,38 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
   function gameOver(res, s) {
     var w = res.winner, bonus = !!res.bonus, stakes = G.cfg.stakes || { perGame: 1, bonus: 2 };
     var amt = bonus ? stakes.bonus : stakes.perGame;
-    G.ledger.money[w] += amt; G.ledger.games[w] += 1; saveLedger();
+    G.ledger.money[w] += amt; G.ledger.games[w] += 1;
     var loser = 1 - w;
+    // Friday-night scoring: 1 point per own ball pocketed, 3 for the 8 (a win is 10). Five games a night.
+    var pts = [0, 0];
+    for (var pi = 0; pi < 2; pi++) {
+      if (pi === w) { pts[pi] = 10; continue; }
+      var grp = G.players[pi].group, n = 0;
+      if (grp) for (var k = 1; k < 16; k++) if (k !== 8 && G.balls[k] && !G.balls[k].onTable && ((grp === 'solids') === (k < 8))) n++;
+      pts[pi] = n;
+    }
+    var sr = G.ledger.series; if (!sr || sr.phase === 'over') sr = G.ledger.series = newSeries();
+    var kingNote = '';
+    if (G.cfg.mode !== 'practice' && G.cfg.mode !== 'trick') {
+      if (G.king) {
+        // King of the World: if the breaker wins with the 8 on the break or runs the table, the other player pays $2 and they go again.
+        var kb = G.state ? G.state.breaker : sr.kingBreaker;
+        sr.kingGames = (sr.kingGames || 0) + 1;
+        if (bonus && w === kb) { sr.kingBreaker = w; sr.phase = 'king'; kingNote = 'again'; }
+        else { sr.phase = 'over'; kingNote = 'over'; }
+      } else {
+        sr.games.push({ w: w, pts: pts.slice() }); sr.pts[0] += pts[0]; sr.pts[1] += pts[1]; sr.wins[w] += 1;
+        if (sr.games.length >= SERIES_LEN) { sr.done = true; sr.phase = 'king'; sr.kingBreaker = w; kingNote = 'next'; }
+      }
+    }
+    saveLedger();
     var info = { winner: w, winnerName: G.players[w].name, loserName: G.players[loser].name, reason: res.winText || '',
-      bonus: bonus, bonusText: res.bonusText || '', amount: amt, ledger: G.ledger };
+      bonus: bonus, bonusText: res.bonusText || '', amount: amt, ledger: G.ledger, points: G.king ? null : pts, series: G.ledger.series, seriesLen: SERIES_LEN, king: !!G.king, kingNote: kingNote };
     lastBreaker = G.state ? G.state.breaker : 0;
     G.nextBreaker = loser; // loser breaks next
     var finish = function () {
       G.mode = 'over';
+      if (kingNote === 'next' || (sr.done && !G.king)) { var cw = sr.pts[0] === sr.pts[1] ? -1 : sr.pts[0] > sr.pts[1] ? 0 : 1; if (cw >= 0) { G.celebrate = 1; call(A(), 'crowd', 'big'); call(A(), 'sting'); } }
       call(UI(), 'showGameOver', info);
       if (G.dean.present) dean(G.players[w].isCPU ? 'cpuWins' : 'humanWins', G.players[w].isCPU ? 'gloat' : 'sulk');
     };
@@ -6947,13 +7453,18 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
       G.mode = 'over-wait'; setTimeout(finish, 1300);
     }
   }
+  var SERIES_LEN = 5;
+  function newSeries() { return { games: [], pts: [0, 0], wins: [0, 0], done: false, phase: 'series', kingBreaker: 0, kingGames: 0, day: new Date().toDateString() }; }
   function ledgerKey() { return 'bph.ledger.' + G.ledger.names.join('|').toLowerCase(); }
-  function saveLedger() { store(ledgerKey(), { money: G.ledger.money, games: G.ledger.games }); }
+  function saveLedger() { store(ledgerKey(), { money: G.ledger.money, games: G.ledger.games, series: G.ledger.series || null }); }
   function loadLedger(names) {
     G.ledger = { names: names.slice(), money: [0, 0], games: [0, 0] };
-    var l = store(ledgerKey()); if (l && l.money) { G.ledger.money = l.money; G.ledger.games = l.games || [0, 0]; }
+    var l = store(ledgerKey()); if (l && l.money) { G.ledger.money = l.money; G.ledger.games = l.games || [0, 0]; G.ledger.series = l.series || null; }
+    // a finished five-game night, or one left over from another day, starts fresh
+    var sr = G.ledger.series, today = new Date().toDateString();
+    if (!sr || sr.phase === 'over' || (sr.done && sr.phase !== 'king') || sr.day !== today) G.ledger.series = newSeries();
   }
-  Main.resetLedger = function () { G.ledger.money = [0, 0]; G.ledger.games = [0, 0]; saveLedger(); };
+  Main.resetLedger = function () { G.ledger.money = [0, 0]; G.ledger.games = [0, 0]; G.ledger.series = newSeries(); saveLedger(); };
 
   // ---------- CPU ----------
   function startCPU() {
@@ -6974,6 +7485,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
       G.place.active = false;
       if (plan.calledPocket != null && plan.calledPocket >= 0) G.callPocket = { needed: true, pocket: plan.calledPocket, manual: true };
       cpu.plan = plan; cpu.phase = 'aim'; cpu.t = 0;
+      if (G.dean.present && G.state && !G.state.isBreak && Math.random() < 0.45) cocky('call', 'smug');
       var a0 = G.aim.angle, d = plan.angle - a0; while (d > Math.PI) d -= 6.2832; while (d < -Math.PI) d += 6.2832;
       cpu.a0 = a0; cpu.da = d;
       G.cpuAim = { angle: a0, power: plan.power, spinX: plan.spinX || 0, spinY: plan.spinY || 0 };
@@ -7004,19 +7516,45 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     if (cfg.mode !== 'practice') loadLedger([G.players[0].name, G.players[1].name]);
     var breaker = (cfg.breaker === 0 || cfg.breaker === 1) ? cfg.breaker : (G.nextBreaker != null && G.lastNames === G.players.map(function (p) { return p.name; }).join('|')) ? G.nextBreaker : 0;
     G.lastNames = G.players.map(function (p) { return p.name; }).join('|');
+    var srk = G.ledger && G.ledger.series;
+    G.king = !!(srk && srk.phase === 'king' && cfg.mode !== 'practice' && cfg.mode !== 'trick');
+    if (G.king) breaker = srk.kingBreaker === 1 ? 1 : 0;
     newRack(breaker);
-    if (G.dean.present) setTimeout(function () { dean('gameStart', 'smug'); }, 900);
+    if (G.king) kingCard(G.players[breaker].name, srk.kingGames || 0);
+    if (G.dean.present) setTimeout(function () { dean('gameStart', 'smug'); }, G.king ? 3200 : 900);
   };
+  // Dramatic title card for the final game of the night.
+  function kingCard(name, n) {
+    try {
+      var d = document, el = d.getElementById('bph-king');
+      if (!el) {
+        el = d.createElement('div'); el.id = 'bph-king';
+        el.style.cssText = 'position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;' +
+          'background:radial-gradient(ellipse at center,rgba(40,10,60,0.82),rgba(0,0,0,0.9));opacity:0;transition:opacity .5s;text-align:center;padding:0 16px';
+        d.body.appendChild(el);
+      }
+      var lbl = n > 0 ? 'KING OF THE WORLD \u2014 AGAIN!' : 'KING OF THE WORLD';
+      el.innerHTML = '<div style="font:900 clamp(40px,9vw,110px)/1 Impact,\'Arial Black\',sans-serif;letter-spacing:.06em;color:#fff6c8;' +
+        'text-shadow:0 0 8px #ffd23a,0 0 22px #ff9a00,0 0 48px #ff3d00,0 0 90px #ff0070">\u265B<br>' + lbl + '</div>' +
+        '<div style="margin-top:18px;font:600 clamp(16px,2.6vw,26px) -apple-system,Helvetica,Arial,sans-serif;color:#ffe9a8">' + String(name).replace(/[<&]/g, '') + ' breaks. 8 on the break or a run-out: the other guy pays $2 and you go again.</div>' +
+        '<div style="margin-top:10px;font:600 clamp(13px,2vw,18px) -apple-system,Helvetica,Arial,sans-serif;color:#7dff9a;text-shadow:0 0 8px #2bff6a">BYRNES POOL RULES APPLY. ALWAYS.</div>';
+      void el.offsetWidth; el.style.opacity = '1';
+      call(A(), 'sting'); G.celebrate = Math.max(G.celebrate || 0, 0.6);
+      setTimeout(function () { el.style.opacity = '0'; }, 3000);
+    } catch (e) { }
+  }
   function newRack(breaker) {
     G.balls = P.createBalls(); P.rack(G.balls, Math.random);
     var r = G.cfg.rules || {};
     G.state = Rules.newGame({ breaker: breaker, call8: r.call8 !== false, openAfterBreak: r.openAfterBreak !== false, foulPlacement: r.foulPlacement || 'anywhere' });
     G.players.forEach(function (p) { p.group = null; });
     G.activePlayer = breaker; G.celebrate = 0; lastRec = null; G.canReplay = false;
+    G.dean.cueBreak = 0; G.dean.brokenCue = false;
     call(A(), 'rack');
     G.aim.angle = 0; G.aim.power = 0.85;
     call(UI(), 'hideAll');
-    toast(G.players[breaker].name + ' breaks.', 'info');
+    var srs = G.ledger && G.ledger.series, gno = srs && !srs.done && !G.king && G.cfg.mode !== 'practice' && G.cfg.mode !== 'trick' ? srs.games.length + 1 : 0;
+    toast((gno ? 'Game ' + gno + ' of ' + SERIES_LEN + '. ' : '') + G.players[breaker].name + ' breaks.', 'info');
     resetCue(T.headX - 0.06, 0);
     beginTurn(true, true);
   }
