@@ -5143,27 +5143,23 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
       if (pressed(p, s, 14)) spinKey(-0.05, 0);
       if (pressed(p, s, 15)) spinKey(0.05, 0);
     }
-    if (tipMode) {
-      // slow, curved tip travel: a light push creeps the tip, a full push crosses the ball in ~1.5 s
-      var mag = Math.hypot(lx, ly);
-      if (mag > 0.15) {
-        var nn = clamp((mag - 0.15) / 0.85, 0, 1), rate = (0.04 + 0.66 * nn * nn) * dt;
-        setSpin((a.spinX || 0) + lx / mag * rate, (a.spinY || 0) - ly / mag * rate);
-      }
-      aimVel = 0;
-    } else {
-      // left stick X = aim: deadzone + response curve, smoothed velocity
-      // ~0.4 deg/s just past the deadzone (surgical), ~2 deg/s at 30%, ~140 deg/s full tilt
-      // real-pool feel: a light push turns the cue a fraction of a degree per second, a full push starts at
-      // ~18 deg/s and only builds to ~50 deg/s if you keep holding it
-      var c = curve(lx, 0.15, 1), n = Math.abs(c);
-      if (n) aimHold += dt; else aimHold = 0;
-      var ramp = 0.35 + 0.65 * clamp((aimHold - 0.5) / 1.5, 0, 1);
-      var target = n ? (c < 0 ? -1 : 1) * (0.004 + 0.9 * n * n * n) * ramp * sens() : 0; // rad/s
-      aimVel += (target - aimVel) * clamp(dt * (target ? 8 : 30), 0, 1);
-      if (!target && Math.abs(aimVel) < 0.003) aimVel = 0;
-      if (Math.abs(aimVel) > 1e-5) nudgeAim(aimVel * dt);
+    // LEFT STICK = cue tip, anywhere inside the circle of the cue ball: up = follow, down = draw,
+    // sides = English, any diagonal. Slow and curved; it stays where you leave it. R3 recenters.
+    var mag = Math.hypot(lx, ly);
+    if (mag > 0.15) {
+      var nn = clamp((mag - 0.15) / 0.85, 0, 1), rate = (0.05 + 0.75 * nn * nn) * dt;
+      setSpin((a.spinX || 0) + lx / mag * rate, (a.spinY || 0) - ly / mag * rate);
     }
+    // RIGHT STICK X = aim (turn the cue): a light push turns it a fraction of a degree per second, a full
+    // push starts at ~18 deg/s and only builds to ~50 deg/s if you keep holding it
+    var rx = ax(p, 2);
+    var c = curve(rx, 0.15, 1), n = Math.abs(c);
+    if (n) aimHold += dt; else aimHold = 0;
+    var ramp = 0.35 + 0.65 * clamp((aimHold - 0.5) / 1.5, 0, 1);
+    var target = n ? (c < 0 ? -1 : 1) * (0.004 + 0.9 * n * n * n) * ramp * sens() : 0; // rad/s
+    aimVel += (target - aimVel) * clamp(dt * (target ? 8 : 30), 0, 1);
+    if (!target && Math.abs(aimVel) < 0.003) aimVel = 0;
+    if (Math.abs(aimVel) > 1e-5) nudgeAim(aimVel * dt);
     holdNudge(p, s, 4, -1, dt, t); holdNudge(p, s, 5, 1, dt, t);
     if (!tipMode) { holdNudge(p, s, 14, -1, dt, t); holdNudge(p, s, 15, 1, dt, t); }
     // D-pad up/down: power meter
@@ -5189,13 +5185,6 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     if (charge && charge.src === 'padA' && charge.pad && charge.pad.index === p.index && !down(p, 0)) { releaseCharge('padA'); return; }
     // B (outside spin mode) cancels a stroke
     if (!I.spinMode && pressed(p, s, 1) && (strokeOwner === 'pad' || strokeOwner === 'charge')) { cancelStroke(); setStroke(0); padStroke.lock = true; call(BPH.Audio, 'uiBack'); }
-    // RIGHT STICK = cue tip, anywhere on the cue ball (up = follow, down = draw, sides = English, any diagonal).
-    // Slow and curved so a light push creeps the tip; it stays where you leave it. R3 recenters.
-    var rx = ax(p, 2), rmag = Math.hypot(rx, ry);
-    if (rmag > 0.15) {
-      var rn = clamp((rmag - 0.15) / 0.85, 0, 1), rr = (0.05 + 0.75 * rn * rn) * dt;
-      setSpin((a.spinX || 0) + rx / rmag * rr, (a.spinY || 0) - ry / rmag * rr);
-    }
   }
 
   // Right stick stroke: pull down = draw the cue back; fast push up through center = shoot.
@@ -5310,9 +5299,9 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     '#bph-fine .strip:before,#bph-fine .strip:after{position:absolute;left:0;right:0;text-align:center;font-size:14px;color:#fff3cf;text-shadow:0 1px 2px #000}',
     '#bph-fine .strip:before{content:"\\25B2";top:6px}#bph-fine .strip:after{content:"\\25BC";bottom:6px}',
     // spin widget (bottom-right)
-    '#bph-spin{right:calc(12px + env(safe-area-inset-right));bottom:calc(10px + env(safe-area-inset-bottom));width:120px;',
+    '#bph-spin{right:calc(12px + env(safe-area-inset-right));bottom:calc(10px + env(safe-area-inset-bottom));width:144px;',
     ' display:flex;flex-direction:column;align-items:center;gap:4px}',
-    '#bph-spin .face{position:relative;width:104px;height:104px;border-radius:50%;cursor:crosshair;',
+    '#bph-spin .face{position:relative;width:128px;height:128px;border-radius:50%;cursor:crosshair;',
     ' background:radial-gradient(circle at 38% 32%,#ffffff,#f3efe2 45%,#cfc8b4 80%,#9c9480);',
     ' box-shadow:0 0 0 3px #b48f45,0 0 0 6px #2b1a0d,0 6px 16px rgba(0,0,0,.7),inset 0 -6px 12px rgba(0,0,0,.18)}',
     '#bph-spin .ring{position:absolute;left:12%;top:12%;width:76%;height:76%;border-radius:50%;border:1px dashed rgba(90,70,40,.35)}',
@@ -5519,7 +5508,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
       var parts = [];
       if (Math.abs(sy) >= 0.05) parts.push((sy > 0 ? 'FOLLOW ' : 'DRAW ') + Math.round(Math.abs(sy) * 100));
       if (Math.abs(sx) >= 0.05) parts.push((sx > 0 ? 'RIGHT ' : 'LEFT ') + Math.round(Math.abs(sx) * 100));
-      setText(W.spinLbl, 'spinl', (I.spinMode || I.tipHeld) ? 'TIP • STICK' : parts.length ? parts.join(' · ') : (I.lastDevice === 'pad' ? 'RIGHT STICK: TIP' : 'CENTER BALL'));
+      setText(W.spinLbl, 'spinl', (I.spinMode || I.tipHeld) ? 'TIP • STICK' : parts.length ? parts.join(' · ') : (I.lastDevice === 'pad' ? 'LEFT STICK: TIP' : 'CENTER BALL'));
       var pm = (I.spinMode || I.tipHeld) && I.lastDevice === 'pad';
       if (last.spinPad !== pm) { last.spinPad = pm; W.spin.classList.toggle('pad', pm); }
     }
@@ -6520,9 +6509,9 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
       ['Pause', 'Tap the pause button, top right.']
     ],
     pad: [
-      ['Aim', 'Left stick (push farther to swing faster). <span class="kb">LB</span>/<span class="kb">RB</span> or D-pad \u25C0 \u25B6 for fine nudges.'],
+      ['Aim', 'Right stick left/right turns the cue (push farther to swing faster). <span class="kb">LB</span>/<span class="kb">RB</span> or D-pad \u25C0 \u25B6 for fine nudges.'],
       ['Shoot', 'Squeeze <span class="kb">RT</span>: how far you squeeze is how hard you hit; let go to shoot. Or hold <span class="kb">A</span> and let go. <span class="kb">B</span> cancels.'],
-      ['Cue tip', 'Push the <span class="kb">right stick</span> to put the tip anywhere on the cue ball: up = follow, down = draw, left or right = English, or any corner. It stays where you leave it. <span class="kb">R3</span> recenters. (Holding <span class="kb">LT</span> with the left stick or D-pad works too.)'],
+      ['Cue tip', 'Left stick puts the tip anywhere inside the cue ball: up = follow, down = draw, left or right = English, or any spot in between. It stays where you leave it. <span class="kb">R3</span> recenters.'],
       ['Ball in hand', 'Left stick moves the cue ball, <span class="kb">A</span> places it.'],
       ['Call the 8', '<span class="kb">X</span> cycles the called pocket.'],
       ['View', '<span class="kb">View</span> button toggles 3D/Top.'],
