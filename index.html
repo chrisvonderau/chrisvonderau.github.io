@@ -212,6 +212,90 @@ section{margin:0 0 56px;scroll-margin-top:78px}
   #sky{display:none}
 }
 
+/* finder:start */
+.finder{max-width:980px;margin:6px auto 14px;padding:0 16px;position:relative;z-index:2}
+.finder-box{padding:14px;border-radius:20px;background:linear-gradient(180deg,rgba(42,36,24,.92),rgba(16,14,12,.94));
+  border:1px solid rgba(232,200,114,.5);box-shadow:inset 0 1px 0 rgba(255,244,214,.3),0 18px 40px rgba(0,0,0,.45)}
+.finder-row{display:flex;gap:10px;align-items:center}
+.search{flex:1;min-width:0;position:relative;display:flex;align-items:center}
+.search svg{position:absolute;left:14px;width:20px;height:20px;color:var(--gold);pointer-events:none}
+.search input{width:100%;appearance:none;-webkit-appearance:none;font:600 17px/1.2 inherit;font-family:inherit;color:#fffaf0;
+  padding:14px 44px 14px 44px;border-radius:999px;border:1px solid rgba(232,200,114,.6);background:#0c0a08;
+  box-shadow:inset 0 2px 6px rgba(0,0,0,.6)}
+.search input::placeholder{color:#a8977a}
+.search input:focus{outline:3px solid #fff6d4;outline-offset:2px;border-color:var(--gold)}
+.search input::-webkit-search-cancel-button{display:none}
+.clear-q{position:absolute;right:6px;width:34px;height:34px;border-radius:50%;border:0;cursor:pointer;font:800 18px/1 inherit;
+  color:var(--ink);background:linear-gradient(180deg,#fff1c2,#e8c872);display:none}
+.search.has-q .clear-q{display:block}
+.clear-q:focus-visible{outline:3px solid #fff6d4;outline-offset:2px}
+.sort{flex:none;display:inline-flex;padding:4px;border-radius:999px;border:1px solid rgba(232,200,114,.5);background:#0c0a08}
+.sort button{appearance:none;border:0;cursor:pointer;font:750 13px/1 inherit;font-family:inherit;color:#f6e7c1;background:transparent;
+  padding:11px 14px;border-radius:999px;white-space:nowrap}
+.sort button[aria-pressed="true"]{color:var(--ink);background:linear-gradient(180deg,#fff1c2,#e8c872);box-shadow:inset 0 1px 0 #fff}
+.sort button:focus-visible{outline:2px solid #fff6d4;outline-offset:2px}
+.chips{display:flex;gap:8px;margin-top:12px;overflow-x:auto;padding:4px 2px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+  mask-image:linear-gradient(90deg,#000 92%,transparent)}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;appearance:none;cursor:pointer;font:700 13.5px/1 inherit;font-family:inherit;color:#f6e7c1;padding:10px 14px;border-radius:999px;
+  border:1px solid rgba(232,200,114,.4);background:rgba(20,16,12,.8);box-shadow:inset 0 1px 0 rgba(255,244,214,.18);white-space:nowrap}
+.chip small{font-size:11px;font-weight:800;color:#bba886;margin-left:6px}
+.chip:hover{background:rgba(232,200,114,.16);color:#fffaf0}
+.chip:focus-visible{outline:2px solid #fff6d4;outline-offset:2px}
+.chip[aria-pressed="true"]{color:var(--ink);border-color:transparent;background:linear-gradient(180deg,#fff1c2,#e8c872)}
+.chip[aria-pressed="true"] small{color:#5a4316}
+.results-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 18px;padding:14px 18px;border-radius:18px;
+  background:linear-gradient(180deg,#2a2418,#100e0c);border:1px solid rgba(232,200,114,.5);box-shadow:inset 0 1px 0 rgba(255,244,214,.3)}
+.results-head h2{margin:0;font-size:clamp(20px,3vw,28px);letter-spacing:-.02em;color:#fff8e8}
+.results-head p{margin:2px 0 0;color:#f0e2c4;font-size:14px}
+.results-head .reset{flex:none;appearance:none;cursor:pointer;border:0;border-radius:999px;padding:11px 16px;font:800 14px/1 inherit;font-family:inherit;
+  color:var(--ink);background:linear-gradient(180deg,#fff6d4,#e8c872)}
+.results-head .reset:focus-visible{outline:3px solid #fff6d4;outline-offset:3px}
+.empty{padding:28px 18px;text-align:center;color:var(--muted);font-size:17px}
+.g .tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;padding:0 4px}
+.g .tags span{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#d9c79e;
+  padding:3px 7px;border-radius:999px;border:1px solid rgba(232,200,114,.28);background:rgba(0,0,0,.3)}
+.is-filtering main>section.cat{display:none}
+#results{display:none}
+.is-filtering #results{display:block}
+.jump .find-btn{display:inline-flex;align-items:center;gap:6px}
+.jump .find-btn svg{width:14px;height:14px}
+/* category styling for cards shown in search results */
+.g.c-adventure,.g.c-puzzles,.g.c-strategy{border-radius:8px 16px 16px 8px;
+  background:repeating-linear-gradient(180deg,#5c4a28 0 3px,#2a2116 3px 8px) left/12px 100% no-repeat,
+    linear-gradient(180deg,rgba(255,244,214,.16),transparent 16%),linear-gradient(180deg,#322a20,#0e0c0a);padding-left:20px}
+.g.c-adventure .art,.g.c-puzzles .art,.g.c-strategy .art{border-radius:4px 8px 8px 4px}
+.g.c-action .name::after,.g.c-shooters .name::after,.g.c-racing .name::after,.g.c-party .name::after{
+  content:"";flex:none;width:16px;height:16px;border-radius:50%;margin-left:auto;
+  background:radial-gradient(circle at 35% 30%,#fff8e4,#e8c872 42%,#6a5018 78%);box-shadow:inset 0 0 0 2px #3a2c12,0 2px 3px rgba(0,0,0,.55)}
+.g.c-action .art{box-shadow:inset 0 0 0 2px #1a140c,inset 0 0 0 5px #c6a15a,0 0 16px rgba(255,91,138,.28),0 10px 16px rgba(0,0,0,.45)}
+.g.c-shooters .art{box-shadow:inset 0 0 0 2px #1a140c,inset 0 0 0 5px #c6a15a,0 0 16px rgba(62,203,255,.28),0 10px 16px rgba(0,0,0,.45)}
+.g.c-adventure .art{box-shadow:inset 0 0 0 2px #1a140c,inset 0 0 0 5px #c6a15a,0 0 16px rgba(62,232,154,.22),0 10px 16px rgba(0,0,0,.45)}
+.g.c-racing .art{box-shadow:inset 0 0 0 2px #1a140c,inset 0 0 0 5px #c6a15a,0 0 16px rgba(255,106,60,.28),0 10px 16px rgba(0,0,0,.45)}
+.g.c-puzzles .art{box-shadow:inset 0 0 0 2px #1a140c,inset 0 0 0 5px #c6a15a,0 0 16px rgba(192,132,252,.28),0 10px 16px rgba(0,0,0,.45)}
+.g.c-strategy .art{box-shadow:inset 0 0 0 2px #1a140c,inset 0 0 0 5px #c6a15a,0 0 16px rgba(240,193,75,.24),0 10px 16px rgba(0,0,0,.45)}
+.g.c-party .art{box-shadow:inset 0 0 0 2px #1a140c,inset 0 0 0 5px #c6a15a,0 0 16px rgba(255,122,217,.28),0 10px 16px rgba(0,0,0,.45)}
+#results .g{animation:none}
+/* controller focus */
+.pad .g:focus{--rx:2deg;transform:translateY(-16px) scale(1.035);z-index:3;outline:4px solid #fff6d4;outline-offset:4px}
+.pad .chip:focus,.pad .sort button:focus,.pad .jump a:focus,.pad .jump button:focus,.pad .random:focus,.pad .reset:focus,.pad .clear-q:focus{outline:3px solid #fff6d4;outline-offset:3px}
+.padhint{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:60;display:none;gap:14px;flex-wrap:wrap;justify-content:center;
+  padding:10px 16px;border-radius:999px;background:rgba(10,9,8,.92);border:1px solid rgba(232,200,114,.5);color:#f6e7c1;font-size:12.5px;font-weight:700;
+  box-shadow:0 10px 30px rgba(0,0,0,.6);max-width:calc(100% - 24px)}
+.pad .padhint{display:flex}
+.padhint b{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border-radius:999px;margin-right:4px;font-size:11px;color:#140f09;background:#e8c872}
+.padhint b.a{background:#5fd35f}.padhint b.b{background:#ff6262}.padhint b.x{background:#5aa8ff}.padhint b.y{background:#ffd23c}
+@media (max-width:720px){
+  .finder{padding:0 12px}
+  .finder-box{padding:12px}
+  .finder-row{flex-wrap:wrap}
+  .search{flex-basis:100%}
+  .sort{width:100%}
+  .sort button{flex:1}
+  .pad .g:focus{transform:translateY(-4px)}
+}
+@media (prefers-reduced-motion:reduce){.pad .g:focus{transform:none}}
+/* finder:end */
 </style>
 </head>
 <body>
@@ -1366,6 +1450,269 @@ section{margin:0 0 56px;scroll-margin-top:78px}
   }
 })();
 
+</script>
+<!-- Search, genre buttons and Newest sort read GAME_META below. When you add a game card, add its href here with tags (shooter, arcade, platformer, adventure, puzzle, racing, strategy, board, card, trivia, word, party, learning, law, retro, space, western, 3d, two-player, sports, horror, history), a one-line desc, search keywords and added (Unix seconds). A card missing here still shows, sorts as newest, and gets its category as its genre. -->
+<script id="game-meta">window.GAME_META={"graveyard-pinball/":{"tags":["arcade","two-player"],"desc":"Shipwreck-coast pinball with missions and multiball.","kw":"pinball flippers shipwreck","added":1794359468},"protocol-nova/":{"tags":["arcade","3d","two-player"],"desc":"Isometric brawler: bend time, parry and smash enemies.","kw":"brawler fighting robots sci-fi","added":1794318001},"far-ridge/":{"tags":["shooter","sports","3d","two-player"],"desc":"Scoped-rifle hunting across mountain ridges.","kw":"hunting rifle scope deer animals","added":1794232201},"frostbite-tower/":{"tags":["platformer","arcade","two-player"],"desc":"Polar bear climbs an icy tower dodging snowballs.","kw":"polar bear climbing ice","added":1794228601},"neon-wake/":{"tags":["racing","arcade","3d"],"desc":"Light-cycle arena: trap rivals behind your neon trail.","kw":"Tron light cycle bike neon","added":1794214201},"ragnarok-rising/":{"tags":["arcade","two-player"],"desc":"Thor and Freya hold off waves of Norse monsters.","kw":"Norse Viking Thor Freya","added":1794203401},"pharaohs-descent/":{"tags":["arcade","retro"],"desc":"Dig through Egyptian tombs collecting keys and relics.","kw":"Egypt tomb dig pharaoh","added":1794171001},"lumen-drift/":{"tags":["arcade","3d"],"desc":"Drift through a glowing web, grabbing synapses, dodging shards.","kw":"neon glow drift endless","added":1794145801},"little-apocalypse/":{"tags":["arcade","shooter","3d"],"desc":"Fly a tiny plane against toy armies and an angry duck.","kw":"plane flying toys duck","added":1794149401},"pong-hyperdrive/":{"tags":["arcade","retro","sports","two-player"],"desc":"Neon Pong with power-ups, versus the computer or a friend.","kw":"pong paddle tennis","added":1794102601},"unicorn-joust/":{"tags":["arcade","retro","two-player"],"desc":"Flap your unicorn and joust your rival from above.","kw":"joust unicorn flying versus","added":1794088201},"mime-high-rise/":{"tags":["platformer","arcade","retro"],"desc":"Climb scaffolding to the rooftop, jumping rolling soccer balls.","kw":"climb barrels Donkey Kong mime","added":1794084601},"orangutan-keg-climb/":{"tags":["platformer","arcade","retro"],"desc":"1980s-style climb up girders dodging rolling kegs.","kw":"Donkey Kong barrels ape climb","added":1794081001},"https://chrisvonderau.github.io/polar-ascent/":{"tags":["platformer","3d"],"desc":"Climb ice floes and ladders to relight a rescue beacon.","kw":"arctic ice climbing ladders","added":1794442156},"https://chrisvonderau.github.io/sparkwell/":{"tags":["arcade","retro"],"desc":"Pinball on a thunderstorm-carnival table.","kw":"pinball flippers carnival storm","added":1794435521},"https://chrisvonderau.github.io/bubble-rescue/":{"tags":["arcade","adventure"],"desc":"Steer a bubble around the bathtub, rescuing baby bubbles.","kw":"bubble bathtub dodge","added":1794435486},"https://chrisvonderau.github.io/long-hop/":{"tags":["arcade","adventure"],"desc":"Hop a kangaroo across Outback highways and rivers.","kw":"Frogger kangaroo Australia crossing","added":1794361765},"astro-vortex/":{"tags":["shooter","arcade","retro","space","two-player"],"desc":"Vector-style space shooter with two-player co-op.","kw":"vector spaceship 1984 aliens","added":1794243001},"shatterfield/":{"tags":["shooter","arcade","retro","space","two-player"],"desc":"Asteroids-style: blast rocks and enemy ships in space.","kw":"Asteroids rocks spaceship","added":1794225001},"chromahive/":{"tags":["shooter","arcade","retro","space","two-player"],"desc":"Galaga-style shooter against diving alien swarms.","kw":"Galaga aliens bugs","added":1794221401},"fort-fisher/":{"tags":["shooter","history","3d","two-player"],"desc":"Storm or defend Fort Fisher in the Civil War battle.","kw":"Civil War Union musket Wilmington","added":1794217801},"dead-mans-gulch/":{"tags":["shooter","western","horror","3d","two-player"],"desc":"First-person Old West shootout against zombie hordes.","kw":"zombies cowboy gun revolver","added":1794207001},"soul-trigger/":{"tags":["shooter","arcade"],"desc":"Auto-firing survival: dodge, dash and outlast the horde.","kw":"survivors roguelite reaper souls","added":1794117001},"time-cop-1986/":{"tags":["shooter","arcade","retro"],"desc":"1980s arcade shooter against waves of corrupted computer drones.","kw":"80s Commodore time travel","added":1794091801},"star-swarm-defender/":{"tags":["shooter","arcade","retro","space"],"desc":"Break the alien swarm, dodge dives, survive rising waves.","kw":"Space Invaders aliens Galaga","added":1794077401},"get-off-my-lawn/":{"tags":["shooter","horror","3d"],"desc":"Defend your porch from waves of zombies.","kw":"zombies porch pistol house","added":1794135001},"blackout/":{"tags":["shooter","horror"],"desc":"Shoot in the dark; every shot briefly lights the room.","kw":"dark scary monsters","added":1794127801},"starbreak/":{"tags":["shooter","arcade","space"],"desc":"Defend the last outpost, flinging asteroids into enemies.","kw":"space station asteroids waves","added":1794120601},"https://chrisvonderau.github.io/six-gun-showdown/Six-Gun%20Sundown.html":{"tags":["shooter","western","3d"],"desc":"Old West gunfights on Main Street, saloon and canyon.","kw":"cowboy outlaws revolver quick draw","added":1794132173},"https://chrisvonderau.github.io/chrono-spark/":{"tags":["shooter","space","3d"],"desc":"3D sci-fi arena combat with plasma, rockets and grenades.","kw":"arena sci-fi FPS Halo","added":1794442150},"https://chrisvonderau.github.io/hollow-light/":{"tags":["shooter","arcade","3d"],"desc":"Tunnel shooter: steer through the dark, burn back creatures.","kw":"tunnel dark light creatures","added":1794435492},"https://chrisvonderau.github.io/kill-switch/":{"tags":["shooter","arcade","two-player"],"desc":"Top-down twin-stick shooter through a city of rogue machines.","kw":"twin-stick robots drone city","added":1794425561},"https://chrisvonderau.github.io/supernova/":{"tags":["shooter","arcade","space","two-player"],"desc":"Arcade space shooter with boosts and nova blasts.","kw":"spaceship stars blaster","added":1794479843},"clockwork-heist/":{"tags":["adventure","3d","two-player"],"desc":"Loop time to pull off bank heists in 1926.","kw":"heist time loop 1920s robbery","added":1794475902},"tender-titan/":{"tags":["adventure","3d"],"desc":"A gentle kaiju helps a harbor town without wrecking it.","kw":"kaiju giant monster helpful","added":1794318064},"tinderhelm/":{"tags":["platformer","3d","two-player"],"desc":"Armored knight platforming through farms, harbors and bosses.","kw":"knight Maximo armor sword","added":1794239401},"tock/":{"tags":["platformer","3d","two-player"],"desc":"Wind-up toy hunts golden keys through an attic world.","kw":"toy wind-up keys Mario","added":1794235801},"the-idol-wakes/":{"tags":["platformer","adventure","3d"],"desc":"Steal a jungle relic, then run when the stone god wakes.","kw":"temple relic jungle Indiana Jones","added":1794160201},"castle-of-chaos/":{"tags":["adventure","3d"],"desc":"Bumbling knight battles ghosts through a cursed castle.","kw":"castle ghosts knight curse","added":1794142201},"gemini-platformer/":{"tags":["platformer","3d"],"desc":"Slingshot your hero between floating platforms collecting prisms.","kw":"Mario slingshot prisms","added":1794138601},"https://chrisvonderau.github.io/brasswind/":{"tags":["platformer","adventure"],"desc":"2.5D platformer through a lantern-lit sky canopy.","kw":"jump run sky lanterns","added":1794435499},"https://chrisvonderau.github.io/horizon-wake-up/":{"tags":["adventure","3d","two-player"],"desc":"Bullet-time fights to escape a school day simulation.","kw":"Matrix bullet time school fighting","added":1794399297},"redline-and-rust/":{"tags":["racing","3d"],"desc":"Race cars in the Cape Fear Grand Prix.","kw":"cars grand prix laps","added":1794163801},"https://chrisvonderau.github.io/midnight-break/":{"tags":["racing","arcade","3d"],"desc":"Neon night-city driving with boosts, drifts and gadgets.","kw":"cars chase neon driving","added":1794442113},"https://chrisvonderau.github.io/the-last-ten-seconds/":{"tags":["racing","horror"],"desc":"Night driving where the radio warns you ten seconds ahead.","kw":"driving supernatural thriller radio","added":1794435506},"https://chrisvonderau.github.io/redline-afterimage/":{"tags":["racing","arcade","3d"],"desc":"Night highway run: leave decoys to crash diving drones.","kw":"highway neon car drones","added":1794435514},"event-horizon/":{"tags":["puzzle","space"],"desc":"Steer a probe through curved space with gravity wells.","kw":"gravity physics black hole","added":1794113401},"chroma-resonance/":{"tags":["puzzle","arcade"],"desc":"Turn tiles to bend and split light beams to targets.","kw":"light beam mirrors music","added":1794109801},"bioluminescent-abyss/":{"tags":["puzzle","arcade"],"desc":"Drop and chain glowing sea creatures down the ocean depths.","kw":"Tetris falling blocks ocean","added":1794106201},"prism-hop/":{"tags":["puzzle","3d"],"desc":"Hop across every tile on floating garden boards.","kw":"tiles hop time trial","added":1794167401},"https://chrisvonderau.github.io/tilt-maze/":{"tags":["puzzle","arcade"],"desc":"Tilt a wooden labyrinth to roll the ball into the ring.","kw":"labyrinth marble ball maze","added":1794065523},"https://chrisvonderau.github.io/clockwork-kinetics/":{"tags":["puzzle"],"desc":"Build gear and belt machines to power each contraption.","kw":"gears Meccano machines physics","added":1794442164},"last-hourglass/":{"tags":["strategy","card","two-player"],"desc":"Play blackjack against Death, wagering years of life.","kw":"blackjack 21 Death cards","added":1794562128},"habeas-corpse/":{"tags":["strategy","card","law","two-player"],"desc":"Defend ghosts in afterlife court with a deck of arguments.","kw":"courtroom ghosts deckbuilder roguelite","added":1794532385},"port-city-tycoon/":{"tags":["strategy","board","two-player"],"desc":"Buy up Wilmington properties and collect rent.","kw":"Monopoly real estate property","added":1794199801},"jade-star-checkers/":{"tags":["strategy","board","two-player"],"desc":"Chinese checkers against the computer or a friend.","kw":"Chinese checkers marbles star","added":1794181801},"marble-mayhem/":{"tags":["strategy","board","two-player"],"desc":"Slide and jump marbles to capture your opponent's.","kw":"marbles capture jump","added":1794174601},"knight-shift/":{"tags":["strategy","board","3d","two-player"],"desc":"3D chess with talking pieces, versus computer or friend.","kw":"chess 3D","added":1794156601},"tide-table/":{"tags":["strategy","board","two-player"],"desc":"Build a beach town tile by tile between tides.","kw":"tiles beach town hot-seat","added":1794153001},"https://chrisvonderau.github.io/bathtub-admirals/":{"tags":["strategy","board","two-player"],"desc":"Pass-the-device Battleship with rubber ducks in a bathtub.","kw":"Battleship naval ducks","added":1794077515},"https://chrisvonderau.github.io/lively-chess/":{"tags":["strategy","board","learning","two-player"],"desc":"Chess with lively pieces, lessons and computer opponents.","kw":"chess tutorial","added":1794090689},"https://chrisvonderau.github.io/capital-tycoon/":{"tags":["strategy","board","two-player"],"desc":"Roll dice, buy properties and bankrupt your rivals.","kw":"Monopoly real estate dice","added":1794442137},"https://chrisvonderau.github.io/world-domination/":{"tags":["strategy","board","two-player"],"desc":"Conquer 42 territories with armies and dice.","kw":"Risk conquest armies war","added":1794442144},"docket-dojo/":{"tags":["trivia","learning","law","two-player"],"desc":"Drill Chapter 13 law: Code, Rules and case law.","kw":"bankruptcy Chapter 13 flashcards study","added":1794519152},"neon-wheel/":{"tags":["word","party"],"desc":"Spin the wheel, buy vowels and solve the phrase.","kw":"Wheel of Fortune letters puzzle","added":1794099001},"legal-jeopardy/":{"tags":["trivia","learning","law"],"desc":"Jeopardy-style legal trivia board.","kw":"Jeopardy quiz law","added":1794095401},"truth-factory/":{"tags":["trivia","party"],"desc":"Decide which contestant's trivia answer is true.","kw":"bluff quiz facts game show","added":1794131401},"lexfury/":{"tags":["word","board","two-player"],"desc":"Build words on a grid and earn power-ups.","kw":"Scrabble words tiles","added":1794124201},"https://chrisvonderau.github.io/Sketch-showdown/":{"tags":["party","two-player"],"desc":"Game-show drawing: guess the computer's sketches.","kw":"Pictionary drawing guess family","added":1794086338},"https://chrisvonderau.github.io/hung-jury/":{"tags":["party","law","two-player"],"desc":"Courtroom bluffing: argue the jury to a verdict.","kw":"jury bluffing social deduction","added":1794078276},"https://chrisvonderau.github.io/wordstorm/":{"tags":["word","party","two-player"],"desc":"Two-player wheel-of-letters word duel.","kw":"Wheel of Fortune letters","added":1794442129},"https://chrisvonderau.github.io/million-dollar-vault/":{"tags":["trivia","party","two-player"],"desc":"Race a rival to answer trivia and crack the vault.","kw":"quiz game show phrases","added":1794442120},"https://chrisvonderau.github.io/whisperchain/":{"tags":["party","word"],"desc":"Be a rumor moving through a party, twisting its words.","kw":"rumor gossip story","added":1794505681}};</script>
+<script id="finder-js">
+/* finder:start */
+(function(){
+  var META = window.GAME_META || {};
+  var CAT_NAMES = {action:"action arcade",shooters:"shooter shooters shooting",adventure:"platformer adventure",racing:"racing driving",puzzles:"puzzle puzzles",strategy:"strategy board tycoon",party:"word trivia party"};
+  var CAT_TAG = {action:"arcade",shooters:"shooter",adventure:"platformer",racing:"racing",puzzles:"puzzle",strategy:"strategy",party:"party"};
+  var TAG_LABEL = {shooter:"Shooter",arcade:"Arcade",platformer:"Platformer",adventure:"Adventure",puzzle:"Puzzle",racing:"Racing",strategy:"Strategy",
+    board:"Board",card:"Card",trivia:"Trivia",word:"Word",party:"Party",learning:"Learning",law:"Law",retro:"Retro",space:"Space",western:"Western",
+    "3d":"3D","two-player":"2 players",sports:"Sports",horror:"Spooky",history:"History"};
+  var TAG_ORDER = ["shooter","arcade","platformer","adventure","puzzle","racing","strategy","board","card","trivia","word","learning","law","party","two-player","3d","retro","space","western","history","horror","sports"];
+  var SYN = {shooter:"shoot shooting gun guns blaster",platformer:"jump jumping platform",puzzle:"brain logic",racing:"race car cars drive driving",
+    strategy:"tactics",board:"tabletop",card:"cards deck",trivia:"quiz",word:"words spelling",learning:"study studying educational trainer teach",
+    law:"legal lawyer bankruptcy court",party:"group friends",retro:"classic 80s old school",space:"stars alien aliens galaxy","two-player":"2 player 2p versus multiplayer co op coop",
+    "3d":"3-d three", western:"cowboy old west", horror:"spooky scary ghost zombie", history:"historical war"};
+  var STOP = {game:1,games:1,a:1,an:1,the:1,of:1,for:1,to:1,and:1,me:1,my:1,with:1,play:1,find:1,show:1};
+
+  function norm(s){ return String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/&#x27;|'/g,"").replace(/[^a-z0-9]+/g," ").trim(); }
+  function stem(w){ if(w.length>5 && /ing$/.test(w)) return w.slice(0,-3); if(w.length>4 && /ers$/.test(w)) return w.slice(0,-3);
+    if(w.length>4 && /er$/.test(w)) return w.slice(0,-2); if(w.length>3 && /s$/.test(w) && !/ss$/.test(w)) return w.slice(0,-1); return w; }
+
+  var main = document.getElementById("main"); if(!main) return;
+  var cards = Array.prototype.slice.call(document.querySelectorAll("main a.g"));
+  var games = cards.map(function(a, i){
+    var sec = a.closest("section.cat"), cat = sec ? sec.id : "";
+    var href = a.getAttribute("href"), m = META[href] || {};
+    var tags = (m.tags && m.tags.length) ? m.tags.slice() : (CAT_TAG[cat] ? [CAT_TAG[cat]] : []);
+    var nameEl = a.querySelector(".name"), name = nameEl ? nameEl.textContent : "";
+    var hay = [name, m.desc, m.kw, tags.join(" "), tags.map(function(t){return SYN[t]||"";}).join(" "), CAT_NAMES[cat]].join(" ");
+    var words = norm(hay).split(" ").filter(Boolean).map(stem);
+    var nwords = norm(name).split(" ");
+    a.classList.add("c-" + cat);
+    if(m.desc && !a.title) a.title = m.desc;
+    if(tags.length && !a.querySelector(".tags")){
+      var t = document.createElement("span"); t.className = "tags"; t.setAttribute("aria-hidden","true");
+      tags.slice(0,3).forEach(function(x){ var s=document.createElement("span"); s.textContent = TAG_LABEL[x] || x; t.appendChild(s); });
+      a.appendChild(t);
+    }
+    // a game with no recorded date is one added after this index was tagged, so it is the newest
+    return {el:a, home:a.parentNode, idx:i, cat:cat, tags:tags, words:words, nwords:nwords, name:name,
+      added: (typeof m.added === "number") ? m.added : Infinity};
+  });
+
+  // ---- build the finder UI ----
+  var counts = {}; games.forEach(function(g){ g.tags.forEach(function(t){ counts[t]=(counts[t]||0)+1; }); });
+  var tagList = TAG_ORDER.filter(function(t){ return counts[t] >= 2; });
+  Object.keys(counts).forEach(function(t){ if(tagList.indexOf(t)<0 && counts[t]>=2) tagList.push(t); });
+
+  var finder = document.createElement("div"); finder.className = "finder"; finder.id = "finder";
+  finder.innerHTML =
+    '<div class="finder-box" role="search">' +
+      '<div class="finder-row">' +
+        '<label class="search"><span class="skip">Search games</span>' +
+          '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>' +
+          '<input id="q" type="search" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="search" placeholder="' + (window.matchMedia && matchMedia("(max-width:520px)").matches ? 'Search ' + games.length + ' games…' : 'Search ' + games.length + ' games, like “shooter” or “chess”') + '">' +
+          '<button type="button" class="clear-q" aria-label="Clear search">×</button></label>' +
+        '<div class="sort" role="group" aria-label="Order">' +
+          '<button type="button" data-sort="cat" aria-pressed="true">By category</button>' +
+          '<button type="button" data-sort="new" aria-pressed="false">Newest first</button></div>' +
+      '</div>' +
+      '<div class="chips" role="group" aria-label="Genres"></div>' +
+    '</div>';
+  var chipsEl = finder.querySelector(".chips");
+  function addChip(tag, label, n){
+    var b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.dataset.tag = tag; b.setAttribute("aria-pressed","false");
+    b.textContent = label; if(n!=null){ var s=document.createElement("small"); s.textContent = n; b.appendChild(s); }
+    chipsEl.appendChild(b);
+  }
+  addChip("", "All", games.length);
+  tagList.forEach(function(t){ addChip(t, TAG_LABEL[t] || t, counts[t]); });
+
+  var nav = document.querySelector("nav.jump");
+  if(nav) nav.parentNode.insertBefore(finder, nav); else main.parentNode.insertBefore(finder, main);
+  if(nav){
+    var fb = document.createElement("button"); fb.type = "button"; fb.className = "find-btn";
+    fb.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>Search';
+    nav.insertBefore(fb, nav.firstChild);
+    fb.addEventListener("click", function(){ focusSearch(); });
+  }
+
+  var results = document.createElement("section"); results.id = "results"; results.setAttribute("aria-live","polite");
+  results.innerHTML = '<div class="results-head"><div><h2></h2><p></p></div><button type="button" class="reset">Show all</button></div><div class="grid"></div><p class="empty" hidden></p>';
+  main.insertBefore(results, main.firstChild);
+  var rGrid = results.querySelector(".grid"), rH = results.querySelector("h2"), rP = results.querySelector(".results-head p"), rEmpty = results.querySelector(".empty");
+
+  var input = finder.querySelector("#q"), searchLbl = finder.querySelector(".search");
+  var state = {q:"", tag:"", sort:"cat"};
+
+  function matches(g, toks){
+    if(state.tag && g.tags.indexOf(state.tag) < 0) return false;
+    for(var i=0;i<toks.length;i++){
+      var q = toks[i], ok = false;
+      for(var j=0;j<g.words.length && !ok;j++){
+        var w = g.words[j];
+        if(w.indexOf(q) === 0 || (w.length >= 3 && q.indexOf(w) === 0)) ok = true;
+      }
+      if(!ok) return false;
+    }
+    return true;
+  }
+  function score(g, toks){
+    var s = 0; toks.forEach(function(q){ g.nwords.forEach(function(w){ if(w.indexOf(q)===0) s += 2; }); });
+    return s;
+  }
+
+  function render(push){
+    var toks = norm(state.q).split(" ").filter(function(w){ return w && !STOP[w]; }).map(stem);
+    var filtering = !!(toks.length || state.tag || state.sort === "new");
+    document.body.classList.toggle("is-filtering", filtering);
+    searchLbl.classList.toggle("has-q", !!state.q);
+    Array.prototype.forEach.call(chipsEl.children, function(b){ b.setAttribute("aria-pressed", String(b.dataset.tag === state.tag)); });
+    Array.prototype.forEach.call(finder.querySelectorAll(".sort button"), function(b){ b.setAttribute("aria-pressed", String(b.dataset.sort === state.sort)); });
+
+    if(!filtering){
+      games.forEach(function(g){ if(g.el.parentNode !== g.home) g.home.appendChild(g.el); });
+      // restore original order inside each category grid
+      games.forEach(function(g){ g.home.appendChild(g.el); });
+    } else {
+      var list = games.filter(function(g){ return matches(g, toks); });
+      if(state.sort === "new") list.sort(function(a,b){ return (b.added - a.added) || (a.idx - b.idx); });
+      else if(toks.length) list.sort(function(a,b){ return (score(b,toks) - score(a,toks)) || (a.idx - b.idx); });
+      list.forEach(function(g){ rGrid.appendChild(g.el); });
+      games.forEach(function(g){ if(list.indexOf(g) < 0 && g.el.parentNode === rGrid) g.home.appendChild(g.el); });
+      var what = [];
+      if(state.q.trim()) what.push("“" + state.q.trim() + "”");
+      if(state.tag) what.push(TAG_LABEL[state.tag] || state.tag);
+      rH.textContent = (what.length ? what.join(" · ") : "All games") + (state.sort === "new" ? ", newest first" : "");
+      rP.textContent = list.length + (list.length === 1 ? " game" : " games");
+      rEmpty.hidden = list.length > 0;
+      rEmpty.textContent = "No games match that. Try a genre button above, or a shorter word.";
+    }
+    var url = new URL(location.href);
+    ["q","tag","sort"].forEach(function(k){ url.searchParams.delete(k); });
+    if(state.q.trim()) url.searchParams.set("q", state.q.trim());
+    if(state.tag) url.searchParams.set("tag", state.tag);
+    if(state.sort === "new") url.searchParams.set("sort", "new");
+    try{ history.replaceState(null, "", url.pathname + url.search + url.hash); }catch(e){}
+  }
+  function showResults(){
+    if(!document.body.classList.contains("is-filtering")) return;
+    var top = finder.getBoundingClientRect().top + window.scrollY - 8;
+    if(window.scrollY > top + finder.offsetHeight) window.scrollTo({top: top, behavior: "smooth"});
+  }
+
+  var tmr;
+  input.addEventListener("input", function(){ state.q = input.value; clearTimeout(tmr); tmr = setTimeout(function(){ render(); }, 90); });
+  input.addEventListener("keydown", function(e){
+    if(e.key === "Enter"){ e.preventDefault(); input.blur(); var f = rGrid.querySelector("a.g"); if(f && document.body.classList.contains("is-filtering")) f.focus(); }
+    if(e.key === "Escape"){ input.value = ""; state.q = ""; render(); }
+  });
+  finder.querySelector(".clear-q").addEventListener("click", function(){ input.value = ""; state.q = ""; render(); input.focus(); });
+  chipsEl.addEventListener("click", function(e){
+    var b = e.target.closest(".chip"); if(!b) return;
+    state.tag = (state.tag === b.dataset.tag) ? "" : b.dataset.tag; render(); showResults();
+  });
+  finder.querySelector(".sort").addEventListener("click", function(e){
+    var b = e.target.closest("button"); if(!b) return; state.sort = b.dataset.sort; render(); showResults();
+  });
+  results.querySelector(".reset").addEventListener("click", function(){
+    input.value = ""; state = {q:"", tag:"", sort:"cat"}; render();
+    finder.scrollIntoView({behavior:"smooth", block:"start"});
+  });
+  function focusSearch(){ finder.scrollIntoView({behavior:"smooth", block:"start"}); setTimeout(function(){ input.focus({preventScroll:true}); }, 250); }
+  document.addEventListener("keydown", function(e){
+    if(e.key === "/" && document.activeElement !== input && !e.metaKey && !e.ctrlKey){ e.preventDefault(); focusSearch(); }
+  });
+
+  // the Random button picks among the games on screen when a search is active
+  Array.prototype.forEach.call(document.querySelectorAll("[data-random]"), function(btn){
+    btn.addEventListener("click", function(e){
+      if(!document.body.classList.contains("is-filtering")) return;
+      var vis = rGrid.querySelectorAll("a.g"); if(!vis.length) return;
+      e.stopImmediatePropagation(); location.href = vis[Math.floor(Math.random()*vis.length)].href;
+    }, true);
+  });
+
+  var sp = new URLSearchParams(location.search);
+  state.q = sp.get("q") || ""; state.tag = sp.get("tag") || ""; state.sort = sp.get("sort") === "new" ? "new" : "cat";
+  if(state.tag && !counts[state.tag]) state.tag = "";
+  input.value = state.q;
+  render();
+  window.addEventListener("pageshow", function(e){ if(e.persisted){ input.value = state.q; } });
+
+  // ---- Xbox / standard gamepad navigation ----
+  var hint = document.createElement("div"); hint.className = "padhint"; hint.setAttribute("aria-hidden","true");
+  hint.innerHTML = '<span><b>✛</b>Move</span><span><b class="a">A</b>Play / press</span><span><b class="b">B</b>Clear</span><span><b class="y">Y</b>Search</span><span><b>LB</b><b>RB</b>Genre</span><span><b class="x">X</b>Newest</span>';
+  document.body.appendChild(hint);
+  function focusables(){
+    return Array.prototype.slice.call(document.querySelectorAll(
+      ".finder input, .finder button, nav.jump a, nav.jump button, .hero .random, #results .reset, main a.g"))
+      .filter(function(el){ var r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== "hidden"; });
+  }
+  function center(r){ return {x:r.left + r.width/2, y:r.top + r.height/2}; }
+  function move(dx, dy){
+    var cur = document.activeElement, list = focusables();
+    if(!cur || list.indexOf(cur) < 0){
+      var first = list.filter(function(el){ var r = el.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; })[0] || list[0];
+      if(first) focusEl(first); return;
+    }
+    var cr = cur.getBoundingClientRect(), c = center(cr), best = null, bestD = Infinity;
+    list.forEach(function(el){
+      if(el === cur) return;
+      var r = el.getBoundingClientRect(), p = center(r);
+      var ddx = p.x - c.x, ddy = p.y - c.y;
+      var along = dx ? ddx*dx : ddy*dy, across = dx ? Math.abs(ddy) : Math.abs(ddx);
+      if(along <= 4) return;
+      if(dx && across > Math.max(cr.height, r.height) * 0.75) return; // left/right stays on the same row
+      var d = along + across * (dx ? 3 : 1.6);
+      if(d < bestD){ bestD = d; best = el; }
+    });
+    if(!best && dx){ // wrap to next/previous row at the end of a row
+      var idx = list.indexOf(cur), n = list[idx + dx]; if(n) best = n;
+    }
+    if(best) focusEl(best);
+  }
+  function focusEl(el){
+    el.focus({preventScroll:true});
+    var r = el.getBoundingClientRect(), navH = nav ? nav.getBoundingClientRect().height : 0;
+    if(r.top < navH + 10 || r.bottom > innerHeight - 70) el.scrollIntoView({block:"center", behavior:"smooth"});
+  }
+  var prev = {}, held = {}, padOn = false;
+  function press(btn){
+    var a = document.activeElement;
+    switch(btn){
+      case 0: if(a && a !== document.body){ if(a === input){ input.blur(); var f = rGrid.querySelector("a.g"); if(f) focusEl(f); } else a.click(); } break;
+      case 1: if(a === input){ input.blur(); }
+              else if(state.q || state.tag || state.sort === "new"){ input.value = ""; state = {q:"", tag:"", sort:"cat"}; render(); var r0 = document.querySelector("main a.g"); if(r0) focusEl(r0); }
+              break;
+      case 3: focusSearch(); break;
+      case 2: state.sort = state.sort === "new" ? "cat" : "new"; render(); showResults(); break;
+      case 4: case 5:
+        var order = [""].concat(tagList), i = order.indexOf(state.tag);
+        i = (i + (btn === 5 ? 1 : -1) + order.length) % order.length; state.tag = order[i]; render(); showResults();
+        var chip = chipsEl.querySelector('[data-tag="' + state.tag + '"]'); if(chip) chip.scrollIntoView({inline:"center", block:"nearest"});
+        break;
+      case 12: move(0,-1); break; case 13: move(0,1); break; case 14: move(-1,0); break; case 15: move(1,0); break;
+    }
+  }
+  function poll(){
+    var pads = navigator.getGamepads ? navigator.getGamepads() : [], now = performance.now(), any = false;
+    for(var p=0;p<pads.length;p++){
+      var gp = pads[p]; if(!gp) continue; any = true;
+      var ax = gp.axes[0]||0, ay = gp.axes[1]||0;
+      var dirs = {12: ay < -0.55, 13: ay > 0.55, 14: ax < -0.55, 15: ax > 0.55};
+      [0,1,2,3,4,5,12,13,14,15].forEach(function(b){
+        var key = p + ":" + b;
+        var down = !!(gp.buttons[b] && gp.buttons[b].pressed) || !!dirs[b];
+        if(down && !prev[key]){ if(!padOn){ padOn = true; document.body.classList.add("pad"); } press(b); held[key] = now + 380; }
+        else if(down && b >= 12 && now > held[key]){ press(b); held[key] = now + 130; }
+        prev[key] = down;
+      });
+    }
+    if(!any){ clearInterval(timer); running = false; }
+  }
+  var running = false, timer = 0;
+  function start(){ if(!running){ running = true; timer = setInterval(poll, 16); } }
+  window.addEventListener("gamepadconnected", start);
+  if(navigator.getGamepads){ var gps = navigator.getGamepads(); for(var k=0;k<gps.length;k++) if(gps[k]) start(); }
+  document.addEventListener("pointerdown", function(){ if(padOn){ padOn = false; document.body.classList.remove("pad"); } });
+})();
+/* finder:end */
 </script>
 </body>
 </html>
