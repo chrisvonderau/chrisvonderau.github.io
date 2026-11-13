@@ -137,6 +137,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     muBallA: 0.00995, muBallB: 0.108, muBallC: 1.088,   // ball-ball friction mu(slip) = A + B exp(-C slip)
     eCushMax: 0.87, eCushSlope: 0.035, eCushMin: 0.64,   // cushion restitution vs normal speed
     muCush: 0.18,        // cushion rubber friction
+    muCushSpin: 0.08,    // extra cushion grip from side spin (reverse english shortens the angle)
     eJaw: 0.58, muJaw: 0.22,  // pocket facings / points (leather, deader)
     vStop: 0.006,        // rolling balls below this stop
     squirt: 0.022,       // rad of cue-ball deflection at full side english
@@ -385,6 +386,9 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     if (vn <= 0) return;
     var e = jaw ? K.eJaw : Math.max(K.eCushMin, Math.min(K.eCushMax, K.eCushMax - K.eCushSlope * (vn - 0.5)));
     var mu = jaw ? K.muJaw : K.muCush;
+    // side spin drags harder on the rubber while the cushion is compressed (single-impulse models undersell
+    // reverse english); grows with how much the spin outruns the approach speed, capped within real-table range
+    if (!jaw && b.w.z) mu += K.muCushSpin * Math.min(1, Math.abs(b.w.z) * R / (vn + 0.5));
     var Ph = (1 + e) * vn;
     b.vx += Ph * nx; b.vy += Ph * ny;
     var Jn = Ph / cosT;
@@ -1223,7 +1227,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     res.angle = plan.angle + gauss() * L.aim;
     var spd = plan.speed * Math.max(0.4, 1 + gauss() * L.pow);
     res.power = clamp(P.speedToPower(spd), 0.03, 1);
-    res.spinX = plan.spinX || 0; res.spinY = clamp(plan.spinY + gauss() * 0.04 * (4 - level), -0.9, 0.9);
+    res.spinX = plan.spinX || (Math.random() < 0.25 ? clamp(gauss() * 0.2, -0.4, 0.4) : 0); res.spinY = clamp(plan.spinY + gauss() * 0.04 * (4 - level), -0.9, 0.9);
     res.calledPocket = plan.pocket != null ? plan.pocket : -1;
     if (targets.length === 1 && targets[0] === 8 && res.calledPocket < 0) res.calledPocket = guessPocket(work, plan.angle);
     return res;
@@ -5129,11 +5133,20 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     if (pressed(p, s, 3)) { I.spinMode = !I.spinMode; call(BPH.Audio, 'uiMove'); }
     if (I.spinMode && pressed(p, s, 1)) { I.spinMode = false; call(BPH.Audio, 'uiBack'); s.prev[1] = true; }
 
-    if (I.spinMode) {
+    // LT held = tip mode too: left stick (or D-pad in steps) moves the tip anywhere on the cue ball
+    I.tipHeld = btn(p, 6) > 0.3;
+    var tipMode = I.spinMode || I.tipHeld;
+    if (tipMode) {
+      if (pressed(p, s, 12)) spinKey(0, 0.1);
+      if (pressed(p, s, 13)) spinKey(0, -0.1);
+      if (pressed(p, s, 14)) spinKey(-0.1, 0);
+      if (pressed(p, s, 15)) spinKey(0.1, 0);
+    }
+    if (tipMode) {
       var mag = Math.hypot(lx, ly);
       if (mag > 0.15) {
         var k = (mag - 0.15) / (0.85 * mag);
-        var sp = 1.4 * dt;
+        var sp = 1.8 * dt;
         setSpin((a.spinX || 0) + lx * k * sp, (a.spinY || 0) - ly * k * sp);
       }
       aimVel = 0;
@@ -5147,10 +5160,10 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
       if (Math.abs(aimVel) > 1e-5) nudgeAim(aimVel * dt);
     }
     holdNudge(p, s, 4, -1, dt, t); holdNudge(p, s, 5, 1, dt, t);
-    holdNudge(p, s, 14, -1, dt, t); holdNudge(p, s, 15, 1, dt, t);
+    if (!tipMode) { holdNudge(p, s, 14, -1, dt, t); holdNudge(p, s, 15, 1, dt, t); }
     // D-pad up/down: power meter
-    if (pressed(p, s, 12)) a.power = clamp(Math.round(((a.power || 0) + 0.05) * 20) / 20, 0.05, 1);
-    if (pressed(p, s, 13)) a.power = clamp(Math.round(((a.power || 0) - 0.05) * 20) / 20, 0.05, 1);
+    if (!tipMode && pressed(p, s, 12)) a.power = clamp(Math.round(((a.power || 0) + 0.05) * 20) / 20, 0.05, 1);
+    if (!tipMode && pressed(p, s, 13)) a.power = clamp(Math.round(((a.power || 0) - 0.05) * 20) / 20, 0.05, 1);
     // RT: squeeze to draw the cue back (depth = power), let go to shoot at the deepest point of the last 0.25 s
     var rt = btn(p, 7);
     if (rt > 0.06 && !charge && (!strokeOwner || strokeOwner === 'charge')) startCharge('rt', p);
@@ -5493,8 +5506,8 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
       var parts = [];
       if (Math.abs(sy) >= 0.05) parts.push((sy > 0 ? 'FOLLOW ' : 'DRAW ') + Math.round(Math.abs(sy) * 100));
       if (Math.abs(sx) >= 0.05) parts.push((sx > 0 ? 'RIGHT ' : 'LEFT ') + Math.round(Math.abs(sx) * 100));
-      setText(W.spinLbl, 'spinl', I.spinMode ? 'SPIN • STICK' : parts.length ? parts.join(' · ') : 'CENTER BALL');
-      var pm = I.spinMode && I.lastDevice === 'pad';
+      setText(W.spinLbl, 'spinl', (I.spinMode || I.tipHeld) ? 'TIP • STICK' : parts.length ? parts.join(' · ') : (I.lastDevice === 'pad' ? 'HOLD LT: MOVE TIP' : 'CENTER BALL'));
+      var pm = (I.spinMode || I.tipHeld) && I.lastDevice === 'pad';
       if (last.spinPad !== pm) { last.spinPad = pm; W.spin.classList.toggle('pad', pm); }
     }
   }
@@ -5551,6 +5564,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     // abandon strokes if the mode changed under us
     if (strokeOwner && !canAim()) { cancelStroke(); if (a) a.stroke = 0; }
     if (mode() !== 'aim') I.spinMode = I.spinMode && mode() === 'place';
+    if (mode() !== 'aim') I.tipHeld = false;
     // forward stroke animation -> shoot
     if (fire && a) {
       fire.t += dt;
@@ -6493,7 +6507,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     pad: [
       ['Aim', 'Left stick (push farther to swing faster). <span class="kb">LB</span>/<span class="kb">RB</span> or D-pad \u25C0 \u25B6 for fine nudges.'],
       ['Shoot', 'Squeeze <span class="kb">RT</span>: how far you squeeze is how hard you hit; let go to shoot. Or pull the right stick down to draw the cue back and push it up to stroke. Or hold <span class="kb">A</span> and let go. <span class="kb">B</span> cancels.'],
-      ['Spin', '<span class="kb">Y</span> = spin mode: left stick moves the tip dot, <span class="kb">Y</span>/<span class="kb">B</span> to exit, <span class="kb">R3</span> recenters.'],
+      ['Cue tip', 'Hold <span class="kb">LT</span> and push the left stick (or tap the D-pad) to put the tip anywhere on the cue ball: top = follow, bottom = draw, left or right = English, or any corner. Let go of LT and it stays. <span class="kb">R3</span> recenters. (<span class="kb">Y</span> also toggles tip mode.)'],
       ['Ball in hand', 'Left stick moves the cue ball, <span class="kb">A</span> places it.'],
       ['Call the 8', '<span class="kb">X</span> cycles the called pocket.'],
       ['View', '<span class="kb">View</span> button toggles 3D/Top.'],
