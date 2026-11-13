@@ -845,10 +845,18 @@
         this.canvas.width = Math.floor(WIDTH * this.dpr);
         this.canvas.height = Math.floor(HEIGHT * this.dpr);
         this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+        const vw = (window.visualViewport && window.visualViewport.width) || window.innerWidth;
+        const vh = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+        const scale = Math.min(vw / WIDTH, vh / HEIGHT);
+        this.canvas.style.width = `${WIDTH * scale}px`;
+        this.canvas.style.height = `${HEIGHT * scale}px`;
       };
 
       resize();
       window.addEventListener("resize", resize);
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", resize);
+      }
       this.canvas.focus();
     }
 
