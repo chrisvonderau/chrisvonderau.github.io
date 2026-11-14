@@ -7493,6 +7493,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     c.vx = c.vy = 0; c.w = { x: 0, y: 0, z: 0 }; c.x = x; c.y = y;
   }
   var BREAK_SPOT_X = T.headX - 0.002;   // the pink head spot: cue ball sits on it for the break
+  var BREAK_START_X = T.headX - 0.12;   // ball in hand for the break starts back from the line so it moves every way (stick X and Y)
   function findPlace(x, y, kitchen) {
     if (P.placeValid(G.balls, x, y, kitchen)) return { x: x, y: y };
     for (var r = 0.02; r < 1.2; r += 0.02) for (var a = 0; a < 6.283; a += 0.3) {
@@ -7510,7 +7511,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     G.callPocket = { needed: false, pocket: -1, manual: false };
     var c = cue();
     if (ballInHand) {
-      var spot = c.onTable ? { x: c.x, y: c.y } : findPlace(kitchen ? (shotIsBreak() ? BREAK_SPOT_X : T.headX - 0.12) : T.headX, 0, kitchen);
+      var spot = c.onTable ? { x: c.x, y: c.y } : findPlace(kitchen ? (shotIsBreak() ? BREAK_START_X : T.headX - 0.12) : T.headX, 0, kitchen);
       if (!c.onTable) resetCue(spot.x, spot.y);
       // remove cue from table collision while placing
       G.place = { active: true, kitchen: !!kitchen, x: c.x, y: c.y, valid: true };
@@ -7878,7 +7879,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     call(UI(), 'hideAll');
     var srs = G.ledger && G.ledger.series, gno = srs && !srs.done && !G.king && G.cfg.mode !== 'practice' && G.cfg.mode !== 'trick' ? srs.games.length + 1 : 0;
     toast((gno ? 'Game ' + gno + ' of ' + SERIES_LEN + '. ' : '') + G.players[breaker].name + ' breaks.', 'info');
-    resetCue(BREAK_SPOT_X, 0);
+    resetCue(BREAK_START_X, 0);
     beginTurn(true, true);
   }
   Main.rematch = function () { if (!G.cfg) return Main.toMenu(); if (G.cfg.mode === 'trick') return Main.retryTrick(); Main.startGame(G.cfg); };
