@@ -2195,7 +2195,8 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
   // ---------------------------------------------------------------- music: chords, melody generation
   var PCN = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
   var QUAL = { '': [0, 4, 7], m: [0, 3, 7], '7': [0, 4, 7, 10], m7: [0, 3, 7, 10], maj7: [0, 4, 7, 11], '9': [0, 4, 7, 10, 14],
-    m9: [0, 3, 7, 10, 14], '13': [0, 4, 10, 14, 21], '6': [0, 4, 7, 9], '5': [0, 7], dim: [0, 3, 6], m6: [0, 3, 7, 9] };
+    m9: [0, 3, 7, 10, 14], '13': [0, 4, 10, 14, 21], '6': [0, 4, 7, 9], '5': [0, 7], dim: [0, 3, 6], m6: [0, 3, 7, 9],
+    maj9: [0, 4, 7, 11, 14], '69': [0, 4, 9, 14], m7b5: [0, 3, 6, 10], '7b9': [0, 4, 7, 10, 13] };
   function chord(name) {
     var r = PCN[name[0]], i = 1;
     if (name[1] === 'b') { r--; i++; } else if (name[1] === '#') { r++; i++; }
@@ -2289,186 +2290,105 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
   function bassMidi(pc) { return inRange(pc, 28); }       // E1..D#2
   function gtrMidi(pc) { return inRange(pc, 40); }        // E2..D#3
 
+  // cool-jazz combo: walking upright bass, brushed swing drums, Rhodes/piano comping on extended chords, mellow leads
+  var ROOTLESS = {   // rootless left-hand voicings (intervals above the root), the classic jazz-piano shapes
+    m7: [3, 7, 10, 14], m9: [3, 7, 10, 14], '7': [4, 9, 10, 14], '9': [4, 9, 10, 14], '13': [4, 9, 10, 14],
+    maj7: [4, 7, 11, 14], maj9: [4, 7, 11, 14], '6': [4, 7, 9, 14], '69': [4, 7, 9, 14], m7b5: [3, 6, 10, 12], '7b9': [4, 7, 10, 13]
+  };
+  function rootless(c, center) {
+    var q = c.name.replace(/^[A-G][b#]?/, ''), ivs = ROOTLESS[q] || c.iv.slice(1, 5), out = [];
+    for (var i = 0; i < ivs.length; i++) out.push(inRange((c.root + ivs[i]) % 12, center - 6));
+    return out.sort(function (a, b) { return a - b; });
+  }
+  function jazzWalk(h, s, vel) {        // quarter-note walking line with a chromatic approach into the next chord
+    if (s.sb !== 0) { if (s.beat === 3 && s.bar % 2 === 1) h.bass(jazzWalk.last, 1, vel * 0.3, 'ubass'); return; }   // triplet "skip" ghost
+    var r = bassMidi(s.ch.root), q = s.ch.iv, third = q.indexOf(3) >= 0 ? 3 : 4, fifth = q.indexOf(6) >= 0 ? 6 : 7;
+    var pats = [[0, third, fifth], [0, 2, third], [12, 10, fifth], [0, fifth, 9]], p = pats[(s.bar + s.secIdx) % 4], n;
+    if (s.beat < 3) n = r + p[s.beat];
+    else {
+      var nr = bassMidi(s.nch.root), prev = r + p[2];
+      n = (Math.abs(nr + 1 - prev) < Math.abs(nr - 1 - prev)) ? nr + 1 : nr - 1;
+      if (nr === r) n = r + (prev > r + 6 ? 8 : -1);
+    }
+    jazzWalk.last = n;
+    h.bass(n, 2, vel * (s.beat === 0 ? 1 : 0.86), 'ubass');
+  }
+  jazzWalk.last = 40;
+  function brushKit(h, s, ride) {       // brushes: soft sweep on every swung eighth, accented 2 & 4, feathered kick, hat foot
+    var b = s.beat, off = s.sb;
+    h.drum('brush', off ? 0.07 : ((b === 1 || b === 3) ? 0.3 : 0.1));
+    if (off === 0) h.drum('kick', 0.1);
+    if (off === 0 && (b === 1 || b === 3)) h.drum('hat', 0.1);
+    if (ride) { if (off === 0) h.drum('ride', b % 2 ? 0.14 : 0.18); else if (b === 1 || b === 3) h.drum('ride', 0.1); }
+    if (s.bar === 0 && s.k === 0 && s.secIdx > 0) h.drum('ride', 0.26);
+    if (s.lastBar && b === 3 && off === 1) h.drum('snare', 0.12);
+  }
+  var COMP = [{ 0: 2, 3: 3 }, { 2: 2, 5: 2 }, { 1: 1, 4: 3 }, { 0: 6 }];   // Charleston and friends (step: length)
+  function comp(h, s, kind, center, vel) {
+    var p = COMP[(s.bar * 3 + s.secIdx) % 4], len = p[s.k];
+    if (len) h.keys(kind, rootless(s.k >= 5 && s.nch ? s.nch : s.ch, center), len, vel);
+  }
+  var JAZZ_MAJ = [0, 2, 4, 5, 7, 9, 11], JAZZ_MIN = [0, 2, 3, 5, 7, 9, 10];
+  function jazzEnd(root, chordIvs) {
+    return function (h, t) {
+      h.at(t); h.drum('ride', 0.3); h.drum('kick', 0.25);
+      h.bass(bassMidi(root), 8, 0.6, 'ubass');
+      h.keys('ep', chordIvs.map(function (x) { return 60 + ((root + x) % 12) + (x > 11 ? 12 : 0); }).sort(function (a, b) { return a - b; }), 12, 0.11);
+    };
+  }
+
   var SONGS = [
     {
-      title: "Rack 'Em Friday", artist: 'The Corner Pocket Kings', style: 'Classic rock shuffle',
-      bpm: 128, sub: 2, swing: 0.66, key: 4, scale: [0, 3, 5, 6, 7, 10], seed: 1971,
-      lead: { voice: 'drive', lo: 59, hi: 81, bends: true },
+      title: 'Side Pocket Swing', artist: 'The Eight-Ball Trio', style: 'Cool jazz swing',
+      bpm: 120, sub: 2, swing: 0.66, key: 5, scale: JAZZ_MAJ, seed: 1959,
+      lead: { voice: 'tenor', lo: 58, hi: 77 },
       sections: {
-        intro: { chords: 'E E B7 A7' },
-        verse: { chords: 'E7 E7 E7 E7 A7 A7 E7 E7 B7 A7 E7 B7', plan: 'a-a-b-' },
-        chorus: { chords: 'A A E E C D E E', plan: 'abaC' },
-        solo: { chords: 'E7 E7 E7 E7 A7 A7 E7 E7 B7 A7 E7 B7', plan: 'ssssss' }
+        intro: { chords: 'Gm7 C13 Gm7 C13' },
+        head: { chords: 'Gm7 C13 Fmaj7 Fmaj7 Cm7 F7b9 Bbmaj7 Bbmaj7 Bbm7 Eb9 Am7 D7b9 Gm7 C7b9 Fmaj9 C13', plan: 'a-b-a-c-' },
+        solo: { chords: 'Gm7 C13 Fmaj7 Fmaj7 Cm7 F7b9 Bbmaj7 Bbmaj7 Bbm7 Eb9 Am7 D7b9 Gm7 C7b9 Fmaj9 C13', plan: 'ss-sss-s', lead: { voice: 'vibes', lo: 62, hi: 84 } }
       },
-      order: ['intro', 'verse', 'verse', 'chorus', 'verse', 'solo', 'chorus', 'verse', 'chorus'],
-      setup: function (h) { h.amp(7, 2800); h.organBus(0.6); },
-      step: function (h, s) {
-        var k = s.k, beat = s.beat, off = s.sb, intro = s.sec === 'intro' && s.bar < 2;
-        if (!intro) {
-          if (off === 0 && (beat === 0 || beat === 2)) h.drum('kick', beat === 0 ? 0.9 : 0.75);
-          if (off === 1 && beat === 1 && s.bar % 2 === 1) h.drum('kick', 0.45);
-          if (off === 0 && (beat === 1 || beat === 3)) h.drum('snare', 0.75);
-          if (s.lastBar && beat === 3 && s.sec !== 'intro') { h.drum('tomH', 0.5); if (off) h.drum('tomL', 0.6); }
-          if (s.bar === 0 && k === 0 && s.secIdx > 0) h.drum('crash', 0.5);
-          var pat = s.sec === 'chorus' ? [0, 0, 0, 0, 0, 0, 0, 0] : [0, 4, 7, 9, 10, 9, 7, 4];
-          h.bass(bassMidi(s.ch.root) + pat[k], 1, 0.5, 'ebass');
-        }
-        h.drum(s.sec === 'chorus' ? 'ride' : 'hat', off === 0 ? 0.32 : 0.2);
-        var r = gtrMidi(s.ch.root), iv = (beat % 2 === 0) ? 7 : (s.bar % 4 === 3 && beat === 3 ? 10 : 9);
-        h.gtr('drive', [r, r + iv], 1, s.sec === 'chorus' ? 0.32 : 0.26, 0.6);
-        if (s.sec === 'chorus' && k === 0) h.organ(voicing(s.ch, 62, 3), 8, 0.12);
-      },
-      end: function (h, t) { h.at(t); h.drum('crash', 0.7); h.drum('kick', 1); h.bass(28, 6, 0.6, 'ebass'); h.gtr('drive', [40, 47, 52], 8, 0.35, 2); }
+      order: ['intro', 'head', 'solo', 'head'],
+      step: function (h, s) { brushKit(h, s, s.sec === 'solo'); jazzWalk(h, s, 0.6); comp(h, s, 'ep', 63, 0.085); },
+      end: jazzEnd(5, [0, 4, 7, 11, 14])
     },
     {
-      title: 'Felt Table Blues', artist: 'Slow Hand Sully & the Chalk Line', style: 'Slow blues',
-      bpm: 62, sub: 3, swing: 0.5, key: 7, scale: [0, 3, 4, 5, 7, 10], seed: 4242,
-      lead: { voice: 'blues', lo: 62, hi: 86, bends: true },
+      title: 'Velvet Felt', artist: 'Rhodes Scholar Quartet', style: 'Cool jazz ballad swing',
+      bpm: 112, sub: 2, swing: 0.67, key: 10, scale: JAZZ_MAJ, seed: 1957,
+      lead: { voice: 'rhodes', lo: 62, hi: 82 },
       sections: {
-        intro: { chords: 'D7 C7 G7 D7', plan: 'aa' },
-        verse: { chords: 'G7 C7 G7 G7 C7 C7 G7 G7 D7 C7 G7 D7', plan: 'a-a-b-' },
-        solo: { chords: 'G7 C7 G7 G7 C7 C7 G7 G7 D7 C7 G7 D7', plan: 'ssssss' }
+        intro: { chords: 'Cm9 F13 Cm9 F13' },
+        head: { chords: 'Cm9 F13 Bbmaj9 Bbmaj9 Ebmaj9 Ab13 Dm7 G7b9 Cm9 F13 Dm7 G7b9 Cm9 F13 Bb69 Bb69', plan: 'aAa-b-A-' },
+        solo: { chords: 'Cm9 F13 Bbmaj9 Bbmaj9 Ebmaj9 Ab13 Dm7 G7b9 Cm9 F13 Dm7 G7b9 Cm9 F13 Bb69 Bb69', plan: 'ss-sss-s', lead: { voice: 'tenor', lo: 56, hi: 75 } }
       },
-      order: ['intro', 'verse', 'solo', 'verse'],
-      setup: function (h) { h.amp(2.6, 3200); h.organBus(0.55); },
-      step: function (h, s) {
-        var k = s.k, beat = s.beat, j = s.sb;
-        if (j === 0 && (beat === 0 || beat === 2)) h.drum('kick', 0.75);
-        if (j === 2 && beat === 1 && s.bar % 2) h.drum('kick', 0.35);
-        if (j === 0 && (beat === 1 || beat === 3)) h.drum('snare', 0.55);
-        h.drum('ride', j === 0 ? 0.2 : 0.11);
-        if (j === 0 && (beat === 1 || beat === 3)) h.drum('hat', 0.15);
-        // bass: walking quarters with a triplet pickup into the next chord
-        var root = bassMidi(s.ch.root), walk = [0, 4, 7, 9];
-        if (j === 0) h.bass(root + walk[beat], 2, 0.5, 'ebass');
-        if (j === 2 && beat === 3) h.bass(bassMidi(s.nch.root) - 1, 1, 0.38, 'ebass');
-        // piano triplet comp, organ pad
-        if (j > 0 && (beat === 1 || beat === 3)) h.keys('piano', voicing(s.ch, 70, 4), 1, 0.07);
-        if (k === 0) h.organ(voicing(s.ch, 60, 4), 12, 0.08);
-        if (s.sec === 'solo' && k === 0 && s.bar % 4 === 0) h.drum('crash', 0.2);
-      },
-      end: function (h, t) { h.at(t); h.drum('crash', 0.5); h.bass(31, 8, 0.5, 'ebass'); h.organ([55, 59, 62, 65, 69], 14, 0.1); h.keys('piano', [67, 71, 74, 77], 10, 0.12); }
+      order: ['intro', 'head', 'solo', 'head'],
+      step: function (h, s) { brushKit(h, s, false); jazzWalk(h, s, 0.58); comp(h, s, 'piano', 60, 0.07); },
+      end: jazzEnd(10, [0, 4, 9, 14])
     },
     {
-      title: 'Chalk on My Cuff', artist: 'Hank Cushion & the Side Pockets', style: 'Country two-step',
-      bpm: 170, sub: 2, swing: 0.55, key: 9, scale: [0, 2, 4, 7, 9], seed: 909,
-      lead: { voice: 'tele', lo: 61, hi: 85, bends: true },
+      title: 'Late Rack', artist: "Dean's Lounge Quintet", style: 'Cool jazz swing',
+      bpm: 126, sub: 2, swing: 0.65, key: 3, scale: JAZZ_MAJ, seed: 1961,
+      lead: { voice: 'vibes', lo: 63, hi: 84 },
       sections: {
-        intro: { chords: 'E7 E7 A A', plan: 'aa' },
-        verse: { chords: 'A A D D E E A A A A D D E E A A', plan: 'a-b-a-B-' },
-        chorus: { chords: 'D D A A E E A A D D A F#m B7 B7 E7 E7', plan: 'abacabdc', lead: { voice: 'steel', lo: 60, hi: 84 } },
-        solo: { chords: 'A A D D E E A A A A D D E E A A', plan: 'ssss-sss' }
+        intro: { chords: 'Fm9 Bb13 Fm9 Bb13' },
+        head: { chords: 'Fm9 Bb13 Ebmaj9 Cm9 Fm9 Bb7b9 Ebmaj9 Ebmaj9 Am7b5 D7b9 Gm7 C7b9 Fm9 Bb13 Eb69 Bb13', plan: 'ab-ab-C-' },
+        solo: { chords: 'Fm9 Bb13 Ebmaj9 Cm9 Fm9 Bb7b9 Ebmaj9 Ebmaj9 Am7b5 D7b9 Gm7 C7b9 Fm9 Bb13 Eb69 Bb13', plan: 'ss-sss-s', lead: { voice: 'tenor', lo: 56, hi: 75 } }
       },
-      order: ['intro', 'verse', 'chorus', 'verse', 'solo', 'chorus', 'verse'],
-      setup: function (h) { h.slap(0.09, 0.15, 0.2); },
-      step: function (h, s) {
-        var beat = s.beat, off = s.sb, root = bassMidi(s.ch.root);
-        if (off === 0 && (beat === 0 || beat === 2)) h.drum('kick', 0.6);
-        if (off === 0 && (beat === 1 || beat === 3)) { h.drum('brush', 0.5); h.drum('cross', 0.25); }
-        h.drum('hat', off ? 0.1 : 0.16);
-        if (s.bar === 0 && s.k === 0 && s.secIdx > 0) h.drum('crash', 0.35);
-        // boom-chick bass with chromatic walk into chord changes
-        var change = s.nch.root !== s.ch.root;
-        if (off === 0) {
-          if (beat === 0) h.bass(root, 2, 0.55, 'ebass');
-          else if (beat === 2) h.bass(change ? bassMidi(s.nch.root) - 2 : root + 7 - (root + 7 > 43 ? 12 : 0), 2, 0.48, 'ebass');
-          else if (beat === 3 && change) h.bass(bassMidi(s.nch.root) - 1, 2, 0.42, 'ebass');
-        }
-        // the "chick": muted strum on 2 and 4
-        if (off === 0 && (beat === 1 || beat === 3)) h.strum('gtr', voicing(s.ch, 60, 4), 0.12, 0.13);
-        if (s.sec === 'verse' && off === 1 && beat === 3 && s.bar % 4 === 3) h.keys('piano', voicing(s.nch, 74, 3), 1, 0.06);
-      },
-      end: function (h, t) { h.at(t); h.drum('crash', 0.5); h.bass(33, 6, 0.55, 'ebass'); h.strum('tele', [57, 61, 64, 69], 2.5, 0.2); }
+      order: ['intro', 'head', 'solo', 'head'],
+      step: function (h, s) { brushKit(h, s, true); jazzWalk(h, s, 0.6); comp(h, s, 'ep', 62, 0.08); },
+      end: jazzEnd(3, [0, 4, 7, 11, 14])
     },
     {
-      title: 'Velvet Rail', artist: 'The Bridge Hand Revue', style: 'Soul / R&B groove',
-      bpm: 96, sub: 4, swing: 0.57, key: 2, scale: [0, 2, 3, 5, 7, 9, 10], seed: 7337,
-      lead: { voice: 'sax', lo: 60, hi: 81 },
+      title: 'Cool Cushion', artist: 'Bank Shot Blue', style: 'Minor cool jazz swing',
+      bpm: 116, sub: 2, swing: 0.66, key: 0, scale: JAZZ_MIN, seed: 1956,
+      lead: { voice: 'tenor', lo: 55, hi: 75 },
       sections: {
-        intro: { chords: 'Dm7 G9 Dm7 G9' },
-        verse: { chords: 'Dm7 G9 Dm7 G9 Dm7 G9 Dm7 G9', plan: 'aAab' },
-        chorus: { chords: 'Bbmaj7 Am7 Gm7 A7 Bbmaj7 Am7 Gm7 A7', plan: 'abaB' },
-        solo: { chords: 'Dm7 G9 Dm7 G9 Dm7 G9 Dm7 A7', plan: 'ssss', lead: { voice: 'organ', lo: 62, hi: 86 } }
+        intro: { chords: 'Dm7b5 G7b9 Cm9 Cm9' },
+        head: { chords: 'Cm9 Cm9 Fm9 Fm9 Dm7b5 G7b9 Cm9 Cm9 Abmaj7 Abmaj7 Dm7b5 G7b9 Cm9 Fm9 Dm7b5 G7b9', plan: 'a-b-a-B-' },
+        solo: { chords: 'Cm9 Cm9 Fm9 Fm9 Dm7b5 G7b9 Cm9 Cm9 Abmaj7 Abmaj7 Dm7b5 G7b9 Cm9 Fm9 Dm7b5 G7b9', plan: 'ss-sss-s', lead: { voice: 'rhodes', lo: 62, hi: 82 } }
       },
-      order: ['intro', 'verse', 'chorus', 'verse', 'chorus', 'solo', 'chorus', 'verse'],
-      setup: function (h) { h.organBus(0.6); },
-      step: function (h, s) {
-        var k = s.k, root = bassMidi(s.ch.root);
-        if (k === 0 || k === 7 || k === 10) h.drum('kick', k === 0 ? 0.85 : 0.6);
-        if (k === 4 || k === 12) { h.drum('snare', 0.7); h.drum('tamb', 0.3); }
-        if (k === 7 || k === 9 || k === 15) h.drum('snare', 0.08);
-        if (k === 14 && s.bar % 2) h.drum('ohat', 0.18); else h.drum('hat', k % 2 ? 0.08 : 0.18);
-        if (k % 2 === 0 && k !== 4 && k !== 12) h.drum('tamb', 0.07);
-        if (s.bar === 0 && k === 0 && s.secIdx > 0) h.drum('crash', 0.3);
-        // syncopated bass
-        var B = { 0: [0, 3], 3: [12, 1], 6: [7, 2], 8: [0, 2], 10: [10, 2], 13: [12, 1] };
-        if (B[k]) h.bass(root + B[k][0], B[k][1], 0.5, 'ebass');
-        if (k === 15) h.bass(bassMidi(s.nch.root) - 1, 1, 0.4, 'ebass');
-        // Rhodes upbeat stabs
-        if (k === 2 || k === 7 || k === 11) h.keys('ep', voicing(s.ch, 65, 4), k === 11 ? 3 : 2, 0.09);
-        if (s.sec === 'chorus') {
-          if (k === 0) h.organ(voicing(s.ch, 60, 4), 16, 0.07);
-          if ((k === 10 && s.bar % 2 === 0) || (k === 0 && s.bar % 4 === 1)) h.horns(voicing(s.ch, 68, 3), k === 0 ? 3 : 1, 0.04);
-        }
-      },
-      end: function (h, t) { h.at(t); h.drum('crash', 0.5); h.drum('kick', 0.9); h.bass(26, 6, 0.55, 'ebass'); h.horns([62, 65, 69, 72], 6, 0.05); h.keys('ep', [57, 60, 64, 65], 10, 0.1); }
-    },
-    {
-      title: 'Whitewall Boogie', artist: 'Duke Diamond & the Hubcaps', style: 'Rockabilly',
-      bpm: 172, sub: 2, swing: 0.62, key: 9, scale: [0, 2, 3, 4, 7, 9], seed: 5512,
-      lead: { voice: 'tele', lo: 61, hi: 85, bends: true },
-      sections: {
-        intro: { chords: 'E7 D7 A E7', plan: 'aa' },
-        verse: { chords: 'A A A A D D A A E7 D7 A E7', plan: 'a-a-b-' },
-        solo: { chords: 'A A A A D D A A E7 D7 A E7', plan: 'ssssss' }
-      },
-      order: ['intro', 'verse', 'verse', 'solo', 'verse', 'solo', 'verse', 'solo', 'verse'],
-      setup: function (h) { h.slap(0.11, 0.25, 0.32); },
-      step: function (h, s) {
-        var k = s.k, beat = s.beat, off = s.sb, root = bassMidi(s.ch.root);
-        if (off === 0 && (beat === 0 || beat === 2)) h.drum('kick', 0.6);
-        if (off === 0 && (beat === 1 || beat === 3)) h.drum('snare', 0.7);
-        h.drum('brush', off ? 0.18 : 0.12);
-        if (s.bar === 0 && k === 0 && s.secIdx > 0) h.drum('crash', 0.35);
-        // slap upright: walking quarters, click on the off
-        if (off === 0) {
-          var walk = s.bar % 2 ? [10, 9, 7, 4] : [0, 4, 7, 9];
-          h.bass(root + walk[beat], 2, 0.6, 'ubass');
-        } else h.drum('slap', 0.25);
-        var r = gtrMidi(s.ch.root), iv = (beat % 2 === 0) ? 7 : 9;
-        if (s.sec !== 'solo' || off === 0) h.gtr('tele', [r + 12, r + 12 + iv], 1, 0.13, 0.12);
-      },
-      end: function (h, t) { h.at(t); h.drum('crash', 0.6); h.bass(33, 4, 0.6, 'ubass'); h.strum('tele', [57, 61, 64, 66, 69], 2.5, 0.2); }
-    },
-    {
-      title: 'Breakwater Drag', artist: 'The Fiberglass Fins', style: 'Surf instrumental',
-      bpm: 158, sub: 2, swing: 0.5, key: 9, scale: [0, 2, 3, 5, 7, 8, 11], seed: 3003,
-      lead: { voice: 'trem', lo: 64, hi: 88 },
-      sections: {
-        intro: { chords: 'Am Am Am Am' },
-        verse: { chords: 'Am Am Dm Dm E E Am Am', plan: 'abaB' },
-        chorus: { chords: 'F F E E Dm Dm E E', plan: 'abab' },
-        solo: { chords: 'Am Am Dm Dm E E Am Am', plan: 'ssss', lead: { voice: 'combo', lo: 64, hi: 88 } }
-      },
-      order: ['intro', 'verse', 'verse', 'chorus', 'verse', 'solo', 'chorus', 'verse', 'solo', 'chorus', 'verse'],
-      setup: function (h) { h.spring(0.5); },
-      step: function (h, s) {
-        var k = s.k, beat = s.beat, off = s.sb, root = bassMidi(s.ch.root);
-        if (s.sec === 'intro') {
-          h.drum(off ? 'tomH' : 'tomL', (k === 0 || k === 3 || k === 6) ? 0.6 : 0.3);
-          h.bass(root, 1, 0.5, 'ebass');
-          return;
-        }
-        if (k === 0 || k === 3 || k === 4) h.drum('kick', 0.6);
-        if (k === 2 || k === 6) h.drum('snare', 0.65);
-        h.drum('ride', off ? 0.12 : 0.2);
-        if (s.bar === 0 && k === 0) h.drum('crash', 0.4);
-        if (s.lastBar && beat >= 2) h.drum(off ? 'tomL' : 'tomH', 0.5);
-        h.bass(root + (k === 6 || k === 7 ? 7 : 0), 1, 0.45, 'ebass');
-        if (off === 1 && (beat === 1 || beat === 3)) h.strum('gtr', voicing(s.ch, 58, 3), 0.1, 0.1, true);
-        if (s.sec === 'chorus' && k === 0) h.organ(voicing(s.ch, 66, 3), 8, 0.05, true);
-      },
-      end: function (h, t) { h.at(t); h.drum('crash', 0.6); h.drum('tomL', 0.7); h.bass(33, 6, 0.5, 'ebass'); h.strum('tele', [45, 52, 57, 60, 64], 3, 0.25, true); }
+      order: ['intro', 'head', 'solo', 'head'],
+      step: function (h, s) { brushKit(h, s, s.sec === 'solo'); jazzWalk(h, s, 0.6); comp(h, s, 'ep', 62, 0.08); },
+      end: jazzEnd(0, [0, 3, 7, 10, 14])
     }
   ];
 
@@ -2518,6 +2438,15 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
           oscNote(null, S.steelWave, f, t, dur * 1.05, 0.13, song.bus, 0.12, 0.25, { from: song.lastLead ? mtof(song.lastLead) : f * 0.94, glide: 0.14, vib: 0.004, vibRate: 4.5 });
           break;
         case 'combo': oscNote(null, S.comboWave, f, t, dur * 0.9, 0.085, song.fxIn || song.bus, 0.01, 0.05, { vib: 0.006, vibRate: 6 }); break;
+        case 'tenor':   // breathy, dark cool-school tenor: filtered saw + soft sine body
+          oscNote('sawtooth', null, f, t, dur * 0.9, 0.075 * v, song.bus, 0.05, 0.14, { lp: 850 + (n.midi - 55) * 22, q: 1.1, scoop: true, vib: 0.0045, vibRate: 4.6 });
+          oscNote('sine', null, f, t, dur * 0.9, 0.07 * v, song.bus, 0.05, 0.14, { vib: 0.0045, vibRate: 4.6 });
+          break;
+        case 'vibes':   // vibraphone: sine bar + soft 4th-partial shimmer, ringing decay
+          oscNote('sine', null, f, t, Math.min(dur, 0.9), 0.12 * v, song.bus, 0.004, 0.7);
+          oscNote('sine', null, f * 4, t, 0.12, 0.018 * v, song.bus, 0.002, 0.15);
+          break;
+        case 'rhodes': noteS(S.ep, n.midi, t, dur * 0.95, 0.22 * v, song.bus, 0.25); break;
         case 'trem':
           var rep = Math.max(1, Math.floor(dur / 0.045));
           for (var i = 0; i < rep; i++) noteS(S.ks.tele, n.midi, t + i * 0.045, 0.04, (i % 2 ? 0.17 : 0.2), song.fxIn || song.bus, 0.02);
@@ -7569,6 +7498,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     recordFrame(true);
     P.strike(G.balls, angle, P.powerToSpeed(power), sx, sy);
     call(A(), 'cueStrike', power, Math.hypot(sx, sy));
+    hapShot = G.mode !== 'cpu-shoot'; if (hapShot) hapStrike(power);
     G.strikeAnim = 1; G.aim.stroke = 0; G.canReplay = false;
     G.mode = 'rolling'; endTimer = 0;
   };
@@ -7623,6 +7553,41 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     if (r.after) r.after();
   }
 
+  // ---------- controller haptics (feel only: called from existing shot/physics events, never touches game state) ----------
+  var hapShot = false, hapLastHit = 0;
+  function hapPads() {
+    var raw = [], out = [];
+    try { raw = (navigator.getGamepads && navigator.getGamepads()) || []; } catch (e) { raw = []; }
+    for (var i = 0; i < raw.length; i++) { var p = raw[i]; if (p && p.connected !== false && (p.vibrationActuator || (p.hapticActuators && p.hapticActuators.length))) out.push(p); }
+    return out;
+  }
+  function rumble(strong, weak, ms, delay) {
+    try {
+      var pads = hapPads();
+      for (var i = 0; i < pads.length; i++) {
+        var p = pads[i], va = p.vibrationActuator;
+        if (va && typeof va.playEffect === 'function') {
+          var r = va.playEffect('dual-rumble', { startDelay: delay || 0, duration: ms, strongMagnitude: Math.min(1, strong), weakMagnitude: Math.min(1, weak) });
+          if (r && r.catch) r.catch(function () {});
+        } else if (p.hapticActuators && p.hapticActuators[0] && typeof p.hapticActuators[0].pulse === 'function') {
+          var hr = p.hapticActuators[0].pulse(Math.min(1, Math.max(strong, weak)), ms);
+          if (hr && hr.catch) hr.catch(function () {});
+        }
+      }
+    } catch (e) { /* no haptics: silently do nothing */ }
+  }
+  function hapStrike(power) {                  // soft tap for a touch shot, a long reverberating thump for a power break
+    var p = Math.max(0, Math.min(1, +power || 0)), ms = Math.round(35 + 230 * p * p);
+    rumble(0.08 + 0.92 * Math.pow(p, 1.3), 0.25 + 0.6 * p, ms, 0);
+    if (p > 0.55) setTimeout(function () { rumble(0.35 * p, 0.25 * p, Math.round(160 * p), 0); }, ms);   // decaying tail
+  }
+  function hapEvent(e) {
+    if (!hapShot || !e) return;
+    var now = Date.now();
+    if (e.t === 'ball' && +e.v > 1.2 && now - hapLastHit > 70) { hapLastHit = now; var m = Math.min(1, e.v / 7); rumble(0.15 * m, 0.3 * m, 30, 0); }
+    else if (e.t === 'pocket' && e.a !== 0) rumble(0.12, 0.22, 55, 0);
+  }
+
   // ---------- sounds from physics events ----------
   function sfx(e, quiet) {
     var a = A(); if (!a) return;
@@ -7635,7 +7600,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     for (var i = 0; i < evs.length; i++) {
       var e = evs[i];
       if (rec) rec.events.push({ f: rec.frames.length, e: e });
-      sfx(e);
+      sfx(e); hapEvent(e);
       if (!shot) continue;
       if (e.t === 'ball') {
         if (shot.firstHit < 0 && (e.a === 0 || e.b === 0)) { shot.firstHit = e.a === 0 ? e.b : e.a; }
