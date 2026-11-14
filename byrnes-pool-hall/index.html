@@ -2290,110 +2290,134 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
   function bassMidi(pc) { return inRange(pc, 28); }       // E1..D#2
   function gtrMidi(pc) { return inRange(pc, 40); }        // E2..D#3
 
-  // cool-jazz combo: walking upright bass, brushed swing drums, Rhodes/piano comping on extended chords, mellow leads
-  var ROOTLESS = {   // rootless left-hand voicings (intervals above the root), the classic jazz-piano shapes
-    m7: [3, 7, 10, 14], m9: [3, 7, 10, 14], '7': [4, 9, 10, 14], '9': [4, 9, 10, 14], '13': [4, 9, 10, 14],
-    maj7: [4, 7, 11, 14], maj9: [4, 7, 11, 14], '6': [4, 7, 9, 14], '69': [4, 7, 9, 14], m7b5: [3, 6, 10, 12], '7b9': [4, 7, 10, 13]
-  };
-  function rootless(c, center) {
-    var q = c.name.replace(/^[A-G][b#]?/, ''), ivs = ROOTLESS[q] || c.iv.slice(1, 5), out = [];
-    for (var i = 0; i < ivs.length; i++) out.push(inRange((c.root + ivs[i]) % 12, center - 6));
-    return out.sort(function (a, b) { return a - b; });
+  // laid-back steel-pan reggae: one-drop drums, off-beat guitar/organ skank, deep round bass, hand-written pan hooks
+  // melody notation: "E5:1 r:1 G5:2" = note:eighth-notes, r = rest; every bar is exactly 8 eighths
+  var NOTE_PC = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+  function noteMidi(n) {
+    var m = /^([A-G])([#b]?)(\d)$/.exec(n); if (!m) return null;
+    return 12 * (+m[3] + 1) + NOTE_PC[m[1]] + (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0);
   }
-  function jazzWalk(h, s, vel) {        // quarter-note walking line with a chromatic approach into the next chord
-    if (s.sb !== 0) { if (s.beat === 3 && s.bar % 2 === 1) h.bass(jazzWalk.last, 1, vel * 0.3, 'ubass'); return; }   // triplet "skip" ghost
-    var r = bassMidi(s.ch.root), q = s.ch.iv, third = q.indexOf(3) >= 0 ? 3 : 4, fifth = q.indexOf(6) >= 0 ? 6 : 7;
-    var pats = [[0, third, fifth], [0, 2, third], [12, 10, fifth], [0, fifth, 9]], p = pats[(s.bar + s.secIdx) % 4], n;
-    if (s.beat < 3) n = r + p[s.beat];
-    else {
-      var nr = bassMidi(s.nch.root), prev = r + p[2];
-      n = (Math.abs(nr + 1 - prev) < Math.abs(nr - 1 - prev)) ? nr + 1 : nr - 1;
-      if (nr === r) n = r + (prev > r + 6 ? 8 : -1);
+  function tune(str) {                 // -> { stepIndex(16ths from section start): {midi, len(16ths)} }
+    var out = {}, pos = 0, toks = str.trim().split(/\s+/);
+    for (var i = 0; i < toks.length; i++) {
+      var p = toks[i].split(':'), len = 2 * (+p[1] || 1);
+      if (p[0] !== 'r') out[pos] = { midi: noteMidi(p[0]), len: len };
+      pos += len;
     }
-    jazzWalk.last = n;
-    h.bass(n, 2, vel * (s.beat === 0 ? 1 : 0.86), 'ubass');
+    out._len = pos; return out;
   }
-  jazzWalk.last = 40;
-  function brushKit(h, s, ride) {       // brushes: soft sweep on every swung eighth, accented 2 & 4, feathered kick, hat foot
-    var b = s.beat, off = s.sb;
-    h.drum('brush', off ? 0.07 : ((b === 1 || b === 3) ? 0.3 : 0.1));
-    if (off === 0) h.drum('kick', 0.1);
-    if (off === 0 && (b === 1 || b === 3)) h.drum('hat', 0.1);
-    if (ride) { if (off === 0) h.drum('ride', b % 2 ? 0.14 : 0.18); else if (b === 1 || b === 3) h.drum('ride', 0.1); }
-    if (s.bar === 0 && s.k === 0 && s.secIdx > 0) h.drum('ride', 0.26);
-    if (s.lastBar && b === 3 && off === 1) h.drum('snare', 0.12);
-  }
-  var COMP = [{ 0: 2, 3: 3 }, { 2: 2, 5: 2 }, { 1: 1, 4: 3 }, { 0: 6 }];   // Charleston and friends (step: length)
-  function comp(h, s, kind, center, vel) {
-    var p = COMP[(s.bar * 3 + s.secIdx) % 4], len = p[s.k];
-    if (len) h.keys(kind, rootless(s.k >= 5 && s.nch ? s.nch : s.ch, center), len, vel);
-  }
-  var JAZZ_MAJ = [0, 2, 4, 5, 7, 9, 11], JAZZ_MIN = [0, 2, 3, 5, 7, 9, 10];
-  function jazzEnd(root, chordIvs) {
-    return function (h, t) {
-      h.at(t); h.drum('ride', 0.3); h.drum('kick', 0.25);
-      h.bass(bassMidi(root), 8, 0.6, 'ubass');
-      h.keys('ep', chordIvs.map(function (x) { return 60 + ((root + x) % 12) + (x > 11 ? 12 : 0); }).sort(function (a, b) { return a - b; }), 12, 0.11);
+  function islandSong(o) {             // shared arrangement for every tune; o supplies chords, hooks, feel
+    var mel = {}; for (var s in o.melody) mel[s] = tune(o.melody[s]);
+    var sections = {}; for (var c in o.chords) sections[c] = { chords: o.chords[c] };
+    return {
+      title: o.title, artist: o.artist, style: 'Steel-pan reggae',
+      bpm: o.bpm, sub: 4, swing: o.swing || 0.56, key: o.key, scale: [0, 2, 4, 5, 7, 9, 11], seed: o.seed,
+      lead: { voice: 'pan', lo: 60, hi: 90 }, sections: sections, order: o.order, _mel: mel,
+      setup: function (h, song) { h.slap(0.75 * 60 / o.bpm, 0.32, 0.22); h.organBus(0.25); song.islandSongMel = mel; },
+      step: function (h, s) {
+        var k = s.k, sec = s.sec, intro = sec === 'intro', root = bassMidi(s.ch.root), q = s.ch.iv;
+        var third = q.indexOf(3) >= 0 ? 3 : 4;
+        // one drop: kick + rim together on beat 3 only; 8th hats leaning on the off-beats; small fill into each section
+        if (k === 8) { h.drum('kick', 0.8); h.drum('cross', 0.42); }
+        if (k % 2 === 0) h.drum('hat', (k % 4 === 2) ? 0.2 : 0.09);
+        if ((k === 15 || k === 7) && s.bar % 2 === 1) h.drum('hat', 0.06);
+        if (k === 14 && s.bar % 4 === 3) h.drum('ohat', 0.12);
+        if (s.lastBar && k >= 12 && k % 2 === 0) h.drum(k === 14 ? 'tomL' : 'cross', 0.3);
+        if (s.bar === 0 && k === 0 && s.secIdx > 0 && o.chorus && o.chorus.indexOf(sec) >= 0) h.drum('crash', 0.14);
+        // skank: muted guitar chop + organ on beats 2 and 4, soft organ bubble on the 16ths after
+        if (k === 4 || k === 12) { h.strum('gtr', voicing(s.ch, 64, 3), 0.1, 0.17); h.organ(voicing(s.ch, 60, 3), 1, 0.06); }
+        if (k === 6 || k === 14) h.organ(voicing(s.ch, 60, 3), 1, 0.028);
+        // deep, round bass: two alternating one-drop lines, rests on beat 3 like the real thing, approach into the next chord
+        if (!intro || s.bar >= 2) {
+          var nr = bassMidi(s.nch.root), alt = s.bar % 2;
+          var line = alt ? { 0: [0, 3], 3: [0, 1], 4: [7, 2], 10: [12, 2], 12: [7, 2], 14: [nr - root + (nr > root ? -1 : 1), 2, true] }
+                         : { 0: [0, 6], 6: [7, 2], 10: [third, 2], 12: [7, 4] };
+          var b = line[k];
+          if (b) { var m = b[2] ? nr + (nr > root ? -1 : 1) : root + b[0]; h.bass(m, b[1], 0.44, 'ebass'); h.sub(m, b[1], 0.055); }
+        }
+        // the steel-pan hook
+        var tm = mel[sec];
+        if (tm) { var n = tm[(s.bar * 16 + k) % tm._len]; if (n && n.midi) h.lead('pan', { midi: n.midi, len: n.len }); }
+      },
+      end: function (h, t) {
+        h.at(t); h.drum('crash', 0.25); h.drum('kick', 0.7);
+        h.bass(bassMidi(o.key), 8, 0.5, 'ebass'); h.sub(bassMidi(o.key), 8, 0.055);
+        h.organ(voicing(chord(o.endChord), 60, 3), 12, 0.06);
+        [0, 4, 7, 12].forEach(function (x, i) { h.at(t + i * 0.09); h.lead('pan', { midi: 72 + o.key + x, len: 8 }); });
+      }
     };
   }
 
   var SONGS = [
-    {
-      title: 'Side Pocket Swing', artist: 'The Eight-Ball Trio', style: 'Cool jazz swing',
-      bpm: 120, sub: 2, swing: 0.66, key: 5, scale: JAZZ_MAJ, seed: 1959,
-      lead: { voice: 'tenor', lo: 58, hi: 77 },
-      sections: {
-        intro: { chords: 'Gm7 C13 Gm7 C13' },
-        head: { chords: 'Gm7 C13 Fmaj7 Fmaj7 Cm7 F7b9 Bbmaj7 Bbmaj7 Bbm7 Eb9 Am7 D7b9 Gm7 C7b9 Fmaj9 C13', plan: 'a-b-a-c-' },
-        solo: { chords: 'Gm7 C13 Fmaj7 Fmaj7 Cm7 F7b9 Bbmaj7 Bbmaj7 Bbm7 Eb9 Am7 D7b9 Gm7 C7b9 Fmaj9 C13', plan: 'ss-sss-s', lead: { voice: 'vibes', lo: 62, hi: 84 } }
+    islandSong({
+      title: 'Island Rack', artist: 'Steel Pan Sully & the Tide', bpm: 80, key: 0, seed: 101, endChord: 'C',
+      chords: { intro: 'C G Am F', verse: 'C G Am F C G Am G', chorus: 'F G C Am F G C C' },
+      melody: {
+        verse: 'E5:1 r:1 G5:1 r:1 A5:1 G5:1 E5:2  D5:3 r:1 C5:1 D5:1 E5:2  C5:1 r:1 E5:1 r:1 A5:1 G5:1 E5:2  F5:3 E5:1 D5:2 C5:2 ' +
+               'E5:1 r:1 G5:1 r:1 A5:1 G5:1 E5:2  D5:3 r:1 C5:1 D5:1 E5:2  C5:1 r:1 E5:1 r:1 A5:1 G5:1 E5:2  D5:4 r:4',
+        chorus: 'A5:2 A5:1 G5:1 A5:2 C6:2  B5:2 A5:1 G5:1 D5:4  G5:2 E5:1 G5:1 C6:3 r:1  A5:2 G5:2 E5:4 ' +
+                'A5:2 A5:1 G5:1 A5:2 C6:2  D6:2 C6:1 B5:1 G5:4  C6:1 r:1 G5:1 r:1 E5:1 G5:1 C6:2  C6:6 r:2'
       },
-      order: ['intro', 'head', 'solo', 'head'],
-      step: function (h, s) { brushKit(h, s, s.sec === 'solo'); jazzWalk(h, s, 0.6); comp(h, s, 'ep', 63, 0.085); },
-      end: jazzEnd(5, [0, 4, 7, 11, 14])
-    },
-    {
-      title: 'Velvet Felt', artist: 'Rhodes Scholar Quartet', style: 'Cool jazz ballad swing',
-      bpm: 112, sub: 2, swing: 0.67, key: 10, scale: JAZZ_MAJ, seed: 1957,
-      lead: { voice: 'rhodes', lo: 62, hi: 82 },
-      sections: {
-        intro: { chords: 'Cm9 F13 Cm9 F13' },
-        head: { chords: 'Cm9 F13 Bbmaj9 Bbmaj9 Ebmaj9 Ab13 Dm7 G7b9 Cm9 F13 Dm7 G7b9 Cm9 F13 Bb69 Bb69', plan: 'aAa-b-A-' },
-        solo: { chords: 'Cm9 F13 Bbmaj9 Bbmaj9 Ebmaj9 Ab13 Dm7 G7b9 Cm9 F13 Dm7 G7b9 Cm9 F13 Bb69 Bb69', plan: 'ss-sss-s', lead: { voice: 'tenor', lo: 56, hi: 75 } }
+      order: ['intro', 'verse', 'verse', 'chorus', 'verse', 'chorus', 'chorus'], chorus: ['chorus']
+    }),
+    islandSong({
+      title: 'Coconut Cue', artist: 'The Breezeway Band', bpm: 76, key: 5, seed: 202, endChord: 'F',
+      chords: { intro: 'F Dm Bb C', a: 'F Dm Bb C F Dm Bb C', b: 'Bb C Am Dm Gm C F F' },
+      melody: {
+        a: 'C6:2 A5:1 F5:1 G5:2 A5:2  F5:2 D5:2 r:2 D5:1 F5:1  Bb5:2 A5:1 G5:1 F5:2 D5:2  E5:2 G5:2 C6:4 ' +
+           'C6:2 A5:1 F5:1 G5:2 A5:2  F5:2 D5:2 r:2 D5:1 F5:1  Bb5:2 A5:1 G5:1 F5:2 D5:2  E5:2 F5:2 G5:4',
+        b: 'D5:1 F5:1 Bb5:2 A5:2 F5:2  G5:2 E5:2 C5:4  E5:1 A5:1 C6:2 A5:2 E5:2  F5:2 E5:1 D5:1 A4:4 ' +
+           'Bb4:1 D5:1 G5:2 F5:2 D5:2  E5:2 G5:2 Bb5:2 G5:2  A5:2 C6:2 A5:2 F5:2  F5:6 r:2'
       },
-      order: ['intro', 'head', 'solo', 'head'],
-      step: function (h, s) { brushKit(h, s, false); jazzWalk(h, s, 0.58); comp(h, s, 'piano', 60, 0.07); },
-      end: jazzEnd(10, [0, 4, 9, 14])
-    },
-    {
-      title: 'Late Rack', artist: "Dean's Lounge Quintet", style: 'Cool jazz swing',
-      bpm: 126, sub: 2, swing: 0.65, key: 3, scale: JAZZ_MAJ, seed: 1961,
-      lead: { voice: 'vibes', lo: 63, hi: 84 },
-      sections: {
-        intro: { chords: 'Fm9 Bb13 Fm9 Bb13' },
-        head: { chords: 'Fm9 Bb13 Ebmaj9 Cm9 Fm9 Bb7b9 Ebmaj9 Ebmaj9 Am7b5 D7b9 Gm7 C7b9 Fm9 Bb13 Eb69 Bb13', plan: 'ab-ab-C-' },
-        solo: { chords: 'Fm9 Bb13 Ebmaj9 Cm9 Fm9 Bb7b9 Ebmaj9 Ebmaj9 Am7b5 D7b9 Gm7 C7b9 Fm9 Bb13 Eb69 Bb13', plan: 'ss-sss-s', lead: { voice: 'tenor', lo: 56, hi: 75 } }
+      order: ['intro', 'a', 'a', 'b', 'a', 'b', 'a'], chorus: ['b']
+    }),
+    islandSong({
+      title: 'Low Tide Bank Shot', artist: 'Dread Pocket Sound System', bpm: 72, key: 9, seed: 303, endChord: 'Am',
+      chords: { intro: 'Am Dm Am Em', a: 'Am Dm Am Em Am Dm F G', c: 'F G Am Am F G Em Am' },
+      melody: {
+        a: 'E5:2 A5:1 B5:1 C6:2 B5:1 A5:1  F5:2 E5:1 D5:1 A4:4  E5:2 A5:1 B5:1 C6:2 E6:2  D6:2 C6:1 B5:1 G5:4 ' +
+           'E5:2 A5:1 B5:1 C6:2 B5:1 A5:1  F5:2 A5:2 D6:2 C6:1 A5:1  C6:2 A5:2 F5:2 A5:2  B5:2 G5:2 D5:2 G5:2',
+        c: 'A5:3 G5:1 F5:2 A5:2  G5:3 F5:1 D5:4  E5:2 A5:2 C6:2 E6:2  D6:1 C6:1 A5:6 ' +
+           'A5:3 G5:1 F5:2 C6:2  B5:3 A5:1 G5:2 D6:2  B5:2 G5:2 E5:2 B5:2  A5:6 r:2'
       },
-      order: ['intro', 'head', 'solo', 'head'],
-      step: function (h, s) { brushKit(h, s, true); jazzWalk(h, s, 0.6); comp(h, s, 'ep', 62, 0.08); },
-      end: jazzEnd(3, [0, 4, 7, 11, 14])
-    },
-    {
-      title: 'Cool Cushion', artist: 'Bank Shot Blue', style: 'Minor cool jazz swing',
-      bpm: 116, sub: 2, swing: 0.66, key: 0, scale: JAZZ_MIN, seed: 1956,
-      lead: { voice: 'tenor', lo: 55, hi: 75 },
-      sections: {
-        intro: { chords: 'Dm7b5 G7b9 Cm9 Cm9' },
-        head: { chords: 'Cm9 Cm9 Fm9 Fm9 Dm7b5 G7b9 Cm9 Cm9 Abmaj7 Abmaj7 Dm7b5 G7b9 Cm9 Fm9 Dm7b5 G7b9', plan: 'a-b-a-B-' },
-        solo: { chords: 'Cm9 Cm9 Fm9 Fm9 Dm7b5 G7b9 Cm9 Cm9 Abmaj7 Abmaj7 Dm7b5 G7b9 Cm9 Fm9 Dm7b5 G7b9', plan: 'ss-sss-s', lead: { voice: 'rhodes', lo: 62, hi: 82 } }
+      order: ['intro', 'a', 'a', 'c', 'a', 'c', 'c'], chorus: ['c']
+    }),
+    islandSong({
+      title: 'Sunset Side Pocket', artist: 'Captain Chalk & the Trade Winds', bpm: 86, key: 2, seed: 404, endChord: 'D',
+      chords: { intro: 'D G A G', a: 'D G A G D G A G', b: 'Bm G D A Bm G A A' },
+      melody: {
+        a: 'F#5:1 A5:1 D6:2 A5:2 F#5:2  G5:1 B5:1 D6:2 B5:2 G5:2  A5:2 C#6:2 E6:2 C#6:1 A5:1  B5:2 A5:1 G5:1 F#5:2 E5:2 ' +
+           'F#5:1 A5:1 D6:2 A5:2 F#5:2  G5:1 B5:1 D6:2 E6:2 D6:2  C#6:2 B5:1 A5:1 E5:2 A5:2  B5:2 A5:2 F#5:4',
+        b: 'D6:2 C#6:1 B5:1 F#5:4  G5:2 B5:2 D6:4  F#5:2 A5:1 F#5:1 D5:4  E5:2 A5:2 C#6:4 ' +
+           'D6:2 C#6:1 B5:1 F#5:2 B5:2  D6:2 B5:2 G5:4  E6:2 C#6:2 A5:2 E5:2  A5:4 r:4'
       },
-      order: ['intro', 'head', 'solo', 'head'],
-      step: function (h, s) { brushKit(h, s, s.sec === 'solo'); jazzWalk(h, s, 0.6); comp(h, s, 'ep', 62, 0.08); },
-      end: jazzEnd(0, [0, 3, 7, 10, 14])
-    }
+      order: ['intro', 'a', 'a', 'b', 'a', 'b', 'a'], chorus: ['b']
+    })
   ];
 
   // ---------------------------------------------------------------- sequencer
   var M = { song: null, idx: 0, playing: false, timer: null, pending: null, level: 0 };
+  // steel pan: additive partials (strong octave + twelfth like a tuned pan note), metallic strike ping,
+  // fast decay to a soft ringing tail, and a lowpass that closes as the note decays
+  function panNote(f, t, dur, vel, dest) {
+    if (!S.panWave) {
+      var re = new Float32Array(9), im = new Float32Array(9);
+      im[1] = 1; im[2] = 0.62; im[3] = 0.3; im[4] = 0.16; im[5] = 0.05; im[6] = 0.07; im[8] = 0.03;
+      S.panWave = ctx.createPeriodicWave(re, im);
+    }
+    var o = ctx.createOscillator(), lp = ctx.createBiquadFilter(), g = ctx.createGain(), end = t + Math.max(0.12, dur);
+    o.setPeriodicWave(S.panWave); o.frequency.setValueAtTime(f, t); o.detune.value = rnd(-3, 3);
+    lp.type = 'lowpass'; lp.Q.value = 0.7; lp.frequency.setValueAtTime(Math.min(16000, f * 9), t); lp.frequency.setTargetAtTime(f * 3.2, t + 0.01, 0.18);
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(vel, t + 0.004);
+    g.gain.setTargetAtTime(vel * 0.3, t + 0.006, 0.09);
+    g.gain.setTargetAtTime(0.0001, end, 0.22);
+    o.connect(lp); lp.connect(g); g.connect(dest);
+    o.start(t); o.stop(end + 1.4);
+    var p = ctx.createOscillator(), pg = ctx.createGain();     // the stick "ping": inharmonic, gone in ~40 ms
+    p.type = 'sine'; p.frequency.setValueAtTime(f * 4.21, t);
+    pg.gain.setValueAtTime(vel * 0.35, t); pg.gain.setTargetAtTime(0.0001, t + 0.002, 0.012);
+    p.connect(pg); pg.connect(dest); p.start(t); p.stop(t + 0.15);
+  }
   function Helper(song) {
     var tnow = 0, h = {};
     var sd = function () { return song.beatDur / song.spec.sub; };
@@ -2404,6 +2428,9 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
     };
     h.bass = function (midi, steps, vel, kind) {
       noteS(kind === 'ubass' ? S.ks.ubass : S.ebass, midi, tnow + rnd(0, 0.006), steps * sd() * 0.92, vel * 0.9, song.bus, 0.05);
+    };
+    h.sub = function (midi, steps, vel) {   // round sine sub under the bass guitar
+      oscNote('sine', null, mtof(midi), tnow + 0.004, steps * sd() * 0.9, vel, song.bus, 0.012, 0.09);
     };
     h.gtr = function (kind, midis, steps, vel, len) {
       var dest = kind === 'drive' ? (song.ampIn || song.bus) : (song.fxIn || song.bus), map = kind === 'drive' ? S.ks.gtr : S.ks[kind] || S.ks.gtr;
@@ -2438,15 +2465,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
           oscNote(null, S.steelWave, f, t, dur * 1.05, 0.13, song.bus, 0.12, 0.25, { from: song.lastLead ? mtof(song.lastLead) : f * 0.94, glide: 0.14, vib: 0.004, vibRate: 4.5 });
           break;
         case 'combo': oscNote(null, S.comboWave, f, t, dur * 0.9, 0.085, song.fxIn || song.bus, 0.01, 0.05, { vib: 0.006, vibRate: 6 }); break;
-        case 'tenor':   // breathy, dark cool-school tenor: filtered saw + soft sine body
-          oscNote('sawtooth', null, f, t, dur * 0.9, 0.075 * v, song.bus, 0.05, 0.14, { lp: 850 + (n.midi - 55) * 22, q: 1.1, scoop: true, vib: 0.0045, vibRate: 4.6 });
-          oscNote('sine', null, f, t, dur * 0.9, 0.07 * v, song.bus, 0.05, 0.14, { vib: 0.0045, vibRate: 4.6 });
-          break;
-        case 'vibes':   // vibraphone: sine bar + soft 4th-partial shimmer, ringing decay
-          oscNote('sine', null, f, t, Math.min(dur, 0.9), 0.12 * v, song.bus, 0.004, 0.7);
-          oscNote('sine', null, f * 4, t, 0.12, 0.018 * v, song.bus, 0.002, 0.15);
-          break;
-        case 'rhodes': noteS(S.ep, n.midi, t, dur * 0.95, 0.22 * v, song.bus, 0.25); break;
+        case 'pan': panNote(f, t, dur, 0.3 * v, song.fxIn || song.bus); break;
         case 'trem':
           var rep = Math.max(1, Math.floor(dur / 0.045));
           for (var i = 0; i < rep; i++) noteS(S.ks.tele, n.midi, t + i * 0.045, 0.04, (i % 2 ? 0.17 : 0.2), song.fxIn || song.bus, 0.02);
@@ -2640,11 +2659,46 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
       else if (ctx.resume) ctx.resume();
     } catch (e) {}
   }
-  function onGesture() { try { if (ctx && ctx.state !== 'running' && !document.hidden) ctx.resume(); } catch (e) {} }
+  // Browsers (Safari and Chrome) only let audio start inside a real tap/click/key press. A game-controller button is NOT
+  // such a gesture, so a controller-only player needs one click/tap; every real gesture creates and/or resumes the context.
+  function onGesture() {
+    try {
+      if (document.hidden) return;
+      if (!ctx) { unlock(); return; }
+      if (ctx.state !== 'running' && ctx.resume) { var p = ctx.resume(); if (p && p.catch) p.catch(function () {}); }
+    } catch (e) {}
+  }
   try {
     document.addEventListener('visibilitychange', onVis);
-    ['pointerdown', 'touchend', 'keydown', 'click'].forEach(function (ev) { window.addEventListener(ev, onGesture, true); });
+    ['pointerdown', 'pointerup', 'mousedown', 'mouseup', 'touchstart', 'touchend', 'keydown', 'keyup', 'click'].forEach(function (ev) { window.addEventListener(ev, onGesture, true); });
   } catch (e) {}
+  // one-time "sound is off" hint: shown only while the browser is still holding audio back, gone for good once it plays
+  var hint = { el: null, timer: null, t0: Date.now() };
+  function padConnected() {
+    try { var g = navigator.getGamepads ? navigator.getGamepads() : []; for (var i = 0; i < g.length; i++) if (g[i] && g[i].connected !== false) return true; } catch (e) {}
+    return false;
+  }
+  function hintCheck() {
+    try {
+      if (ctx && ctx.state === 'running') {
+        if (hint.el && hint.el.parentNode) hint.el.parentNode.removeChild(hint.el);
+        hint.el = null; clearInterval(hint.timer); hint.timer = null; return;
+      }
+      var want = !document.hidden && (padConnected() || (ctx && Date.now() - hint.t0 > 1500));
+      if (want && !hint.el && document.body) {
+        var e = document.createElement('div'); e.id = 'bph-sound-hint'; e.setAttribute('role', 'button');
+        e.textContent = '\uD83D\uDD0A Sound is off \u2014 click or tap once to turn it on';
+        e.style.cssText = 'position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 118px);transform:translateX(-50%);z-index:60;cursor:pointer;' +
+          'pointer-events:auto;font:600 14px/1.2 -apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;color:#fff;background:rgba(12,12,16,.85);' +
+          'border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:8px 16px;box-shadow:0 2px 10px rgba(0,0,0,.4);white-space:nowrap';
+        var tap = function (ev) { ev.stopPropagation(); onGesture(); unlock(); };
+        ['pointerdown', 'click', 'touchend'].forEach(function (n) { e.addEventListener(n, tap); });
+        document.body.appendChild(e); hint.el = e;
+      }
+      if (hint.el) hint.el.style.display = want ? 'block' : 'none';
+    } catch (e) {}
+  }
+  try { hint.timer = setInterval(hintCheck, 400); } catch (e) {}
 
   function setSfxVolume(v) {
     sfxVol = clamp(num(v, 0.8), 0, 1);
