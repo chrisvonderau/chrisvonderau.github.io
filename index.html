@@ -448,7 +448,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:0 20px 40px}
     cats.forEach(function(sec){
       var n = 0, okCat = !active || active === sec.dataset.cat;
       Array.prototype.forEach.call(sec.querySelectorAll("a.g"), function(g){
-        var ok = okCat && (!q || g.dataset.search.indexOf(q) !== -1);
+        var hay = ((g.dataset.search || "") + " " + (g.textContent || "")).toLowerCase(); var ok = okCat && (!q || hay.indexOf(q) !== -1);
         g.classList.toggle("hidden", !ok); if(ok) n++;
       });
       sec.classList.toggle("hidden", n === 0);
@@ -459,7 +459,8 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:0 20px 40px}
     var spot = document.querySelector("section.spot"); if(spot){ var was = spot.classList.contains("hidden"); spot.classList.toggle("hidden", !!q); if(q && !was){ var m = document.getElementById("main"); if(m) window.scrollTo({top: Math.max(0, m.getBoundingClientRect().top + window.pageYOffset - (document.querySelector(".bar").offsetHeight + 12))}); } }
     empty.querySelector("b").textContent = input.value;
   }
-  input.addEventListener("input", apply);
+  ["input","keyup","change","search","compositionend"].forEach(function(ev){ input.addEventListener(ev, apply); });
+  window.addEventListener("pageshow", apply);
   input.addEventListener("keydown", function(e){ if(e.key === "Escape"){ input.value = ""; apply(); input.blur(); } });
   document.addEventListener("keydown", function(e){
     if(e.key === "/" && document.activeElement !== input && !e.metaKey && !e.ctrlKey){ e.preventDefault(); input.focus(); }
