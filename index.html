@@ -87,6 +87,7 @@ a{color:inherit}
 .search input{width:100%;font:600 15px/1 inherit;color:#fff;padding:12px 40px 12px 40px;border-radius:12px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);outline:none}
 .search input:focus{border-color:#fff;background:rgba(255,255,255,.1)}
 .search input::-webkit-search-cancel-button{display:none}
+body:has(#q:not(:placeholder-shown)) .spot{display:none!important}
 .search kbd{position:absolute;right:10px;top:50%;transform:translateY(-50%);font:700 11px/1 ui-monospace,Menlo,monospace;color:var(--muted);border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:4px 6px}
 .chips{display:flex;gap:8px;flex-wrap:wrap;flex:1 1 auto}
 .chip{appearance:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:8px 11px;border-radius:999px;font:700 13px/1 inherit;color:#e9ebff;
@@ -396,6 +397,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:0 20px 40px}
     var byCat = {}; games.forEach(function(g){ (byCat[g.dataset.cat] = byCat[g.dataset.cat] || []).push(g); });
     var picks = Object.keys(byCat).map(function(c){ var a = byCat[c]; return a[Math.floor(Math.random()*a.length)]; });
     for(var i=picks.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=picks[i]; picks[i]=picks[j]; picks[j]=t; }
+    var newest = document.querySelector('a.g[href*="ghosts-of-market-street"]'); if(newest){ picks = picks.filter(function(g){ return g !== newest && g.dataset.cat !== newest.dataset.cat; }); picks.unshift(newest); }
     var bg = stage.querySelector(".stage-bg"), screen = stage.querySelector(".screen"), title = stage.querySelector(".spot-title"),
         what = stage.querySelector(".spot-what"), eb = stage.querySelector(".eyebrow"), play = stage.querySelector(".btn-play"),
         thumbs = stage.querySelector(".thumbs"), copy = stage.querySelector(".spot-copy"), nav = thumbs.querySelector(".spot-nav");
