@@ -1,4 +1,4 @@
-import * as T from './three.module.js';
+import * as T from 'https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js';
 const $=id=>document.getElementById(id), overlay=$('overlay');
 const KEY='founder-first-light-v1';let state={name:'Alex Vale',color:'#e9b96f',day:1,cash:240,quality:0,users:0,trust:50,energy:100,actions:0,met:false,pitch:0,won:false,visits:0},started=false,modal=true,choice=0,nearest=null,minigame=null,sound=false,ctx=null,toastTimer,sceneMode='apartment';
 const keys={},touch={x:0,y:0};let saved;try{saved=JSON.parse(localStorage.getItem(KEY))}catch{}
