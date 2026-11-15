@@ -456,6 +456,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:0 20px 40px}
       shown += n;
     });
     empty.classList.toggle("hidden", shown !== 0);
+    var spot = document.querySelector("section.spot"); if(spot){ var was = spot.classList.contains("hidden"); spot.classList.toggle("hidden", !!q); if(q && !was){ var m = document.getElementById("main"); if(m) window.scrollTo({top: Math.max(0, m.getBoundingClientRect().top + window.pageYOffset - (document.querySelector(".bar").offsetHeight + 12))}); } }
     empty.querySelector("b").textContent = input.value;
   }
   input.addEventListener("input", apply);
