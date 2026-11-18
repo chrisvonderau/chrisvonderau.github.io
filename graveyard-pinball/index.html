@@ -5455,6 +5455,16 @@
     if (!unlocked) { unlocked = true; $('sound').style.display = 'none'; }
   }
   ['pointerdown', 'touchstart', 'keydown', 'mousedown'].forEach(function (ev) { window.addEventListener(ev, unlock, { capture: true, passive: true }); });
+  // Controller-only players: a gamepad press can't unlock audio (browsers don't count it as a gesture), but it should still clear the sound card.
+  (function padGate() {
+    if (unlocked || $('sound').style.display === 'none') return;
+    try {
+      var ps = navigator.getGamepads ? navigator.getGamepads() : [];
+      for (var i = 0; ps && i < ps.length; i++) { var gp = ps[i]; if (!gp || !gp.buttons) continue;
+        for (var k = 0; k < gp.buttons.length; k++) { var b = gp.buttons[k]; if (b && (b.pressed || b.value > 0.5)) { $('sound').style.display = 'none'; return; } } }
+    } catch (e) {}
+    requestAnimationFrame(padGate);
+  })();
   function fillHelp(dev) {
     var l = PB.Input.labels(dev || 'keyboard');
     var rows = [['Start', l.start], ['Plunger', l.plunge], ['Left flipper', l.left], ['Right flipper', l.right], ['Nudge', l.nudge], ['Pause', l.pause]];
