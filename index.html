@@ -22,23 +22,31 @@ a{color:inherit}
  background-image:linear-gradient(rgba(124,92,255,.7) 1px,transparent 1px),linear-gradient(90deg,rgba(124,92,255,.7) 1px,transparent 1px);background-size:60px 60px;
  mask-image:linear-gradient(transparent,#000 70%);-webkit-mask-image:linear-gradient(transparent,#000 70%);animation:floor 6s linear infinite}
 @keyframes floor{to{background-position:0 60px}}
+.bg .aurora{position:absolute;inset:-25%;pointer-events:none;opacity:.85;filter:blur(48px);
+  background:radial-gradient(36% 32% at 18% 18%,rgba(255,91,138,.26),transparent 62%),radial-gradient(32% 38% at 82% 8%,rgba(62,203,255,.2),transparent 64%),radial-gradient(40% 36% at 62% 78%,rgba(192,132,252,.18),transparent 62%),radial-gradient(28% 28% at 40% 40%,rgba(240,193,75,.08),transparent 60%);
+  animation:aurora 18s ease-in-out infinite alternate}
+@keyframes aurora{to{transform:translate3d(-7%,5%,0) rotate(8deg) scale(1.1)}}
 #sky{position:absolute;inset:0;width:100%;height:100%}
 .wrap{position:relative;z-index:1}
 
 /* top bar */
 .top{display:flex;align-items:center;justify-content:space-between;gap:16px;max-width:1360px;margin:0 auto;padding:18px 28px 0}
 .brand{display:flex;align-items:center;gap:12px;font-family:var(--display);font-weight:800;letter-spacing:.02em}
-.brand i{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-style:normal;font-size:18px;
- background:conic-gradient(from 0deg,var(--action),var(--racing),var(--strategy),var(--adventure),var(--shooters),var(--puzzles),var(--party),var(--action));box-shadow:0 0 22px rgba(124,92,255,.45)}
-.brand i span{width:26px;height:26px;border-radius:7px;background:#0b0c18;display:grid;place-items:center}
-.brand h1{margin:0;font-size:20px;letter-spacing:.01em}
+.brand i{position:relative;overflow:hidden;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-style:normal;font-size:18px;
+ background:#0b0c18;box-shadow:0 0 22px rgba(124,92,255,.45),0 0 40px rgba(255,91,138,.25)}
+.brand i::before{content:"";position:absolute;inset:-45%;background:conic-gradient(from 0deg,var(--action),var(--racing),var(--strategy),var(--adventure),var(--shooters),var(--puzzles),var(--party),var(--action));animation:spinconic 10s linear infinite;z-index:0}
+.brand i span{position:relative;z-index:1;width:26px;height:26px;border-radius:7px;background:#0b0c18;display:grid;place-items:center}
+.brand h1{margin:0;font-size:20px;letter-spacing:.01em;background:linear-gradient(90deg,#fff 10%,#d7c9ff 40%,#7ce7ff 70%,#fff 100%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 14px rgba(124,92,255,.4));animation:brandshift 8s ease-in-out infinite alternate}
+@keyframes spinconic{to{transform:rotate(360deg)}}
+@keyframes brandshift{to{background-position:100% 0}}
 .tally{color:var(--muted);font-size:14px}
 .tally b{color:#fff;font-variant-numeric:tabular-nums}
 
 /* spotlight */
 .spot{max-width:1360px;margin:14px auto 0;padding:0 28px}
 .stage{position:relative;border-radius:28px;overflow:hidden;min-height:400px;isolation:isolate;
- border:1px solid rgba(255,255,255,.12);box-shadow:0 30px 80px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.12);background:#0a0b16}
+ border:1px solid rgba(255,255,255,.12);box-shadow:0 30px 80px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1px color-mix(in srgb,var(--c,#7c5cff) 25%,transparent);background:#0a0b16;animation:stageglow 4.5s ease-in-out infinite}
+@keyframes stageglow{50%{box-shadow:0 30px 80px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.16),0 0 48px color-mix(in srgb,var(--c,#7c5cff) 40%,transparent)}}
 .stage-bg{position:absolute;inset:-40px;z-index:-2;filter:blur(38px) saturate(1.4) brightness(.7);transform:scale(1.15);transition:opacity .6s}
 .stage-bg svg{width:100%;height:100%;display:block}
 .stage::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(5,6,13,.92) 0%,rgba(5,6,13,.65) 45%,rgba(5,6,13,.15) 100%),linear-gradient(0deg,rgba(5,6,13,.7),transparent 40%)}
@@ -72,7 +80,7 @@ a{color:inherit}
 .thumb[aria-current="true"]{opacity:1;transform:translateY(-4px);box-shadow:0 0 0 2px var(--c,#fff),0 8px 20px rgba(0,0,0,.5)}
 .thumb:hover{opacity:.95}
 .thumb i{position:absolute;left:0;bottom:0;height:3px;width:0;background:var(--c,#fff)}
-.thumb[aria-current="true"] i{animation:prog var(--dur,7s) linear forwards}
+.thumb[aria-current="true"] i{animation:prog var(--dur,4s) linear forwards}
 .paused .thumb i{animation-play-state:paused}
 @keyframes prog{to{width:100%}}
 .spot-nav{margin-left:auto;display:flex;gap:8px}
@@ -143,7 +151,7 @@ section.cat{margin:0 0 54px;scroll-margin-top:130px}
 .meta{display:flex;flex-direction:column;gap:2px;padding:0 4px}
 .name{font-weight:800;font-size:16px;line-height:1.2;letter-spacing:-.005em}
 .what{font-size:13.5px;color:var(--muted)}
-.g:hover .case,.g:focus-visible .case{transform:translateY(-6px);box-shadow:0 1px 0 rgba(255,255,255,.25) inset,0 24px 44px rgba(0,0,0,.55),0 0 36px color-mix(in srgb,var(--c) 45%,transparent)}
+.g:hover .case,.g:focus-visible .case{transform:translateY(-8px) scale(1.02);box-shadow:0 1px 0 rgba(255,255,255,.3) inset,0 28px 50px rgba(0,0,0,.58),0 0 48px color-mix(in srgb,var(--c) 58%,transparent)}
 .g:hover svg.cover,.g:focus-visible svg.cover{transform:scale(1.08)}
 .g:hover .sheen,.g:focus-visible .sheen{transform:translateX(120%)}
 .g:hover .play,.g:focus-visible .play{opacity:1;transform:none}
@@ -200,7 +208,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:0 20px 40px}
 </style>
 </head>
 <body>
-<div class="bg" aria-hidden="true"><canvas id="sky"></canvas><div class="floor"></div></div>
+<div class="bg" aria-hidden="true"><canvas id="sky"></canvas><div class="aurora"></div><div class="floor"></div></div>
 <a class="skip" href="#main">Skip to games</a>
 <div class="wrap">
 <div class="top">
@@ -212,7 +220,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:0 20px 40px}
     <div class="stage-bg" aria-hidden="true"></div>
     <div class="stage-in">
       <div class="spot-copy" aria-live="polite">
-        <span class="eyebrow">Featured</span>
+        <span class="eyebrow">New</span>
         <h2 class="spot-title">Pick a game. Press start.</h2>
         <p class="spot-what">Every game runs right in your browser.</p>
         <div class="spot-actions">
@@ -397,17 +405,22 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:0 20px 40px}
   function catName(cat){ var h = document.querySelector("#"+cat+" h2"); return h ? h.textContent : cat; }
   function catIcon(cat){ var h = document.querySelector("#"+cat+" .sh-icon"); return h ? h.textContent : ""; }
 
-  /* spotlight: one random game from each category, shuffled each visit */
+  /* spotlight: the five most recently introduced games, newest first */
   var stage = document.querySelector(".stage");
   if(stage && games.length){
-    var byCat = {}; games.forEach(function(g){ (byCat[g.dataset.cat] = byCat[g.dataset.cat] || []).push(g); });
-    var picks = Object.keys(byCat).map(function(c){ var a = byCat[c]; return a[Math.floor(Math.random()*a.length)]; });
-    for(var i=picks.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=picks[i]; picks[i]=picks[j]; picks[j]=t; }
-    var newest = document.querySelector('a.g[href*="ghosts-of-market-street"]'); if(newest){ picks = picks.filter(function(g){ return g !== newest && g.dataset.cat !== newest.dataset.cat; }); picks.unshift(newest); }
+    var newestKeys = ["neon-light-cycles","boardwalk-rivals","defcon-zero","neural-nirvana","storm-chaser"];
+    var picks = [];
+    newestKeys.forEach(function(key){
+      games.forEach(function(g){
+        var href = g.getAttribute("href") || "";
+        if(picks.indexOf(g) === -1 && href.indexOf(key) !== -1) picks.push(g);
+      });
+    });
+    games.forEach(function(g){ if(picks.indexOf(g) === -1 && picks.length < 5) picks.push(g); });
     var bg = stage.querySelector(".stage-bg"), screen = stage.querySelector(".screen"), title = stage.querySelector(".spot-title"),
         what = stage.querySelector(".spot-what"), eb = stage.querySelector(".eyebrow"), play = stage.querySelector(".btn-play"),
         thumbs = stage.querySelector(".thumbs"), copy = stage.querySelector(".spot-copy"), nav = thumbs.querySelector(".spot-nav");
-    var cur = -1, timer = null, DUR = 7000, paused = reduce;
+    var cur = -1, timer = null, DUR = 4000, paused = reduce;
     var tb = picks.map(function(g, n){
       var b = document.createElement("button"); b.type = "button"; b.className = "thumb";
       b.setAttribute("aria-label", "Show " + g.querySelector(".name").textContent);
@@ -424,7 +437,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:0 20px 40px}
       var em = document.createElement("span"); em.className = "emb"; em.setAttribute("aria-hidden","true"); em.textContent = g.querySelector(".emblem").textContent; screen.appendChild(em);
       title.textContent = g.querySelector(".name").textContent;
       what.textContent = g.querySelector(".what").textContent;
-      eb.textContent = catIcon(g.dataset.cat) + " " + catName(g.dataset.cat);
+      eb.textContent = "New · " + catIcon(g.dataset.cat) + " " + catName(g.dataset.cat);
       play.href = g.getAttribute("href");
       play.setAttribute("aria-label", "Play " + title.textContent);
       tb.forEach(function(b,k){ b.setAttribute("aria-current", k===cur ? "true" : "false"); });
@@ -445,6 +458,30 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:0 20px 40px}
     stage.addEventListener("focusin", function(){ hold(true); });
     stage.addEventListener("focusout", function(e){ if(!stage.contains(e.relatedTarget)) hold(false); });
     document.addEventListener("visibilitychange", function(){ hold(document.hidden); });
+    document.addEventListener("keydown", function(e){
+      if(e.metaKey || e.ctrlKey || e.altKey) return;
+      var t = e.target;
+      if(t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT" || t.isContentEditable)) return;
+      var r = stage.getBoundingClientRect();
+      if(!(r.bottom > 80 && r.top < innerHeight * 0.75) && !stage.contains(document.activeElement)) return;
+      if(e.key === "ArrowLeft" || e.keyCode === 37){ e.preventDefault(); show(cur-1); restart(); }
+      if(e.key === "ArrowRight" || e.keyCode === 39){ e.preventDefault(); show(cur+1); restart(); }
+    });
+    var gpWas = {};
+    function gpTick(){
+      var pads = navigator.getGamepads ? navigator.getGamepads() : [];
+      for(var i=0;i<pads.length;i++){
+        var p = pads[i]; if(!p) continue;
+        var left = (p.buttons[14] && p.buttons[14].pressed) || (p.buttons[4] && p.buttons[4].pressed) || (p.axes[0] < -0.65);
+        var right = (p.buttons[15] && p.buttons[15].pressed) || (p.buttons[5] && p.buttons[5].pressed) || (p.axes[0] > 0.65);
+        var k = String(p.index);
+        if(left && !gpWas[k+"l"]){ show(cur-1); restart(); }
+        if(right && !gpWas[k+"r"]){ show(cur+1); restart(); }
+        gpWas[k+"l"] = left; gpWas[k+"r"] = right;
+      }
+      requestAnimationFrame(gpTick);
+    }
+    if(navigator.getGamepads) requestAnimationFrame(gpTick);
     show(0); restart();
   }
 
