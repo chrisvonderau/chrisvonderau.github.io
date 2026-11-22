@@ -195,6 +195,11 @@
         #solve-btn { background: #00ffcc; color: #000; box-shadow: 0 0 15px rgba(0,255,204,0.3); }
         #solve-btn:hover:not(:disabled) { background: #33ffdd; box-shadow: 0 0 25px rgba(0,255,204,0.6); }
         .action-btn:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
+        #nw-feedback { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:14px 0 0; }
+        #nw-feedback button { min-height:44px; border:1px solid #4e6680; border-radius:9px; padding:6px 12px;
+            background:#141427; color:#c8d4e5; font:600 13px system-ui,sans-serif; cursor:pointer; }
+        #nw-feedback button[aria-pressed="true"] { border-color:#00f0ff; color:#00f0ff; }
+        #nw-feedback button:focus-visible { outline:2px solid #ff0077; outline-offset:3px; }
     </style>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a14">
@@ -218,6 +223,10 @@
                 <button id="vowel-btn" class="action-btn" onclick="prepareBuyVowel()">BUY VOWEL (-$250)</button>
                 <button id="solve-btn" class="action-btn" onclick="solvePuzzle()">SOLVE</button>
             </div>
+            <div id="nw-feedback" aria-label="Game feedback">
+                <button type="button" id="nw-sound" aria-label="Sound effects" aria-pressed="true">Sound: On</button>
+                <button type="button" id="nw-rumble" aria-label="Xbox rumble" aria-pressed="true">Xbox rumble: On</button>
+            </div>
         </div>
 
         <div id="board-panel">
@@ -238,6 +247,135 @@
         </div>
     </div>
 
+<script>
+(() => {
+    'use strict';
+    const key = 'neon-wheel.feedback.';
+    const read = (name) => { try { return localStorage.getItem(key + name) !== 'off'; } catch (_) { return true; } };
+    const save = (name, on) => { try { localStorage.setItem(key + name, on ? 'on' : 'off'); } catch (_) {} };
+    let sound = read('sound'), rumble = read('rumble'), ctx, output, resuming, boundary, tickAt = -Infinity;
+    const soundButton = document.getElementById('nw-sound');
+    const rumbleButton = document.getElementById('nw-rumble');
+    const notes = {
+        spin: [[180,0,.07,'triangle',.16,340],[400,.045,.095,'sine',.12,670]],
+        tick: [[660,0,.028,'triangle',.13,420]],
+        land: [[523,0,.10,'triangle',.25],[784,.07,.16,'sine',.22]],
+        bankrupt: [[175,0,.23,'sawtooth',.16,72],[105,.18,.34,'triangle',.25,44]],
+        lost: [[415,0,.12,'triangle',.23],[294,.13,.20,'triangle',.19]],
+        hit: [[660,0,.11,'sine',.24],[880,.065,.15,'triangle',.22],[1175,.13,.18,'sine',.16]],
+        miss: [[240,0,.20,'triangle',.20,125]],
+        vowel: [[587,0,.07,'sine',.18],[740,.048,.09,'sine',.13]],
+        win: [[523,0,.15,'triangle',.22],[659,.08,.17,'triangle',.22],[784,.16,.20,'triangle',.22],
+              [1047,.25,.25,'triangle',.24],[659,.25,.23,'sine',.10],[784,.25,.23,'sine',.10]],
+        toggle: [[740,0,.08,'sine',.17]]
+    };
+    const effects = {
+        spin:[80,.10,.37], tick:[24,.04,.18], land:[110,.34,.56],
+        bankrupt:[295,.80,.38], lost:[175,.43,.44], hit:[98,.26,.50],
+        miss:[125,.20,.20], vowel:[64,.12,.24], win:[430,.87,.69], toggle:[75,.25,.45]
+    };
+    function sync() {
+        soundButton.textContent = 'Sound: ' + (sound ? 'On' : 'Off');
+        rumbleButton.textContent = 'Xbox rumble: ' + (rumble ? 'On' : 'Off');
+        soundButton.setAttribute('aria-pressed', String(sound));
+        rumbleButton.setAttribute('aria-pressed', String(rumble));
+    }
+    function unlock(event) {
+        if ((event && !event.isTrusted) || !sound) return;
+        try {
+            if (!ctx) {
+                const Audio = window.AudioContext || window.webkitAudioContext;
+                if (!Audio) return;
+                ctx = new Audio();
+                output = ctx.createGain();
+                output.gain.value = .32;
+                output.connect(ctx.destination);
+            }
+            if (ctx.state !== 'running' && !resuming) {
+                resuming = Promise.resolve(ctx.resume()).catch(() => {}).finally(() => { resuming = null; });
+            }
+        } catch (_) {}
+    }
+    function play(name) {
+        if (!sound || !ctx || !output || document.hidden) return;
+        if (ctx.state !== 'running') {
+            if (resuming && name !== 'tick') {
+                const queued = performance.now();
+                resuming.then(() => { if (ctx.state === 'running' && performance.now()-queued < 200) play(name); });
+            }
+            return;
+        }
+        try {
+            const now = ctx.currentTime + .004;
+            for (const [hz, delay, length, type, volume, endHz] of notes[name]) {
+                const start = now + delay;
+                const osc = ctx.createOscillator(), voice = ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(hz, start);
+                if (endHz) osc.frequency.exponentialRampToValueAtTime(endHz, start + length);
+                voice.gain.setValueAtTime(.0001, start);
+                voice.gain.exponentialRampToValueAtTime(volume, start + .008);
+                voice.gain.exponentialRampToValueAtTime(.0001, start + length);
+                osc.connect(voice); voice.connect(output);
+                osc.onended = () => { osc.disconnect(); voice.disconnect(); };
+                osc.start(start); osc.stop(start + length + .012);
+            }
+        } catch (_) {}
+    }
+    function pads(fn) {
+        let gamepads;
+        try { gamepads = navigator.getGamepads ? navigator.getGamepads() : []; } catch (_) { return; }
+        for (const pad of gamepads || []) {
+            if (!pad || pad.connected === false) continue;
+            try {
+                fn(pad.vibrationActuator || (pad.hapticActuators && pad.hapticActuators[0]));
+            } catch (_) {}
+        }
+    }
+    function motor(name) {
+        if (!rumble || document.hidden) return;
+        const [duration,strongMagnitude,weakMagnitude] = effects[name];
+        pads(act => {
+            if (!act) return;
+            const result = typeof act.playEffect === 'function' ?
+                act.playEffect('dual-rumble', { startDelay:0, duration, strongMagnitude, weakMagnitude }) :
+                typeof act.pulse === 'function' ? act.pulse(Math.max(strongMagnitude, weakMagnitude), duration) : null;
+            if (result && result.catch) result.catch(() => {});
+        });
+    }
+    function emit(name) { play(name); motor(name); }
+    function start(angle, sectors) {
+        boundary = Math.floor((2.5 * Math.PI - angle) / (2 * Math.PI / sectors));
+        tickAt = performance.now();
+        emit('spin');
+    }
+    function step(angle, sectors) {
+        const n = Math.floor((2.5 * Math.PI - angle) / (2 * Math.PI / sectors));
+        if (boundary === n) return;
+        boundary = n;
+        const now = performance.now();
+        if (now - tickAt >= 64) { tickAt = now; emit('tick'); }
+    }
+    for (const name of ['pointerdown','pointerup','touchend','keydown','click']) {
+        window.addEventListener(name, unlock, { capture:true, passive:true });
+    }
+    soundButton.addEventListener('click', () => {
+        sound = !sound; save('sound',sound); sync();
+        if (sound) unlock();
+        if (output) output.gain.value = sound ? .32 : 0;
+        if (sound) play('toggle');
+    });
+    rumbleButton.addEventListener('click', () => {
+        rumble = !rumble; save('rumble',rumble); sync();
+        if (rumble) motor('toggle');
+        else pads(act => {
+            if (act && typeof act.reset === 'function') Promise.resolve(act.reset()).catch(() => {});
+        });
+    });
+    sync();
+    window.NeonFeedback = { emit, start, step };
+})();
+</script>
 <script>
     // Game Data bank
     const puzzles = [
@@ -392,6 +530,7 @@
     function spinWheel() {
         if (isSpinning) return;
         isSpinning = true;
+        NeonFeedback.start(currentAngle, wheelValues.length);
         setButtonsDisabled(true);
         document.getElementById("status-bar").innerText = "The wheel is spinning...";
 
@@ -400,6 +539,7 @@
 
         function animateSpin() {
             currentAngle += spinVelocity;
+            NeonFeedback.step(currentAngle, wheelValues.length);
             spinVelocity *= friction;
             drawWheel();
 
@@ -423,6 +563,7 @@
         
         const sectorIndex = Math.floor(normalizedAngle / arcSize) % numSegments;
         currentSpinValue = wheelValues[sectorIndex];
+        NeonFeedback.emit(currentSpinValue === "BANKRUPT" ? 'bankrupt' : currentSpinValue === "LOSE A TURN" ? 'lost' : 'land');
 
         if (currentSpinValue === "BANKRUPT") {
             wallet = 0;
@@ -476,6 +617,7 @@
             }
         }
 
+        NeonFeedback.emit(matchCount > 0 ? 'hit' : 'miss');
         updateBoard();
         gamePhase = "SPINNING";
         updateUI();
@@ -484,6 +626,7 @@
 
     function prepareBuyVowel() {
         if (wallet < 250) return;
+        NeonFeedback.emit('vowel');
         gamePhase = "GUESSING_VOWEL";
         document.getElementById("status-bar").innerText = "Select a VOWEL from the input set.";
         updateUI();
@@ -492,6 +635,7 @@
     function solvePuzzle() {
         const solution = prompt("Type your solution for the puzzle below:").toUpperCase().trim();
         if (solution === currentPuzzle.phrase) {
+            NeonFeedback.emit('win');
             grandBank += wallet;
             document.getElementById("status-bar").innerText = `CORRECT! You solved the puzzle and win $${wallet}!`;
             setTimeout(() => {
@@ -500,6 +644,7 @@
                 buildKeyboard();
             }, 500);
         } else {
+            NeonFeedback.emit('miss');
             alert("Incorrect guess! Don't lose heart, keep spinning.");
         }
     }
@@ -512,6 +657,7 @@
             if(!guessedLetters.has(l)) allSolved = false;
         }
         if(allSolved) {
+            NeonFeedback.emit('win');
             setTimeout(() => {
                 grandBank += wallet;
                 alert(`You uncovered the whole board! Total winnings: $${wallet}. Loading next game!`);
@@ -867,7 +1013,7 @@
    X / RT / Start = Spin, Y = Buy a vowel. Any pad works. */
 VPad.init({
   players: 1,
-  ui: { selector: '#controls .action-btn, #keyboard .key', when: function () { return true; } },
+  ui: { selector: '#controls .action-btn, #nw-feedback button, #keyboard .key', when: function () { return true; } },
   map: function () {
     return { X: { sel: '#spin-btn' }, RT: { sel: '#spin-btn' }, Start: { sel: '#spin-btn' }, Y: { sel: '#vowel-btn' } };
   }
