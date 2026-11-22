@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE_NAME = 'neon-wheel-v2';
+const CACHE_NAME = 'neon-wheel-v3';
 const CACHE_PREFIX = 'neon-wheel-';
 const APP_SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 const SCOPE_URL = new URL(self.registration.scope);
