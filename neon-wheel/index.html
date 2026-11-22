@@ -196,6 +196,12 @@
         #solve-btn:hover:not(:disabled) { background: #33ffdd; box-shadow: 0 0 25px rgba(0,255,204,0.6); }
         .action-btn:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
     </style>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0a0a14">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Neon Wheel">
+    <link rel="apple-touch-icon" href="icon-192.png">
 </head>
 <body>
 
@@ -868,5 +874,14 @@ VPad.init({
 });
 </script>
 <!-- /Xbox controller support -->
+<script>
+  window.addEventListener('load', function () {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(function (error) {
+        console.warn('Neon Wheel: offline setup failed.', error);
+      });
+    }
+  });
+</script>
 </body>
 </html>
