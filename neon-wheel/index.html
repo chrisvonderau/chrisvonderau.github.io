@@ -225,7 +225,7 @@
             </div>
             <div id="nw-feedback" aria-label="Game feedback">
                 <button type="button" id="nw-sound" aria-label="Sound effects" aria-pressed="true">Sound: On</button>
-                <button type="button" id="nw-test">Test sound (MP3)</button>
+                <button type="button" id="nw-test">Test sound (v5)</button>
                 <button type="button" id="nw-rumble" aria-label="Xbox rumble" aria-pressed="true">Xbox rumble: On</button>
                 <small id="nw-audio-status" role="status" style="flex-basis:100%;text-align:center;color:#c8d4e5"></small>
             </div>
@@ -281,7 +281,7 @@
         (/Mac/.test(navigator.platform || '') && navigator.maxTouchPoints > 1);
     const testButton = document.getElementById('nw-test');
     const soundStatus = document.getElementById('nw-audio-status');
-    let media, pauseTimer, mediaSequence = 0;
+    let media, spinPlayer, wheelSpinning = false, pauseTimer, mediaSequence = 0;
     const mediaCues = {"test":{"at":0,"duration":0.43500000000000005},"spin":{"at":0.7150625,"duration":0.165},"tick":{"at":1.160125,"duration":0.053000000000000005},"land":{"at":1.493125,"duration":0.255},"bankrupt":{"at":2.028125,"duration":0.545},"lost":{"at":2.8531875,"duration":0.35500000000000004},"hit":{"at":3.4881875,"duration":0.335},"miss":{"at":4.1031875,"duration":0.225},"vowel":{"at":4.6081875,"duration":0.163},"win":{"at":5.05125,"duration":0.525},"toggle":{"at":5.85625,"duration":0.10500000000000001}};
     function ensureMedia() {
         if (!media) {
@@ -290,6 +290,31 @@
             media.playsInline = true;
         }
         return media;
+    }
+    function ensureSpinPlayer() {
+        if (!spinPlayer) {
+            spinPlayer = new Audio('./neon-spin-v5.mp3');
+            spinPlayer.preload = 'auto';
+            spinPlayer.playsInline = true;
+        }
+        return spinPlayer;
+    }
+    function startSpinSound() {
+        if (!sound || document.hidden) return;
+        try {
+            stopMedia();
+            const player = ensureSpinPlayer();
+            if (player.currentTime > .01) player.currentTime = 0;
+            // Called directly by the Spin Wheel tap: one play request, no per-tick media seeks.
+            Promise.resolve(player.play()).catch(() => {
+                if (wheelSpinning && sound && !document.hidden) {
+                    soundStatus.textContent = 'Wheel audio did not start. Tap Spin Wheel directly to retry.';
+                }
+            });
+        } catch (_) {}
+    }
+    function stopSpinSound() {
+        if (spinPlayer) { try { spinPlayer.pause(); } catch (_) {} }
     }
     function stopMedia() {
         mediaSequence++;
@@ -384,18 +409,26 @@
             if (result && result.catch) result.catch(() => {});
         });
     }
-    function emit(name) { play(name); motor(name); }
+    function emit(name) {
+        if (name === 'land' || name === 'bankrupt' || name === 'lost') {
+            wheelSpinning = false;
+            stopSpinSound();
+        }
+        play(name); motor(name);
+    }
     function start(angle, sectors) {
         boundary = Math.floor((2.5 * Math.PI - angle) / (2 * Math.PI / sectors));
         tickAt = performance.now();
-        emit('spin');
+        wheelSpinning = true;
+        startSpinSound();
+        motor('spin');
     }
     function step(angle, sectors) {
         const n = Math.floor((2.5 * Math.PI - angle) / (2 * Math.PI / sectors));
         if (boundary === n) return;
         boundary = n;
         const now = performance.now();
-        if (now - tickAt >= 64) { tickAt = now; emit('tick'); }
+        if (now - tickAt >= 64) { tickAt = now; motor('tick'); }
     }
     for (const name of ['pointerdown','pointerup','touchend','keydown','click']) {
         window.addEventListener(name, unlock, { capture:true, passive:true });
@@ -404,8 +437,8 @@
         sound = !sound; save('sound',sound); sync();
         if (sound) unlock();
         if (output) output.gain.value = sound ? .32 : 0;
-        if (sound) play('toggle');
-        else stopMedia();
+        if (sound) { if (!wheelSpinning) play('toggle'); }
+        else { stopSpinSound(); stopMedia(); }
     });
     rumbleButton.addEventListener('click', () => {
         rumble = !rumble; save('rumble',rumble); sync();
@@ -417,11 +450,14 @@
     testButton.addEventListener('click', () => {
         if (!sound) { sound = true; save('sound',sound); sync(); }
         if (output) output.gain.value = .32;
+        if (wheelSpinning) { soundStatus.textContent = 'Wait for the wheel to stop, then test sound.'; return; }
         soundStatus.textContent = 'Starting test tone…';
         mediaPlay('test', true);
     });
-    document.addEventListener('visibilitychange', () => { if (document.hidden) stopMedia(); });
-    if (appleMobile && sound) { try { ensureMedia(); } catch (_) {} }
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) { stopSpinSound(); stopMedia(); }
+    });
+    if (sound) { try { ensureSpinPlayer(); if (appleMobile) ensureMedia(); } catch (_) {} }
     sync();
     window.NeonFeedback = { emit, start, step };
 })();

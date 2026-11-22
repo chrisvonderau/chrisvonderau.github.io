@@ -1,8 +1,8 @@
 'use strict';
 
-const CACHE_NAME = 'neon-wheel-v4';
+const CACHE_NAME = 'neon-wheel-v5';
 const CACHE_PREFIX = 'neon-wheel-';
-const APP_SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './neon-sounds-v4.mp3'];
+const APP_SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './neon-sounds-v4.mp3', './neon-spin-v5.mp3'];
 const SCOPE_URL = new URL(self.registration.scope);
 
 self.addEventListener('install', (event) => {
@@ -33,7 +33,7 @@ self.addEventListener('fetch', (event) => {
     const hit = await cache.match(request);
     if (hit) {
       const range = request.headers.get('range');
-      if (range && url.pathname === new URL('./neon-sounds-v4.mp3', SCOPE_URL).pathname) {
+      if (range && ['./neon-sounds-v4.mp3', './neon-spin-v5.mp3'].some(path => url.pathname === new URL(path, SCOPE_URL).pathname)) {
         return fromMediaRange(hit, range);
       }
       return hit;
