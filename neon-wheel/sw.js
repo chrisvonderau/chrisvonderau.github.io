@@ -1,8 +1,8 @@
 'use strict';
 
-const CACHE_NAME = 'neon-wheel-v3';
+const CACHE_NAME = 'neon-wheel-v4';
 const CACHE_PREFIX = 'neon-wheel-';
-const APP_SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
+const APP_SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './neon-sounds-v4.mp3'];
 const SCOPE_URL = new URL(self.registration.scope);
 
 self.addEventListener('install', (event) => {
@@ -31,7 +31,13 @@ self.addEventListener('fetch', (event) => {
   event.respondWith((async () => {
     const cache = await caches.open(CACHE_NAME);
     const hit = await cache.match(request);
-    if (hit) return hit;
+    if (hit) {
+      const range = request.headers.get('range');
+      if (range && url.pathname === new URL('./neon-sounds-v4.mp3', SCOPE_URL).pathname) {
+        return fromMediaRange(hit, range);
+      }
+      return hit;
+    }
     // Launches with a query string should also work after the initial online visit.
     if (request.mode === 'navigate' &&
         (url.pathname === SCOPE_URL.pathname || url.pathname === new URL('./index.html', SCOPE_URL).pathname)) {
@@ -41,3 +47,20 @@ self.addEventListener('fetch', (event) => {
     return fetch(request);
   })());
 });
+
+async function fromMediaRange(response, range) {
+  const bytes = await response.arrayBuffer();
+  const size = bytes.byteLength;
+  const m = /^bytes=(\d*)-(\d*)$/i.exec(range);
+  const bad = () => new Response(null, { status:416, headers:{'Content-Range': 'bytes */' + size} });
+  if (!m || (!m[1] && !m[2])) return bad();
+  const start = m[1] ? Number(m[1]) : Math.max(0,size-Number(m[2]));
+  const end = m[1] && m[2] ? Math.min(size-1,Number(m[2])) : size-1;
+  if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start>=size || start>end) return bad();
+  return new Response(bytes.slice(start,end+1), {status:206, headers:{
+    'Content-Type': 'audio/mpeg',
+    'Content-Length': String(end-start+1),
+    'Content-Range': 'bytes ' + start + '-' + end + '/' + size,
+    'Accept-Ranges': 'bytes'
+  }});
+}
