@@ -969,7 +969,7 @@ class Ghost{constructor(kind,x,z,o={}){this.kind=kind;this.boss=!!o.boss;this.cf
     this.pos.y=.15+Math.sin(this.t*1.7)*.12;
     this.moanT-=dt;if(this.moanT<=0){this.moanT=R(4,9);if(d<30)(Math.random()<.5?SFX.whisper(this.pos):SFX.moan(this.pos,this.boss?.7:1));}
     if(this.glimpse>0)this.glimpse-=dt;
-    const see=DF().see&&d<34;const vis=P.raised||this.glimpse>0||see;this.mesh.visible=vis;u.op.value=this.fade*(P.raised?1:see?.55:.35)*(this.decoy?.95:1);
+    const see=DF().see&&d<34;const vis=P.raised||this.glimpse>0||see;this.mesh.visible=vis;u.op.value=this.fade*(P.raised?1:see?.8:.35)*(this.decoy?.95:1);
     if(P.raised&&!this.seenOnce&&this.inFrame(.5)&&d<22&&!this.decoy){this.seenOnce=true;if(d<12||this.boss){SFX.stinger();rumble(.2,.5,180);}}
     if(d<(this.boss?1.6:1.05)&&P.invuln<=0&&state==='play'){playerHit(this);}
     this.place();return true;}
