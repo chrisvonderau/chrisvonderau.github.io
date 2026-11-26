@@ -215,7 +215,7 @@ html.sbPulseR #vpad-badge { right: auto !important; left: calc(10px + env(safe-a
     <p><b style="color:#ffc04a">Power-ups</b> drop from enemies — fly into a capsule: spread shot, a stored second pulse, or a wingman. Kills earn <b style="color:#ffc04a">scrap</b> to spend in the upgrade bay between waves.</p>
     <p><b style="color:#ffc04a">2 players (co-op)</b> — on the title pick 2 PLAYERS (or press 2), then press A on controller 2. Controller 1 (or keyboard, mouse, touch) flies the cyan ship, controller 2 the amber one. Score and scrap are shared; a player who runs out of ships comes back with the next extra ship or a REVIVE in the upgrade bay.</p>
     <p>Mac keys: P/Esc pause · M mute · R restart · F full screen</p>
-    <p><b style="color:#fff">Xbox controller</b> — left stick moves (push gently to creep, all the way for full speed) or D-pad · <b style="color:#5ff3ff">A</b> pulse · <b style="color:#fff">Start</b> pause · B back · Y mute · View restart · click the left stick for full screen. In menus, the D-pad picks and A presses.</p>
+    <p><b style="color:#fff">Xbox controller</b> — left stick moves (push gently to creep, all the way for full speed) or D-pad · <b style="color:#5ff3ff">A</b> pulse · <b style="color:#fff">Start</b> pause · B back · Y mute · View restart · hold the left stick in for a second for full screen. In menus, the D-pad picks and A presses.</p>
     <button class="btn primary" data-back>BACK</button>
   </div>
 </div>
@@ -6874,7 +6874,7 @@ html.sbPulseR #vpad-badge { right: auto !important; left: calc(10px + env(safe-a
     }
     v.boxes = box;
   }
-  // [fullscreen] Fullscreen API (with webkit prefixes): button next to pause/mute, F key, controller left-stick click.
+  // [fullscreen] Fullscreen API (with webkit prefixes): button next to pause/mute, F key, controller left-stick held in for 1 s.
   // iPhone Safari has no element fullscreen: the button is hidden there and a one-time tip suggests Add to Home Screen.
   var sbFs = (function () {
     let d = document,
@@ -9083,7 +9083,7 @@ html.sbPulseR #vpad-badge { right: auto !important; left: calc(10px + env(safe-a
   window.VPad = VPad;
 })();
 </script>
-<script>/* Xbox controller: left stick (analog) / D-pad move, A/RT/X pulse, Start = play/pause, B = back, Y = mute, View = restart, LS click = full screen.
+<script>/* Xbox controller: left stick (analog) / D-pad move, A/RT/X pulse, Start = play/pause, B = back, Y = mute, View = restart, hold the left-stick click 1 s (stick centred) = full screen.
    Menus (title, pause, settings, game over) are DOM buttons: D-pad/stick moves the highlight, A presses it.
    The left stick is NOT turned into arrow keys: it is sent to the game as an analog vector (Starbreak.setStick),
    so a small push moves the ship slowly and a full push at full speed. The D-pad stays digital (arrow keys). */
@@ -9119,12 +9119,12 @@ html.sbPulseR #vpad-badge { right: auto !important; left: calc(10px + env(safe-a
     },
     map: function (slot) {
       var r = role(slot); // [coop]
-      if (r === 'p2') return { Y: 'KeyM', Back: 'KeyR', Start: { fn: startFn }, LS: { fn: fullFn } };
-      if (r === 'join') return { A: { fn: function (s) { SB().coJoin && SB().coJoin(s); } }, Y: 'KeyM', Back: 'KeyR', Start: { fn: startFn }, LS: { fn: fullFn } };
+      if (r === 'p2') return { Y: 'KeyM', Back: 'KeyR', Start: { fn: startFn } };
+      if (r === 'join') return { A: { fn: function (s) { SB().coJoin && SB().coJoin(s); } }, Y: 'KeyM', Back: 'KeyR', Start: { fn: startFn } };
       return {
         Up: 'ArrowUp', Down: 'ArrowDown', Left: 'ArrowLeft', Right: 'ArrowRight',
         A: 'Space', X: 'Space', RT: 'Space', Y: 'KeyM', Back: 'KeyR',
-        Start: { fn: startFn }, LS: { fn: fullFn } // [fullscreen] left-stick click (View is restart, Start is pause)
+        Start: { fn: startFn } // [fsfix] full screen is a deliberate 1-second hold of the left-stick click, handled in padLoop
       };
     }
   });
@@ -9133,8 +9133,10 @@ html.sbPulseR #vpad-badge { right: auto !important; left: calc(10px + env(safe-a
   // ---- analog left stick -> Starbreak.setStick (radial dead zone, rescaled so movement starts at 0 just past it) ----
   var DZ = 0.18, CURVE = 1.2, wasMoving = false, lastAny = [false, false, false, false];
   var BTNS = ['A', 'B', 'X', 'Y', 'LB', 'RB', 'LT', 'RT', 'Back', 'Start', 'Up', 'Down', 'Left', 'Right'];
+  var lsHold = [0, 0, 0, 0]; // [fsfix] per pad: 0 idle, >0 hold start time, -1 fired (wait for release)
   function padLoop() {
     requestAnimationFrame(padLoop);
+    var now = performance.now();
     var sb = SB(), bx = 0, by = 0, bm = 0, act = false;
     var co = sb.coopSlot ? sb.coopSlot() : -1, jn = sb.joinSlot ? sb.joinSlot() : -1, coAct = false, menu = !!document.querySelector('.screen:not(.hidden)'); // [coop]
     for (var j = 0; j < 4; j++) {
@@ -9148,6 +9150,12 @@ html.sbPulseR #vpad-badge { right: auto !important; left: calc(10px + env(safe-a
       for (var b = 0; b < BTNS.length && !any; b++) any = !!st[BTNS[b]];
       if (any && !lastAny[j]) { if (j === co || j === jn) coAct = true; else act = true; } // [coop]
       lastAny[j] = any;
+      // [fsfix] full screen only on a deliberate hold: left stick clicked for 1 s with the stick centred and nothing else pressed.
+      // A plain click fired on every accidental press while steering hard, which flipped full screen on and off mid-game.
+      var lsOnly = !!st.LS && m < 0.35;
+      for (var b2 = 0; b2 < BTNS.length && lsOnly; b2++) if (st[BTNS[b2]]) lsOnly = false;
+      if (lsOnly) { if (!lsHold[j]) lsHold[j] = now; else if (lsHold[j] > 0 && now - lsHold[j] >= 1000) { lsHold[j] = -1; fullFn(); } }
+      else if (!st.LS || lsHold[j] >= 0) lsHold[j] = 0;
     }
     if (co < 0) { p2Last = true; if (p2Moving && sb.setP2) { sb.setP2(0, 0, false); p2Moving = false; } } // [coop]
     // Safari does not treat gamepad presses as a user gesture; try to unlock sound anyway (works in Chrome/Edge).
