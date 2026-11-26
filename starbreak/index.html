@@ -7912,6 +7912,10 @@ html.sbPulseR #vpad-badge { right: auto !important; left: calc(10px + env(safe-a
     if (!j) return;
     let s = v.sim && v.sim.s,
       on = v.scene === "play" && !v.paused && Co.want && !Co.joined && s && !s.coop && !s.over && s.wave === 0;
+    // [live] show the join banner for a few seconds per state, not the whole wave: it sat over the formation
+    let k = on ? (s === Co.jSim ? "" : "r") + (Co_slotOn(1) ? "2" : "1") : "";
+    on && k !== Co.jKey && ((Co.jKey = k.replace("r", "")), (Co.jSim = s), (Co.jT = 0));
+    on && (Co.jT = (Co.jT || 0) + 0.25) > 5 && (on = !1);
     (on && (j.textContent = Co_slotOn(1) ? "P2: press A on controller 2 to join" : "P2: connect controller 2 and press A to join"),
       j.classList.toggle("hidden", !on));
   }
