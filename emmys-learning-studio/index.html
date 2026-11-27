@@ -811,7 +811,7 @@ holdButton($("btn-keepgoing"),2000,function(){$("ov-done").hidden=true;sessionSt
 $("btn-start").addEventListener("click",function(){audioInit();
   /* speak inside the tap so iPad allows speech from now on */
   tts("Hi Emmy!");started=true;sessionStart=Date.now();$("ov-start").hidden=true;
-  setTimeout(function(){setMode("say",true);},1100);});
+  var m0=mode;setTimeout(function(){if(mode===m0)setMode(m0,true);},1100);});
 document.addEventListener("visibilitychange",function(){if(document.hidden){shush();stopWait();}else{audioInit();}});
 document.addEventListener("pointerdown",function(){if(AC&&AC.state!=="running")audioInit();},{passive:true});
 document.addEventListener("gesturestart",function(e){e.preventDefault();});
