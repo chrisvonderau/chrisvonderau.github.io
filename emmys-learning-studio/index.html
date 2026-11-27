@@ -33,7 +33,7 @@ header.top{display:flex;align-items:center;gap:8px;padding:8px 10px 6px;flex:0 0
 .tab .ti{width:40px;height:40px}
 .tab .ti svg{width:100%;height:100%}
 .tab.on{color:var(--slate);border-color:var(--mari);background:var(--cream2)}
-.ghold{position:relative;flex:0 0 auto;width:66px;height:62px;border-radius:16px;background:var(--white);box-shadow:var(--shadow);
+.ghold{position:relative;flex:0 0 auto;width:74px;height:62px;padding:0;white-space:nowrap;border-radius:16px;background:var(--white);box-shadow:var(--shadow);
   display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.68rem;font-weight:800;color:var(--muted);touch-action:none}
 .ghold .ring{position:absolute;inset:3px;border-radius:13px;background:conic-gradient(var(--sage) calc(var(--p,0)*1%),transparent 0);opacity:.35}
 .ghold span{position:relative}
@@ -42,7 +42,7 @@ main{flex:1 1 auto;min-height:0;position:relative}
 .mode{display:none;position:absolute;inset:0;padding:4px 12px 12px}
 .mode.on{display:flex;flex-direction:column}
 .card{background:var(--white);border-radius:var(--r);box-shadow:var(--shadow)}
-.stage{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;align-items:center;gap:8px;padding:10px}
+.stage{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;align-items:center;gap:8px;padding:10px 10px 20px}
 .row{display:flex;align-items:center;gap:8px}
 .toprow{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px}
 .pill{font-size:.85rem;font-weight:800;color:var(--muted);background:var(--cream2);padding:6px 12px;border-radius:999px}
@@ -69,7 +69,7 @@ main{flex:1 1 auto;min-height:0;position:relative}
 .big.mari{background:var(--mari);box-shadow:0 7px 0 var(--mari-d)}
 .big:active{transform:translateY(4px);box-shadow:none}
 .big .wait{position:absolute;left:0;bottom:0;height:8px;width:0;background:rgba(255,255,255,.75)}
-.big.waiting{filter:saturate(.55) brightness(1.04)}
+.big.waiting{}
 /* ---------- feelings ---------- */
 .fgrid{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:1fr;gap:10px;padding:10px;width:100%}
 .tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:var(--white);border-radius:20px;box-shadow:var(--shadow);
@@ -112,7 +112,8 @@ main{flex:1 1 auto;min-height:0;position:relative}
 #mode-parent.on{display:block}
 .phead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:6px 0 12px}
 .phead h2{margin:0;font-size:1.5rem}
-.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px}
+.pgrid{columns:310px;column-gap:12px}
+.pgrid>.pc{break-inside:avoid;-webkit-column-break-inside:avoid;margin:0 0 12px}
 .pc{background:var(--white);border-radius:18px;box-shadow:var(--shadow);padding:14px 16px;display:flex;flex-direction:column;gap:10px;-webkit-user-select:text;user-select:text}
 .pc h3{margin:0;font-size:1.1rem}
 .pc p,.pc li{margin:0;font-size:.93rem;line-height:1.45;color:#3d4d5c}
@@ -133,8 +134,8 @@ select,input[type=text]{width:100%;padding:10px;border-radius:10px;border:2px so
 label.fl{font-size:.85rem;font-weight:800;color:var(--muted)}
 .thumb{width:84px;height:84px;border-radius:12px;overflow:hidden;background:var(--cream2);flex:0 0 auto}
 .thumb svg,.thumb img{width:100%;height:100%;object-fit:cover}
-.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(140%);background:var(--slate);color:#fff;padding:12px 18px;border-radius:14px;font-weight:800;z-index:60;transition:transform .3s;max-width:90vw;text-align:center}
-.toast.show{transform:translateX(-50%) translateY(0)}
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(calc(100% + 80px));opacity:0;background:var(--slate);color:#fff;padding:12px 18px;border-radius:14px;font-weight:800;z-index:60;transition:transform .3s,opacity .3s;max-width:90vw;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 .hide{display:none!important}
 /* ---------- wide screens: art left, controls right ---------- */
 @media (min-aspect-ratio:5/4) and (min-width:700px){
@@ -145,7 +146,7 @@ label.fl{font-size:.85rem;font-weight:800;color:var(--muted)}
 }
 .ctl{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%}
 @media (max-height:600px){ .tab .ti{width:30px;height:30px} .tab{font-size:.7rem} .arrow{height:70px;width:44px} }
-@media (max-width:420px){ .tab{min-width:56px;font-size:.7rem} .tab .ti{width:32px;height:32px} .arrow{width:40px;height:80px;font-size:2rem} .frame{max-width:calc(100% - 92px)} .ghold{width:56px} }
+@media (max-width:420px){ .tab{min-width:56px;font-size:.7rem} .tab .ti{width:32px;height:32px} .arrow{width:40px;height:80px;font-size:2rem} .frame{max-width:calc(100% - 92px)} .ghold{width:58px;font-size:.6rem} }
 </style>
 </head>
 <body>
@@ -254,7 +255,7 @@ label.fl{font-size:.85rem;font-weight:800;color:var(--muted)}
             <li><b>Wait</b> 5 seconds and look at her expectantly. The bar on the big button counts it for you.</li>
             <li><b>Prompt</b> if needed: say it again, or show the sign.</li>
             <li><b>Praise any try</b> ("eh", "hep", a sign): tap <b>She said it!</b> right away and give her what she asked for.</li>
-            <li>Then practise for real with the drills below. Real life matters more than the screen.</li>
+            <li>Then practice for real with the drills below. Real life matters more than the screen.</li>
           </ol>
           <p>Her own taps on the big button just say the word out loud (like a talker button). Only <b>She said it!</b> counts as a win.</p>
         </div>
