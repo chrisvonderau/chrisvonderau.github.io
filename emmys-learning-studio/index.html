@@ -138,12 +138,12 @@ label.fl{font-size:.85rem;font-weight:800;color:var(--muted)}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
 .hide{display:none!important}
 @media (max-aspect-ratio:3/4){
-  .ftrow{flex-direction:column;gap:4px}
+  .ftrow{flex-direction:column;gap:2px;justify-content:safe center;overflow:auto}
   .ft{flex:0 0 auto;max-width:none;width:100%;display:grid;grid-template-columns:auto 1fr;grid-template-rows:1fr 1fr;column-gap:16px;row-gap:2px;text-align:left;font-size:clamp(1.3rem,3.2vh,2rem)}
-  .ft .fa{grid-column:1;grid-row:1/3;width:auto;height:min(20vh,38vw)}
+  .ft .fa{grid-column:1;grid-row:1/3;width:auto;height:min(14.5vh,30vw)}
   .ft .lab{grid-column:2;grid-row:1;align-self:end;font-size:.6em}
   .ft>span:last-child{grid-column:2;grid-row:2;align-self:start}
-  .ftarrow{width:min(7vh,13vw);transform:rotate(90deg);margin-left:calc(min(20vh,38vw)/2 - min(7vh,13vw)/2)}
+  .ftarrow{width:min(5vh,10vw);transform:rotate(90deg);margin-left:calc(min(14.5vh,30vw)/2 - min(5vh,10vw)/2)}
 }
 /* ---------- wide screens: art left, controls right ---------- */
 @media (min-aspect-ratio:5/4) and (min-width:700px){
