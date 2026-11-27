@@ -75,6 +75,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; cursor: poin
   font-size: 20px; font-weight: 800; letter-spacing: 0.06em; color: #fff; }
 .btn.primary { border-color: var(--cyan); background: linear-gradient(180deg, #1aa6c8, #0b5c86); box-shadow: 0 0 22px rgba(95, 243, 255, 0.35); }
 .btn.alt { border-color: rgba(255, 192, 74, 0.7); background: linear-gradient(180deg, rgba(110, 70, 10, 0.9), rgba(50, 30, 6, 0.9)); }
+.btn.wait { opacity: 0.4; pointer-events: none; transition: opacity 0.3s; } /* [noreset] results buttons wake up after 1.6 s */
 .btn:active { transform: scale(0.98); }
 .row2 { display: flex; gap: 10px; } .row2 .btn { flex: 1; }
 #logo { width: 100%; max-width: 520px; height: auto; display: block; margin: 0 auto 6px; }
@@ -215,7 +216,7 @@ html.sbPulseR #vpad-badge { right: auto !important; left: calc(10px + env(safe-a
     <p><b style="color:#ffc04a">Power-ups</b> drop from enemies — fly into a capsule: spread shot, a stored second pulse, or a wingman. Kills earn <b style="color:#ffc04a">scrap</b> to spend in the upgrade bay between waves.</p>
     <p><b style="color:#ffc04a">2 players (co-op)</b> — on the title pick 2 PLAYERS (or press 2), then press A on controller 2. Controller 1 (or keyboard, mouse, touch) flies the cyan ship, controller 2 the amber one. Score and scrap are shared; a player who runs out of ships comes back with the next extra ship or a REVIVE in the upgrade bay.</p>
     <p>Mac keys: P/Esc pause · M mute · R restart · F full screen</p>
-    <p><b style="color:#fff">Xbox controller</b> — left stick moves (push gently to creep, all the way for full speed) or D-pad · <b style="color:#5ff3ff">A</b> pulse · <b style="color:#fff">Start</b> pause · B back · Y mute · View restart · hold the left stick in for a second for full screen. In menus, the D-pad picks and A presses.</p>
+    <p><b style="color:#fff">Xbox controller</b> — left stick moves (push gently to creep, all the way for full speed) or D-pad · <b style="color:#5ff3ff">A</b> pulse · <b style="color:#fff">Start</b> pause · B back · Y mute · View pause · hold the left stick in for a second for full screen. In menus, the D-pad picks and A presses.</p>
     <button class="btn primary" data-back>BACK</button>
   </div>
 </div>
@@ -7117,7 +7118,7 @@ html.sbPulseR #vpad-badge { right: auto !important; left: calc(10px + env(safe-a
     if (v.shop) return; // [shop]
     if (v.scene !== "play") return;
     if (v.sim.s.over) {
-      Gt(v.mode);
+      v.overShown && !sbOverLocked() && Gt(v.mode); // [noreset] never skip the results straight into a new run
       return;
     }
     (v.paused || dt(!0, "restart"), ye("sConfirm"));
@@ -8114,6 +8115,20 @@ html.sbPulseR #vpad-badge { right: auto !important; left: calc(10px + env(safe-a
       ((sbEndT = 0), v.sim === s && v.scene === "play" && An(e));
     }, o);
   }
+  // [noreset] PLAY AGAIN / TITLE ignore presses for the first 1.6 s of the results screen. Players mash A (PULSE) as a run
+  // ends; before this, the first A after the screen appeared pressed PLAY AGAIN and a new run replaced the old one at once.
+  var sbOverLockT = 0;
+  function sbOverLocked() {
+    return performance.now() < (v.overLock || 0);
+  }
+  function sbOverLockOn() {
+    v.overLock = performance.now() + 1600;
+    for (let id of ["bAgain", "bOverTitle"]) q(id).classList.add("wait");
+    clearTimeout(sbOverLockT);
+    sbOverLockT = setTimeout(() => {
+      for (let id of ["bAgain", "bOverTitle"]) q(id).classList.remove("wait");
+    }, 1600);
+  }
   function sbCancelEnd() {
     (clearTimeout(sbEndT), (sbEndT = 0));
   }
@@ -8171,6 +8186,7 @@ html.sbPulseR #vpad-badge { right: auto !important; left: calc(10px + env(safe-a
       .map(([y, p]) => `<div class="stat"><span>${y}</span><b>${p}</b></div>`)
       .join("")),
       ye("sOver"));
+    sbOverLockOn(); // [noreset] a PULSE press that lands on the results screen must not start a new run
     Co_over(o); // [coop]
   }
   var Ne = {};
@@ -8714,8 +8730,8 @@ html.sbPulseR #vpad-badge { right: auto !important; left: calc(10px + env(safe-a
   Me("bQuit", () => Pn());
   Me("bNo", () => ye("sPause"));
   Me("bYes", () => Gt(v.mode));
-  Me("bAgain", () => Gt(v.mode));
-  Me("bOverTitle", () => Pn());
+  Me("bAgain", () => sbOverLocked() || Gt(v.mode)); // [noreset]
+  Me("bOverTitle", () => sbOverLocked() || Pn()); // [noreset]
   q("bPause").addEventListener("pointerdown", (e) => {
     e.stopPropagation();
   });
@@ -9083,7 +9099,7 @@ html.sbPulseR #vpad-badge { right: auto !important; left: calc(10px + env(safe-a
   window.VPad = VPad;
 })();
 </script>
-<script>/* Xbox controller: left stick (analog) / D-pad move, A/RT/X pulse, Start = play/pause, B = back, Y = mute, View = restart, hold the left-stick click 1 s (stick centred) = full screen.
+<script>/* Xbox controller: left stick (analog) / D-pad move, A/RT/X pulse, Start = play/pause, B = back, Y = mute, View = pause (restart only from the pause menu), hold the left-stick click 1 s (stick centred) = full screen.
    Menus (title, pause, settings, game over) are DOM buttons: D-pad/stick moves the highlight, A presses it.
    The left stick is NOT turned into arrow keys: it is sent to the game as an analog vector (Starbreak.setStick),
    so a small push moves the ship slowly and a full push at full speed. The D-pad stays digital (arrow keys). */
@@ -9119,11 +9135,11 @@ html.sbPulseR #vpad-badge { right: auto !important; left: calc(10px + env(safe-a
     },
     map: function (slot) {
       var r = role(slot); // [coop]
-      if (r === 'p2') return { Y: 'KeyM', Back: 'KeyR', Start: { fn: startFn } };
-      if (r === 'join') return { A: { fn: function (s) { SB().coJoin && SB().coJoin(s); } }, Y: 'KeyM', Back: 'KeyR', Start: { fn: startFn } };
+      if (r === 'p2') return { Y: 'KeyM', Back: 'KeyP', Start: { fn: startFn } };
+      if (r === 'join') return { A: { fn: function (s) { SB().coJoin && SB().coJoin(s); } }, Y: 'KeyM', Back: 'KeyP', Start: { fn: startFn } };
       return {
         Up: 'ArrowUp', Down: 'ArrowDown', Left: 'ArrowLeft', Right: 'ArrowRight',
-        A: 'Space', X: 'Space', RT: 'Space', Y: 'KeyM', Back: 'KeyR',
+        A: 'Space', X: 'Space', RT: 'Space', Y: 'KeyM', Back: 'KeyP',
         Start: { fn: startFn } // [fsfix] full screen is a deliberate 1-second hold of the left-stick click, handled in padLoop
       };
     }
