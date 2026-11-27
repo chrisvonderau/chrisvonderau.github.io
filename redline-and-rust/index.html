@@ -4819,5 +4819,6 @@ calibrate(e,t){let n=this.calibEl.querySelector(".dot");if(!n)return;let i=this.
   }
 };function cb(){let s=document.getElementById("app"),e=document.getElementById("gl");if(!document.createElement("canvas").getContext("webgl2")){s.innerHTML='<div class="nogl"><h1>REDLINE &amp; RUST</h1><p>This game needs WebGL 2. Please update Safari / your browser, or turn on hardware acceleration.</p></div>';return}let n=new uf(e),i=new df(document.getElementById("ui"),n);n.attachUI(i);let r=()=>{n.gesture(),window.removeEventListener("pointerdown",r,!0),window.removeEventListener("keydown",r,!0)};window.addEventListener("pointerdown",r,!0),window.addEventListener("keydown",r,!0),document.addEventListener("gesturestart",o=>o.preventDefault()),document.addEventListener("contextmenu",o=>{o.target.closest("input")||o.preventDefault()});let a=new URLSearchParams(location.search).get("quality");(a==="low"||a==="medium"||a==="high")&&n.updateSettings({quality:a}),n.boot(),window.__redline={game:n,ui:i,audio:Fd}}document.readyState==="loading"?document.addEventListener("DOMContentLoaded",cb):cb();})();
 </script>
+<script src="/recent.js" async></script>
 </body>
 </html>

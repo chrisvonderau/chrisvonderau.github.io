@@ -1,0 +1,2 @@
+/* Vonderau Games: logs this game as recently played, for the "Jump back in" row on the home page. */
+(function(){try{var s=(location.pathname.split("/")[1]||"").toLowerCase();if(!s||/\.html?$/.test(s))return;s=decodeURIComponent(s);var K="vg-recent-v1",a=JSON.parse(localStorage.getItem(K)||"[]");if(!Array.isArray(a))a=[];a=a.filter(function(x){return x&&String(x.p||"").replace(/^\/+|\/.*$/g,"").toLowerCase()!==s});a.unshift({p:"/"+s+"/",t:Date.now()});localStorage.setItem(K,JSON.stringify(a.slice(0,30)))}catch(e){}})();
