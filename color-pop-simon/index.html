@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Color Pop Simon">
+<meta name="theme-color" content="#FFF7E8">
+<title>Color Pop Simon</title>
+<style>
+  :root {
+    --bg-top: #FFF9EE;
+    --bg-bottom: #E8F6FF;
+    --ink: #2C2A3B;
+    --muted: #6C6982;
+    --red: #FF4D5E;
+    --red-dark: #D62839;
+    --red-glow: rgba(255, 77, 94, 0.55);
+    --blue: #2FA8FF;
+    --blue-dark: #1577D1;
+    --blue-glow: rgba(47, 168, 255, 0.55);
+    --yellow: #FFD233;
+    --yellow-dark: #E09F00;
+    --yellow-glow: rgba(255, 210, 51, 0.65);
+    --green: #42D36D;
+    --green-dark: #1FA349;
+    --green-glow: rgba(66, 211, 109, 0.55);
+    --sat: env(safe-area-inset-top, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sal: env(safe-area-inset-left, 0px);
+    --sar: env(safe-area-inset-right, 0px);
+  }
+
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    touch-action: manipulation;
+    overscroll-behavior: none;
+    font-family: "SF Pro Rounded", "Arial Rounded MT Bold", "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+    color: var(--ink);
+  }
+
+  #fx-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 40;
+  }
+
+  .app {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    padding: calc(var(--sat) + 12px) calc(var(--sar) + 16px) calc(var(--sab) + 16px) calc(var(--sal) + 16px);
+    gap: 12px;
+    z-index: 10;
+  }
+
+  /* Header Bar */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 3px solid rgba(255, 255, 255, 0.95);
+    border-radius: 26px;
+    padding: 10px 16px;
+    box-shadow: 0 8px 24px rgba(68, 86, 130, 0.10);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .brand-title {
+    font-size: clamp(18px, 2.8vw, 28px);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    background: linear-gradient(90deg, #FF4D5E, #FF9E2C, #2FA8FF, #33C463);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin: 0;
+  }
+
+  .stars-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #FFF3C4;
+    border: 3px solid #FFD233;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: clamp(16px, 2.2vw, 22px);
+    font-weight: 900;
+    color: #9A6400;
+    box-shadow: 0 4px 0 #E6B517;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .stars-badge.pop {
+    transform: scale(1.22);
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .mode-switch {
+    display: inline-flex;
+    background: #EDF2FA;
+    border-radius: 999px;
+    padding: 4px;
+    gap: 4px;
+  }
+
+  .mode-btn {
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-weight: 800;
+    font-size: clamp(12px, 1.6vw, 15px);
+    color: var(--muted);
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .mode-btn.active {
+    background: #FFFFFF;
+    color: var(--ink);
+    box-shadow: 0 3px 10px rgba(44, 42, 59, 0.12);
+  }
+
+  .icon-btn {
+    border: none;
+    background: #FFFFFF;
+    color: var(--ink);
+    font-family: inherit;
+    font-weight: 800;
+    font-size: clamp(14px, 1.8vw, 18px);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #D8E2F0, 0 6px 14px rgba(44, 42, 59, 0.08);
+    transition: transform 0.12s ease;
+  }
+
+  .icon-btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #D8E2F0;
+  }
+
+  /* Prompt Banner */
+  .prompt-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: clamp(50px, 7vh, 72px);
+  }
+
+  .prompt-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 4px solid #FFFFFF;
+    border-radius: 999px;
+    padding: 10px 24px;
+    font-size: clamp(20px, 3.2vw, 34px);
+    font-weight: 900;
+    color: var(--ink);
+    box-shadow: 0 10px 26px rgba(68, 86, 130, 0.12);
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.25s ease;
+  }
+
+  .prompt-pill:active {
+    transform: scale(0.96);
+  }
+
+  .prompt-dot {
+    width: clamp(22px, 3vw, 32px);
+    height: clamp(22px, 3vw, 32px);
+    border-radius: 50%;
+    background: #CBD5E1;
+    border: 3px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    transition: background-color 0.25s ease, transform 0.25s ease;
+  }
+
+  /* Main 2x2 Game Board */
+  .board {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: clamp(14px, 2.5vw, 26px);
+    max-width: 1120px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 4px;
+  }
+
+  .pad {
+    position: relative;
+    border: 6px solid rgba(255, 255, 255, 0.85);
+    border-radius: clamp(28px, 4.5vw, 48px);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    outline: none;
+    overflow: hidden;
+    transition:
+      transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1),
+      box-shadow 0.2s ease,
+      filter 0.2s ease;
+  }
+
+  .pad::before {
+    content: "";
+    position: absolute;
+    top: 8px;
+    left: 14%;
+    right: 14%;
+    height: 28%;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0) 100%);
+    pointer-events: none;
+  }
+
+  .pad[data-color="red"] {
+    background: radial-gradient(circle at 35% 25%, #FF7885 0%, var(--red) 62%, #E8384A 100%);
+    box-shadow: 0 12px 0 var(--red-dark), 0 18px 30px rgba(214, 40, 57, 0.24);
+  }
+  .pad[data-color="blue"] {
+    background: radial-gradient(circle at 35% 25%, #6AC4FF 0%, var(--blue) 62%, #1C8EE8 100%);
+    box-shadow: 0 12px 0 var(--blue-dark), 0 18px 30px rgba(21, 119, 209, 0.24);
+  }
+  .pad[data-color="yellow"] {
+    background: radial-gradient(circle at 35% 25%, #FFE77A 0%, var(--yellow) 62%, #F5BC00 100%);
+    box-shadow: 0 12px 0 var(--yellow-dark), 0 18px 30px rgba(224, 159, 0, 0.24);
+  }
+  .pad[data-color="green"] {
+    background: radial-gradient(circle at 35% 25%, #7BE89A 0%, var(--green) 62%, #29BD56 100%);
+    box-shadow: 0 12px 0 var(--green-dark), 0 18px 30px rgba(31, 163, 73, 0.24);
+  }
+
+  .pad.pressed {
+    transform: translateY(8px) scale(0.96);
+  }
+  .pad[data-color="red"].pressed { box-shadow: 0 4px 0 var(--red-dark), 0 0 42px var(--red-glow); }
+  .pad[data-color="blue"].pressed { box-shadow: 0 4px 0 var(--blue-dark), 0 0 42px var(--blue-glow); }
+  .pad[data-color="yellow"].pressed { box-shadow: 0 4px 0 var(--yellow-dark), 0 0 42px var(--yellow-glow); }
+  .pad[data-color="green"].pressed { box-shadow: 0 4px 0 var(--green-dark), 0 0 42px var(--green-glow); }
+
+  /* Lit / Cue State */
+  .pad.lit {
+    filter: brightness(1.16) saturate(1.12);
+    transform: scale(1.035);
+    z-index: 5;
+  }
+  .pad[data-color="red"].lit { box-shadow: 0 12px 0 var(--red-dark), 0 0 0 10px rgba(255,255,255,0.9), 0 0 55px 14px var(--red-glow); }
+  .pad[data-color="blue"].lit { box-shadow: 0 12px 0 var(--blue-dark), 0 0 0 10px rgba(255,255,255,0.9), 0 0 55px 14px var(--blue-glow); }
+  .pad[data-color="yellow"].lit { box-shadow: 0 12px 0 var(--yellow-dark), 0 0 0 10px rgba(255,255,255,0.9), 0 0 55px 14px var(--yellow-glow); }
+  .pad[data-color="green"].lit { box-shadow: 0 12px 0 var(--green-dark), 0 0 0 10px rgba(255,255,255,0.9), 0 0 55px 14px var(--green-glow); }
+
+  /* Gentle Toddler Target Pulse (Touch Color Mode) */
+  .pad.target-hint {
+    animation: targetPulse 1.35s ease-in-out infinite;
+    z-index: 4;
+  }
+
+  @keyframes targetPulse {
+    0%, 100% { transform: scale(1); filter: brightness(1.03); }
+    50% { transform: scale(1.045); filter: brightness(1.15); }
+  }
+
+  .pad.gentle-wiggle {
+    animation: gentleWiggle 0.42s ease-in-out;
+  }
+
+  @keyframes gentleWiggle {
+    0%, 100% { transform: translateX(0) rotate(0deg); }
+    25% { transform: translateX(-8px) rotate(-2deg); }
+    50% { transform: translateX(8px) rotate(2deg); }
+    75% { transform: translateX(-5px) rotate(-1deg); }
+  }
+
+  .pad.rainbow-dance {
+    animation: rainbowBounce 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) infinite alternate;
+  }
+
+  @keyframes rainbowBounce {
+    0% { transform: translateY(0) scale(1) rotate(-2deg); }
+    100% { transform: translateY(-10px) scale(1.04) rotate(2deg); }
+  }
+
+  .char-svg {
+    width: min(58%, 210px);
+    height: auto;
+    max-height: 68%;
+    filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.16));
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+  }
+
+  .pad.lit .char-svg,
+  .pad.pressed .char-svg {
+    transform: scale(1.12) translateY(-4px);
+  }
+
+  .color-label {
+    margin-top: 6px;
+    font-size: clamp(20px, 3.1vw, 34px);
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    color: #FFFFFF;
+    text-shadow: 0 3px 0 rgba(0, 0, 0, 0.22);
+    pointer-events: none;
+  }
+
+  .pad[data-color="yellow"] .color-label {
+    color: #6B4700;
+    text-shadow: 0 2px 0 rgba(255, 255, 255, 0.6);
+  }
+
+  .key-hint {
+    position: absolute;
+    bottom: 12px;
+    right: 16px;
+    background: rgba(255, 255, 255, 0.28);
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 13px;
+    font-weight: 800;
+    padding: 3px 9px;
+    border-radius: 10px;
+    pointer-events: none;
+  }
+
+  .pad[data-color="yellow"] .key-hint {
+    background: rgba(107, 71, 0, 0.14);
+    color: rgba(107, 71, 0, 0.85);
+  }
+
+  @media (pointer: coarse) {
+    .key-hint { display: none; }
+  }
+
+  /* Eye blinking & joyful eyes */
+  .eye-happy { display: none; }
+  .pad.joy .eye-normal { display: none; }
+  .pad.joy .eye-happy { display: block; }
+
+  .eye-normal {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: blink 4.4s infinite;
+  }
+
+  @keyframes blink {
+    0%, 92%, 100% { transform: scaleY(1); }
+    96% { transform: scaleY(0.1); }
+  }
+
+  /* Start Overlay (Unlocks iPadOS Safari Web Audio & Speech) */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    background: radial-gradient(circle at 50% 40%, rgba(255, 250, 236, 0.96), rgba(226, 244, 255, 0.97));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+
+  .overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(1.04);
+  }
+
+  .hero-dots {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .hero-dot {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 4px solid #FFFFFF;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+    animation: floatDot 1.6s ease-in-out infinite;
+  }
+  .hero-dot:nth-child(1) { background: var(--red); animation-delay: 0s; }
+  .hero-dot:nth-child(2) { background: var(--blue); animation-delay: 0.15s; }
+  .hero-dot:nth-child(3) { background: var(--yellow); animation-delay: 0.3s; }
+  .hero-dot:nth-child(4) { background: var(--green); animation-delay: 0.45s; }
+
+  @keyframes floatDot {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+
+  .overlay h1 {
+    font-size: clamp(38px, 7vw, 68px);
+    font-weight: 900;
+    margin: 0 0 10px;
+    background: linear-gradient(90deg, #FF4D5E, #FF9E2C, #2FA8FF, #33C463);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .overlay p {
+    font-size: clamp(18px, 2.5vw, 24px);
+    color: var(--muted);
+    font-weight: 700;
+    margin: 0 0 30px;
+    max-width: 520px;
+  }
+
+  .play-btn {
+    border: 6px solid #FFFFFF;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #5CE882 0%, #27C254 100%);
+    color: #FFFFFF;
+    font-family: inherit;
+    font-size: clamp(30px, 5vw, 48px);
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    padding: 20px 64px;
+    cursor: pointer;
+    box-shadow: 0 12px 0 #1A943E, 0 22px 40px rgba(39, 194, 84, 0.35);
+    animation: playPulse 1.8s ease-in-out infinite;
+    transition: transform 0.12s ease;
+  }
+
+  .play-btn:active {
+    transform: translateY(8px) scale(0.97);
+    box-shadow: 0 4px 0 #1A943E;
+  }
+
+  @keyframes playPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+  }
+
+  /* Rainbow Celebration Banner */
+  .celebration-banner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.5);
+    z-index: 50;
+    background: linear-gradient(90deg, #FF4D5E, #FF9E2C, #FFD233, #42D36D, #2FA8FF, #A855F7);
+    color: #FFFFFF;
+    font-size: clamp(32px, 6vw, 62px);
+    font-weight: 900;
+    padding: 18px 40px;
+    border-radius: 999px;
+    border: 6px solid #FFFFFF;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+    text-shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    white-space: nowrap;
+  }
+
+  .celebration-banner.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+</style>
+</head>
+<body>
+
+<canvas id="fx-canvas" aria-hidden="true"></canvas>
+
+<!-- Start Overlay -->
+<div class="overlay" id="start-overlay">
+  <div class="hero-dots" aria-hidden="true">
+    <div class="hero-dot"></div>
+    <div class="hero-dot"></div>
+    <div class="hero-dot"></div>
+    <div class="hero-dot"></div>
+  </div>
+  <h1>Color Pop Simon</h1>
+  <p>Tap the glowing color friend to pop stars, hear music, and dance!</p>
+  <button class="play-btn" id="start-btn" type="button">PLAY!</button>
+</div>
+
+<!-- Rainbow Celebration Banner -->
+<div class="celebration-banner" id="celebration-banner">RAINBOW PARTY!</div>
+
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <h1 class="brand-title">Color Pop Simon</h1>
+      <div class="stars-badge" id="stars-badge" aria-live="polite">
+        <span aria-hidden="true">⭐</span>
+        <span id="star-count">0</span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="mode-switch" role="group" aria-label="Game Mode">
+        <button class="mode-btn active" id="mode-touch" type="button">Touch Color (Age 2)</button>
+        <button class="mode-btn" id="mode-simon" type="button">Simon Pattern</button>
+      </div>
+      <button class="icon-btn" id="replay-btn" type="button" title="Hear color again (Space)" aria-label="Hear color again">🔊</button>
+      <button class="icon-btn" id="voice-btn" type="button" title="Toggle voice prompts" aria-label="Toggle voice prompts">🗣️</button>
+    </div>
+  </header>
+
+  <div class="prompt-bar">
+    <button class="prompt-pill" id="prompt-pill" type="button" aria-live="polite">
+      <span class="prompt-dot" id="prompt-dot"></span>
+      <span id="prompt-text">Ready to play!</span>
+    </button>
+  </div>
+
+  <main class="board" id="board">
+    <!-- RED LADYBUG -->
+    <button class="pad" data-color="red" type="button" aria-label="Red Ladybug">
+      <svg class="char-svg" viewBox="0 0 200 200" aria-hidden="true">
+        <!-- Antennae -->
+        <path d="M80 45 Q68 20 55 26" fill="none" stroke="#2D232E" stroke-width="7" stroke-linecap="round"/>
+        <circle cx="54" cy="26" r="7" fill="#2D232E"/>
+        <path d="M120 45 Q132 20 145 26" fill="none" stroke="#2D232E" stroke-width="7" stroke-linecap="round"/>
+        <circle cx="146" cy="26" r="7" fill="#2D232E"/>
+        <!-- Body -->
+        <ellipse cx="100" cy="118" rx="68" ry="62" fill="#FF2E43" stroke="#FFFFFF" stroke-width="6"/>
+        <!-- Head -->
+        <path d="M52 80 C52 44, 148 44, 148 80 Z" fill="#2D232E"/>
+        <!-- Wing Line -->
+        <line x1="100" y1="80" x2="100" y2="178" stroke="#2D232E" stroke-width="6" stroke-linecap="round"/>
+        <!-- Spots -->
+        <circle cx="66" cy="112" r="12" fill="#2D232E"/>
+        <circle cx="134" cy="112" r="12" fill="#2D232E"/>
+        <circle cx="76" cy="148" r="10" fill="#2D232E"/>
+        <circle cx="124" cy="148" r="10" fill="#2D232E"/>
+        <!-- Eyes Normal -->
+        <g class="eye-normal">
+          <circle cx="80" cy="64" r="11" fill="#FFFFFF"/>
+          <circle cx="82" cy="64" r="5.5" fill="#2D232E"/>
+          <circle cx="84" cy="61" r="2.2" fill="#FFFFFF"/>
+          <circle cx="120" cy="64" r="11" fill="#FFFFFF"/>
+          <circle cx="118" cy="64" r="5.5" fill="#2D232E"/>
+          <circle cx="120" cy="61" r="2.2" fill="#FFFFFF"/>
+        </g>
+        <!-- Eyes Happy -->
+        <g class="eye-happy">
+          <path d="M69 66 Q80 52 91 66" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round"/>
+          <path d="M109 66 Q120 52 131 66" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round"/>
+        </g>
+        <!-- Cheeks & Smile -->
+        <circle cx="62" cy="72" r="6" fill="#FF8FA3" opacity="0.85"/>
+        <circle cx="138" cy="72" r="6" fill="#FF8FA3" opacity="0.85"/>
+        <path d="M90 73 Q100 81 110 73" fill="none" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round"/>
+      </svg>
+      <span class="color-label">RED</span>
+      <span class="key-hint">1 / Q</span>
+    </button>
+
+    <!-- BLUE WHALE -->
+    <button class="pad" data-color="blue" type="button" aria-label="Blue Whale">
+      <svg class="char-svg" viewBox="0 0 200 200" aria-hidden="true">
+        <!-- Water Spout -->
+        <path d="M100 54 Q96 28 76 26" fill="none" stroke="#D9F4FF" stroke-width="7" stroke-linecap="round"/>
+        <path d="M100 54 Q104 28 124 26" fill="none" stroke="#D9F4FF" stroke-width="7" stroke-linecap="round"/>
+        <circle cx="70" cy="29" r="5" fill="#FFFFFF"/>
+        <circle cx="130" cy="29" r="5" fill="#FFFFFF"/>
+        <!-- Tail -->
+        <path d="M148 134 C174 128, 186 106, 178 94 C166 104, 158 112, 150 116 C164 114, 184 126, 178 144 C166 146, 154 144, 146 138 Z" fill="#0E7AE0" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round"/>
+        <!-- Body -->
+        <path d="M32 124 C32 70, 74 52, 114 56 C148 60, 162 94, 156 132 C152 156, 130 166, 94 166 C52 166, 32 152, 32 124 Z" fill="#178BFF" stroke="#FFFFFF" stroke-width="6"/>
+        <!-- Belly -->
+        <path d="M40 136 C56 130, 116 130, 142 146 C132 160, 110 164, 88 164 C58 164, 44 154, 40 136 Z" fill="#DDF4FF"/>
+        <!-- Eyes Normal -->
+        <g class="eye-normal">
+          <circle cx="70" cy="108" r="11" fill="#FFFFFF"/>
+          <circle cx="72" cy="108" r="5.5" fill="#183153"/>
+          <circle cx="74" cy="105" r="2.2" fill="#FFFFFF"/>
+          <circle cx="114" cy="108" r="11" fill="#FFFFFF"/>
+          <circle cx="112" cy="108" r="5.5" fill="#183153"/>
+          <circle cx="114" cy="105" r="2.2" fill="#FFFFFF"/>
+        </g>
+        <!-- Eyes Happy -->
+        <g class="eye-happy">
+          <path d="M59 110 Q70 96 81 110" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round"/>
+          <path d="M103 110 Q114 96 125 110" fill="none" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round"/>
+        </g>
+        <!-- Cheeks & Smile -->
+        <circle cx="54" cy="122" r="7" fill="#FF9EB5" opacity="0.8"/>
+        <circle cx="130" cy="122" r="7" fill="#FF9EB5" opacity="0.8"/>
+        <path d="M78 124 Q92 138 106 124" fill="none" stroke="#183153" stroke-width="5.5" stroke-linecap="round"/>
+      </svg>
+      <span class="color-label">BLUE</span>
+      <span class="key-hint">2 / W</span>
+    </button>
+
+    <!-- YELLOW SUN -->
+    <button class="pad" data-color="yellow" type="button" aria-label="Yellow Sun">
+      <svg class="char-svg" viewBox="0 0 200 200" aria-hidden="true">
+        <!-- Rays -->
+        <g stroke="#FFFFFF" stroke-width="10" stroke-linecap="round">
+          <line x1="100" y1="18" x2="100" y2="36"/>
+          <line x1="100" y1="164" x2="100" y2="182"/>
+          <line x1="18" y1="100" x2="36" y2="100"/>
+          <line x1="164" y1="100" x2="182" y2="100"/>
+          <line x1="42" y1="42" x2="55" y2="55"/>
+          <line x1="145" y1="145" x2="158" y2="158"/>
+          <line x1="158" y1="42" x2="145" y2="55"/>
+          <line x1="55" y1="145" x2="42" y2="158"/>
+        </g>
+        <!-- Sun Face -->
+        <circle cx="100" cy="100" r="56" fill="#FFB800" stroke="#FFFFFF" stroke-width="6"/>
+        <circle cx="100" cy="100" r="46" fill="#FFDF4D"/>
+        <!-- Eyes Normal -->
+        <g class="eye-normal">
+          <circle cx="80" cy="92" r="10.5" fill="#FFFFFF"/>
+          <circle cx="81" cy="92" r="5.5" fill="#5A3700"/>
+          <circle cx="83" cy="89" r="2.2" fill="#FFFFFF"/>
+          <circle cx="120" cy="92" r="10.5" fill="#FFFFFF"/>
+          <circle cx="119" cy="92" r="5.5" fill="#5A3700"/>
+          <circle cx="121" cy="89" r="2.2" fill="#FFFFFF"/>
+        </g>
+        <!-- Eyes Happy -->
+        <g class="eye-happy">
+          <path d="M69 94 Q80 80 91 94" fill="none" stroke="#5A3700" stroke-width="6" stroke-linecap="round"/>
+          <path d="M109 94 Q120 80 131 94" fill="none" stroke="#5A3700" stroke-width="6" stroke-linecap="round"/>
+        </g>
+        <!-- Cheeks & Smile -->
+        <circle cx="64" cy="108" r="8" fill="#FF8C5A" opacity="0.65"/>
+        <circle cx="136" cy="108" r="8" fill="#FF8C5A" opacity="0.65"/>
+        <path d="M82 112 Q100 130 118 112" fill="none" stroke="#5A3700" stroke-width="6" stroke-linecap="round"/>
+      </svg>
+      <span class="color-label">YELLOW</span>
+      <span class="key-hint">3 / A</span>
+    </button>
+
+    <!-- GREEN FROG -->
+    <button class="pad" data-color="green" type="button" aria-label="Green Frog">
+      <svg class="char-svg" viewBox="0 0 200 200" aria-hidden="true">
+        <!-- Eye Bumps -->
+        <circle cx="68" cy="64" r="26" fill="#2CC85B" stroke="#FFFFFF" stroke-width="6"/>
+        <circle cx="132" cy="64" r="26" fill="#2CC85B" stroke="#FFFFFF" stroke-width="6"/>
+        <!-- Body -->
+        <ellipse cx="100" cy="122" rx="68" ry="52" fill="#2CC85B" stroke="#FFFFFF" stroke-width="6"/>
+        <!-- Belly -->
+        <ellipse cx="100" cy="138" rx="46" ry="30" fill="#C7F9CC"/>
+        <!-- Eyes Normal -->
+        <g class="eye-normal">
+          <circle cx="68" cy="64" r="15" fill="#FFFFFF"/>
+          <circle cx="70" cy="64" r="7.5" fill="#183A22"/>
+          <circle cx="73" cy="60" r="2.8" fill="#FFFFFF"/>
+          <circle cx="132" cy="64" r="15" fill="#FFFFFF"/>
+          <circle cx="130" cy="64" r="7.5" fill="#183A22"/>
+          <circle cx="133" cy="60" r="2.8" fill="#FFFFFF"/>
+        </g>
+        <!-- Eyes Happy -->
+        <g class="eye-happy">
+          <path d="M55 66 Q68 50 81 66" fill="none" stroke="#FFFFFF" stroke-width="6.5" stroke-linecap="round"/>
+          <path d="M119 66 Q132 50 145 66" fill="none" stroke="#FFFFFF" stroke-width="6.5" stroke-linecap="round"/>
+        </g>
+        <!-- Cheeks & Smile -->
+        <circle cx="56" cy="112" r="9" fill="#FF9EB5" opacity="0.75"/>
+        <circle cx="144" cy="112" r="9" fill="#FF9EB5" opacity="0.75"/>
+        <path d="M74 108 Q100 132 126 108" fill="none" stroke="#183A22" stroke-width="6" stroke-linecap="round"/>
+      </svg>
+      <span class="color-label">GREEN</span>
+      <span class="key-hint">4 / S</span>
+    </button>
+  </main>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  const COLORS = {
+    red:    { name: 'Red',    friend: 'Red Ladybug',  hex: '#FF4D5E', freq: 523.25 }, // C5
+    blue:   { name: 'Blue',   friend: 'Blue Whale',   hex: '#2FA8FF', freq: 659.25 }, // E5
+    yellow: { name: 'Yellow', friend: 'Yellow Sun',   hex: '#FFD233', freq: 783.99 }, // G5
+    green:  { name: 'Green',  friend: 'Green Frog',   hex: '#42D36D', freq: 1046.50 } // C6
+  };
+  const COLOR_KEYS = ['red', 'blue', 'yellow', 'green'];
+
+  const state = {
+    started: false,
+    mode: 'touch', // 'touch' (Age 2) or 'simon' (Pattern)
+    voiceEnabled: true,
+    stars: 0,
+    locked: true,
+    targetColor: null,
+    sequence: [],
+    playerIndex: 0,
+    timers: []
+  };
+
+  // DOM
+  const startOverlay = document.getElementById('start-overlay');
+  const startBtn = document.getElementById('start-btn');
+  const starCountEl = document.getElementById('star-count');
+  const starsBadge = document.getElementById('stars-badge');
+  const modeTouchBtn = document.getElementById('mode-touch');
+  const modeSimonBtn = document.getElementById('mode-simon');
+  const replayBtn = document.getElementById('replay-btn');
+  const voiceBtn = document.getElementById('voice-btn');
+  const promptPill = document.getElementById('prompt-pill');
+  const promptDot = document.getElementById('prompt-dot');
+  const promptText = document.getElementById('prompt-text');
+  const celebrationBanner = document.getElementById('celebration-banner');
+  const pads = {};
+  document.querySelectorAll('.pad').forEach(el => {
+    pads[el.dataset.color] = el;
+  });
+
+  // --- Web Audio API Marimba / Xylophone Engine ---
+  let audioCtx = null;
+
+  function ensureAudio() {
+    if (!audioCtx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) audioCtx = new AC();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume().catch(() => {});
+    }
+  }
+
+  function playMarimba(freq, duration = 0.45, volume = 0.32, startDelay = 0) {
+    ensureAudio();
+    if (!audioCtx) return;
+    const now = audioCtx.currentTime + startDelay;
+
+    const osc1 = audioCtx.createOscillator();
+    const osc2 = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    const harmGain = audioCtx.createGain();
+
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(freq, now);
+
+    // Warm marimba overtone
+    osc2.type = 'triangle';
+    osc2.frequency.setValueAtTime(freq * 4, now);
+    harmGain.gain.setValueAtTime(0.14, now);
+    harmGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+    gain.gain.setValueAtTime(0.001, now);
+    gain.gain.linearRampToValueAtTime(volume, now + 0.012);
+    gain.gain.exponentialRampToValueAtTime(0.0008, now + duration);
+
+    osc1.connect(gain);
+    osc2.connect(harmGain);
+    harmGain.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc1.start(now);
+    osc2.start(now);
+    osc1.stop(now + duration + 0.02);
+    osc2.stop(now + duration + 0.02);
+  }
+
+  function playBubblyPop() {
+    ensureAudio();
+    if (!audioCtx) return;
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(340, now);
+    osc.frequency.exponentialRampToValueAtTime(920, now + 0.11);
+    gain.gain.setValueAtTime(0.22, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.13);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.14);
+  }
+
+  function playSoftBoing() {
+    ensureAudio();
+    if (!audioCtx) return;
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(240, now);
+    osc.frequency.exponentialRampToValueAtTime(330, now + 0.12);
+    osc.frequency.exponentialRampToValueAtTime(210, now + 0.26);
+    gain.gain.setValueAtTime(0.22, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.3);
+  }
+
+  function playSuccessChime() {
+    const notes = [523.25, 659.25, 783.99, 1046.50];
+    notes.forEach((f, idx) => playMarimba(f, 0.32, 0.24, idx * 0.075));
+  }
+
+  function playRainbowFanfare() {
+    const notes = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50, 1318.51];
+    notes.forEach((f, idx) => playMarimba(f, 0.42, 0.26, idx * 0.09));
+  }
+
+  // --- Web Speech API Cheerful Voice ---
+  function speak(text) {
+    if (!state.voiceEnabled || !('speechSynthesis' in window)) return;
+    try {
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate = 0.94;
+      u.pitch = 1.25;
+      u.volume = 1.0;
+      const voices = window.speechSynthesis.getVoices();
+      const friendly = voices.find(v => /en/i.test(v.lang) && /(Samantha|Karen|Tessa|Moira|Google US English)/i.test(v.name));
+      if (friendly) u.voice = friendly;
+      window.speechSynthesis.speak(u);
+    } catch (_) {}
+  }
+
+  // --- HTML5 Canvas Particle System (Stars, Bubbles, Confetti) ---
+  const canvas = document.getElementById('fx-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let cw = 0, ch = 0;
+
+  function resizeCanvas() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    cw = window.innerWidth;
+    ch = window.innerHeight;
+    canvas.width = Math.floor(cw * dpr);
+    canvas.height = Math.floor(ch * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  function spawnBurst(x, y, colorHex, count = 26) {
+    const palette = [colorHex, '#FFFFFF', '#FFD233', '#FF7885', '#6AC4FF', '#7BE89A'];
+    const shapes = ['star', 'bubble', 'confetti'];
+    for (let i = 0; i < count; i++) {
+      const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.5;
+      const speed = 3 + Math.random() * 8;
+      particles.push({
+        x, y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 2.5,
+        size: 7 + Math.random() * 11,
+        color: palette[Math.floor(Math.random() * palette.length)],
+        shape: shapes[Math.floor(Math.random() * shapes.length)],
+        rot: Math.random() * Math.PI * 2,
+        vrot: (Math.random() - 0.5) * 0.25,
+        life: 1.0,
+        decay: 0.015 + Math.random() * 0.014
+      });
+    }
+  }
+
+  function spawnRainbowShower() {
+    const rainbow = ['#FF4D5E', '#FF9E2C', '#FFD233', '#42D36D', '#2FA8FF', '#A855F7'];
+    for (let i = 0; i < 95; i++) {
+      particles.push({
+        x: Math.random() * cw,
+        y: -20 - Math.random() * 180,
+        vx: (Math.random() - 0.5) * 4,
+        vy: 3 + Math.random() * 5.5,
+        size: 8 + Math.random() * 12,
+        color: rainbow[i % rainbow.length],
+        shape: i % 3 === 0 ? 'star' : (i % 3 === 1 ? 'confetti' : 'bubble'),
+        rot: Math.random() * Math.PI * 2,
+        vrot: (Math.random() - 0.5) * 0.22,
+        life: 1.25,
+        decay: 0.008 + Math.random() * 0.007
+      });
+    }
+  }
+
+  function drawStar(c, r) {
+    c.beginPath();
+    for (let i = 0; i < 5; i++) {
+      const a = (i * 4 * Math.PI) / 5 - Math.PI / 2;
+      const px = Math.cos(a) * r;
+      const py = Math.sin(a) * r;
+      if (i === 0) c.moveTo(px, py);
+      else c.lineTo(px, py);
+    }
+    c.closePath();
+    c.fill();
+  }
+
+  function tickParticles() {
+    ctx.clearRect(0, 0, cw, ch);
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.16;
+      p.vx *= 0.99;
+      p.rot += p.vrot;
+      p.life -= p.decay;
+      if (p.life <= 0) {
+        particles.splice(i, 1);
+        continue;
+      }
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, Math.min(1, p.life));
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      if (p.shape === 'star') {
+        drawStar(ctx, p.size);
+      } else if (p.shape === 'bubble') {
+        ctx.beginPath();
+        ctx.arc(0, 0, p.size * 0.65, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,0.6)';
+        ctx.beginPath();
+        ctx.arc(-p.size * 0.2, -p.size * 0.2, p.size * 0.2, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.fillRect(-p.size * 0.6, -p.size * 0.32, p.size * 1.2, p.size * 0.64);
+      }
+      ctx.restore();
+    }
+    requestAnimationFrame(tickParticles);
+  }
+  requestAnimationFrame(tickParticles);
+
+  // --- Helpers ---
+  function later(fn, ms) {
+    const id = setTimeout(fn, ms);
+    state.timers.push(id);
+    return id;
+  }
+
+  function clearTimers() {
+    state.timers.forEach(clearTimeout);
+    state.timers = [];
+  }
+
+  function clearPadHighlights() {
+    COLOR_KEYS.forEach(c => {
+      pads[c].classList.remove('lit', 'target-hint', 'joy', 'gentle-wiggle', 'rainbow-dance');
+    });
+  }
+
+  function setPrompt(text, colorKey = null) {
+    promptText.textContent = text;
+    if (colorKey && COLORS[colorKey]) {
+      promptDot.style.backgroundColor = COLORS[colorKey].hex;
+      promptPill.style.borderColor = COLORS[colorKey].hex;
+    } else {
+      promptDot.style.backgroundColor = '#CBD5E1';
+      promptPill.style.borderColor = '#FFFFFF';
+    }
+  }
+
+  function flashPad(colorKey, duration = 620) {
+    const pad = pads[colorKey];
+    pad.classList.add('lit', 'joy');
+    playMarimba(COLORS[colorKey].freq, 0.5, 0.34);
+    later(() => {
+      pad.classList.remove('lit', 'joy');
+    }, duration);
+  }
+
+  function addStar(onDone) {
+    state.stars += 1;
+    starCountEl.textContent = state.stars;
+    starsBadge.classList.remove('pop');
+    void starsBadge.offsetWidth;
+    starsBadge.classList.add('pop');
+    later(() => starsBadge.classList.remove('pop'), 300);
+
+    if (state.stars % 5 === 0) {
+      triggerRainbowCelebration(onDone);
+    } else {
+      later(onDone, 950);
+    }
+  }
+
+  function triggerRainbowCelebration(onDone) {
+    state.locked = true;
+    clearPadHighlights();
+    COLOR_KEYS.forEach(c => pads[c].classList.add('rainbow-dance', 'joy'));
+    celebrationBanner.classList.add('show');
+    setPrompt('Yay! Rainbow Party!');
+    playRainbowFanfare();
+    spawnRainbowShower();
+    speak('Yay! Five stars! Rainbow party!');
+
+    later(() => {
+      spawnRainbowShower();
+    }, 850);
+
+    later(() => {
+      celebrationBanner.classList.remove('show');
+      clearPadHighlights();
+      onDone();
+    }, 2900);
+  }
+
+  // --- Mode 1: Touch Color (Age 2) ---
+  function startTouchRound() {
+    clearTimers();
+    clearPadHighlights();
+    state.locked = false;
+
+    // Pick a color (try not to repeat the exact same color twice in a row)
+    const choices = COLOR_KEYS.filter(c => c !== state.targetColor);
+    const next = choices[Math.floor(Math.random() * choices.length)];
+    state.targetColor = next;
+
+    const info = COLORS[next];
+    setPrompt(`Touch ${info.name}!`, next);
+    pads[next].classList.add('target-hint');
+    flashPad(next, 680);
+    speak(`Touch ${info.name}!`);
+  }
+
+  // --- Mode 2: Simon Pattern ---
+  function startNewSimonGame() {
+    clearTimers();
+    clearPadHighlights();
+    state.sequence = [];
+    state.playerIndex = 0;
+    nextSimonStep();
+  }
+
+  function nextSimonStep() {
+    const next = COLOR_KEYS[Math.floor(Math.random() * COLOR_KEYS.length)];
+    state.sequence.push(next);
+    state.playerIndex = 0;
+    playSimonSequence();
+  }
+
+  function playSimonSequence() {
+    clearTimers();
+    clearPadHighlights();
+    state.locked = true;
+    setPrompt('Watch the colors...');
+
+    state.sequence.forEach((colorKey, idx) => {
+      later(() => {
+        flashPad(colorKey, 600);
+        setPrompt(COLORS[colorKey].name + '!', colorKey);
+        if (state.sequence.length <= 3) {
+          speak(COLORS[colorKey].name);
+        }
+      }, 500 + idx * 880);
+    });
+
+    const totalMs = 500 + state.sequence.length * 880 + 250;
+    later(() => {
+      state.locked = false;
+      setPrompt('Your turn!');
+      speak('Your turn!');
+    }, totalMs);
+  }
+
+  // --- Handle Pad Tap ---
+  function handlePadTap(colorKey, clientX, clientY) {
+    if (!state.started || state.locked) return;
+    ensureAudio();
+
+    const pad = pads[colorKey];
+    const rect = pad.getBoundingClientRect();
+    const cx = clientX || (rect.left + rect.width / 2);
+    const cy = clientY || (rect.top + rect.height / 2);
+
+    pad.classList.add('pressed');
+    later(() => pad.classList.remove('pressed'), 160);
+
+    if (state.mode === 'touch') {
+      if (colorKey === state.targetColor) {
+        state.locked = true;
+        pad.classList.remove('target-hint');
+        pad.classList.add('lit', 'joy');
+        playBubblyPop();
+        playSuccessChime();
+        spawnBurst(cx, cy, COLORS[colorKey].hex, 34);
+
+        const cheers = ['Yay!', 'Great job!', 'Woohoo!', 'Super!'];
+        const cheer = cheers[Math.floor(Math.random() * cheers.length)];
+        setPrompt(`${cheer} ${COLORS[colorKey].name}!`, colorKey);
+        speak(`${cheer} That's ${COLORS[colorKey].name}!`);
+
+        addStar(() => startTouchRound());
+      } else {
+        // Gentle, encouraging toddler guidance — no harsh buzzers!
+        playSoftBoing();
+        pad.classList.remove('gentle-wiggle');
+        void pad.offsetWidth;
+        pad.classList.add('gentle-wiggle');
+        spawnBurst(cx, cy, COLORS[colorKey].hex, 10);
+
+        const targetName = COLORS[state.targetColor].name;
+        setPrompt(`That's ${COLORS[colorKey].name}! Find ${targetName}!`, state.targetColor);
+        speak(`That's ${COLORS[colorKey].name}. Let's touch ${targetName}!`);
+        later(() => flashPad(state.targetColor, 550), 320);
+      }
+    } else {
+      // Simon Pattern mode
+      const expected = state.sequence[state.playerIndex];
+      if (colorKey === expected) {
+        playMarimba(COLORS[colorKey].freq, 0.45, 0.34);
+        pad.classList.add('lit', 'joy');
+        later(() => pad.classList.remove('lit', 'joy'), 360);
+        spawnBurst(cx, cy, COLORS[colorKey].hex, 24);
+        state.playerIndex += 1;
+
+        if (state.playerIndex >= state.sequence.length) {
+          state.locked = true;
+          playSuccessChime();
+          setPrompt('Awesome! Next pattern!');
+          speak('Awesome!');
+          addStar(() => nextSimonStep());
+        }
+      } else {
+        // Gentle replay in Simon mode
+        state.locked = true;
+        playSoftBoing();
+        pad.classList.add('gentle-wiggle');
+        setPrompt("Let's watch again!", expected);
+        speak("Oopsie! Let's watch again!");
+        state.playerIndex = 0;
+        later(() => playSimonSequence(), 1100);
+      }
+    }
+  }
+
+  function replayPrompt() {
+    if (!state.started) return;
+    ensureAudio();
+    if (state.mode === 'touch' && state.targetColor) {
+      flashPad(state.targetColor, 650);
+      speak(`Touch ${COLORS[state.targetColor].name}!`);
+    } else if (state.mode === 'simon' && state.sequence.length > 0) {
+      playSimonSequence();
+    }
+  }
+
+  // --- Event Listeners ---
+  startBtn.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    ensureAudio();
+    playSuccessChime();
+    state.started = true;
+    startOverlay.classList.add('hidden');
+    later(() => {
+      if (state.mode === 'touch') startTouchRound();
+      else startNewSimonGame();
+    }, 350);
+  });
+
+  COLOR_KEYS.forEach(colorKey => {
+    pads[colorKey].addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      handlePadTap(colorKey, e.clientX, e.clientY);
+    });
+  });
+
+  modeTouchBtn.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    if (state.mode === 'touch') return;
+    state.mode = 'touch';
+    modeTouchBtn.classList.add('active');
+    modeSimonBtn.classList.remove('active');
+    if (state.started) startTouchRound();
+  });
+
+  modeSimonBtn.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    if (state.mode === 'simon') return;
+    state.mode = 'simon';
+    modeSimonBtn.classList.add('active');
+    modeTouchBtn.classList.remove('active');
+    if (state.started) startNewSimonGame();
+  });
+
+  replayBtn.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    replayPrompt();
+  });
+
+  promptPill.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    replayPrompt();
+  });
+
+  voiceBtn.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    state.voiceEnabled = !state.voiceEnabled;
+    voiceBtn.textContent = state.voiceEnabled ? '🗣️' : '🔇';
+    if (!state.voiceEnabled && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+  });
+
+  // MacBook Keyboard Shortcuts
+  window.addEventListener('keydown', (e) => {
+    if (!state.started) {
+      if (e.code === 'Space' || e.code === 'Enter') {
+        e.preventDefault();
+        startBtn.dispatchEvent(new PointerEvent('pointerdown'));
+      }
+      return;
+    }
+    const key = e.key.toLowerCase();
+    if (key === '1' || key === 'q') handlePadTap('red');
+    else if (key === '2' || key === 'w') handlePadTap('blue');
+    else if (key === '3' || key === 'a') handlePadTap('yellow');
+    else if (key === '4' || key === 's') handlePadTap('green');
+    else if (e.code === 'Space') {
+      e.preventDefault();
+      replayPrompt();
+    }
+  });
+})();
+</script>
+</body>
+</html>
