@@ -205,6 +205,30 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:0 20px 40px}
  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
  .screen{transform:none}
 }
+/* recently played */
+body:has(#q:not(:placeholder-shown)) .rp{display:none!important}
+.rp{max-width:1360px;margin:18px auto 0;padding:0 28px;--c:#ffd166}
+.rp-head{display:flex;align-items:baseline;gap:12px;margin:0 0 12px}
+.rp-head h2{margin:0;font-family:var(--display);font-size:clamp(20px,2vw,26px);font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+.rp-head h2 i{font-style:normal;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:18px;background:radial-gradient(circle at 30% 25%,color-mix(in srgb,var(--c) 45%,#141526),#0b0c18 75%);box-shadow:0 0 0 1px color-mix(in srgb,var(--c) 60%,transparent),0 0 18px color-mix(in srgb,var(--c) 35%,transparent)}
+.rp-head p{margin:0;color:var(--muted);font-size:14px}
+.rp-clear{margin-left:auto;appearance:none;cursor:pointer;background:none;border:1px solid rgba(255,255,255,.16);color:var(--muted);border-radius:999px;padding:6px 12px;font:700 12px/1 inherit}
+.rp-clear:hover{color:#fff;border-color:rgba(255,255,255,.4)}
+.rp-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:20px}
+.rp .g{animation:none}
+.rp .what{color:color-mix(in srgb,var(--c) 70%,#fff)}
+.rp-empty{display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:16px;border:1px dashed rgba(255,255,255,.18);background:rgba(255,255,255,.03);color:var(--muted);font-size:15px}
+.rp-empty b{color:#fff}
+.rp.is-empty .rp-head,.rp.is-empty .rp-grid,.rp:not(.is-empty) .rp-empty{display:none}
+@media (max-width:900px){
+ .rp{padding-left:18px;padding-right:18px}
+ .rp-grid{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -18px;padding:4px 18px 14px;scroll-padding:0 18px;scrollbar-width:none}
+ .rp-grid::-webkit-scrollbar{display:none}
+ .rp-grid .g{flex:0 0 160px;scroll-snap-align:start}
+ .rp-head p{display:none}
+}
+/* tidy card captions: two lines max, so every row lines up */
+.what{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 </style>
 </head>
 <body>
@@ -215,6 +239,11 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:0 20px 40px}
   <div class="brand"><i aria-hidden="true"><span>🕹️</span></i><h1>Vonderau Games</h1></div>
   <div class="tally"><b data-total>95</b> original games · seven arcades</div>
 </div>
+<section class="rp is-empty" id="recent" aria-labelledby="rp-title">
+  <div class="rp-head"><h2 id="rp-title"><i aria-hidden="true">⏱️</i>Jump back in</h2><p>Your last five games on this device</p><button type="button" class="rp-clear" data-rp-clear>Clear</button></div>
+  <div class="rp-grid"></div>
+  <p class="rp-empty"><span aria-hidden="true">⏱️</span><span><b>Jump back in.</b> The last five games you play will wait for you right here.</span></p>
+</section>
 <section class="spot" aria-label="Featured games">
   <div class="stage">
     <div class="stage-bg" aria-hidden="true"></div>
@@ -613,6 +642,59 @@ footer{text-align:center;color:var(--muted);font-size:13px;padding:0 20px 40px}
       requestAnimationFrame(tick);
     })(performance.now());
   }
+})();
+</script>
+<script>
+/* Recently played: remembers the last games opened on this device (localStorage) and shows the newest five.
+   A play is logged when a game is opened from this page, and by /recent.js inside each game folder. */
+(function(){
+  var KEY = "vg-recent-v1", MAX = 5;
+  var shelf = document.getElementById("recent"); if(!shelf) return;
+  var grid = shelf.querySelector(".rp-grid");
+  function seg(href){ try { var a = document.createElement("a"); a.href = href; if(a.host && a.host !== location.host) return ""; var s = a.pathname.split("/")[1] || ""; return s ? decodeURIComponent(s).toLowerCase() : ""; } catch(e){ return ""; } }
+  var byKey = {};
+  Array.prototype.forEach.call(document.querySelectorAll("main a.g"), function(g){ var k = seg(g.getAttribute("href")); if(k && !byKey[k]) byKey[k] = g; });
+  function load(){ try { var a = JSON.parse(localStorage.getItem(KEY) || "[]"); return Array.isArray(a) ? a : []; } catch(e){ return []; } }
+  function save(a){ try { localStorage.setItem(KEY, JSON.stringify(a.slice(0, 30))); } catch(e){} }
+  function record(k){ if(!k || !byKey[k]) return; var a = load().filter(function(x){ return x && seg("/" + String(x.p || "").replace(/^\/+/, "")) !== k; }); a.unshift({ p: "/" + k + "/", t: Date.now() }); save(a); }
+  function ago(t){
+    var s = Math.max(0, (Date.now() - t) / 1000), m = s / 60, h = m / 60, d = h / 24;
+    if(m < 2) return "Played just now"; if(h < 1) return "Played " + Math.round(m) + " min ago";
+    if(d < 1) return "Played " + Math.round(h) + " hr ago"; if(d < 2) return "Played yesterday";
+    if(d < 14) return "Played " + Math.round(d) + " days ago"; return "Played " + new Date(t).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  }
+  var uid = 0;
+  function cloneCard(g){
+    var k = "-r" + (++uid);
+    var h = g.outerHTML.replace(/id="([^"]+)"/g, function(m, a){ return 'id="' + a + k + '"'; }).replace(/url\(#([^)]+)\)/g, function(m, a){ return "url(#" + a + k + ")"; }).replace(/href="#([^"]+)"/g, function(m, a){ return 'href="#' + a + k + '"'; });
+    var t = document.createElement("div"); t.innerHTML = h; var c = t.firstChild;
+    c.classList.remove("hidden"); c.removeAttribute("data-rc"); Array.prototype.forEach.call(c.querySelectorAll("[title]"), function(x){ x.removeAttribute("title"); }); c.style.removeProperty("--i");
+    c.style.setProperty("--c", "var(--" + (g.getAttribute("data-cat") || "action") + ")");
+    return c;
+  }
+  function render(){
+    var seen = {}, list = [];
+    load().forEach(function(x){ if(!x) return; var k = seg("/" + String(x.p || "").replace(/^\/+/, "")); if(k && byKey[k] && !seen[k] && list.length < MAX){ seen[k] = 1; list.push({ k: k, t: +x.t || 0 }); } });
+    grid.innerHTML = "";
+    list.forEach(function(it){ var c = cloneCard(byKey[it.k]); var w = c.querySelector(".what"); if(w) w.textContent = ago(it.t); grid.appendChild(c); });
+    shelf.classList.toggle("is-empty", list.length === 0);
+  }
+  function onOpen(e){
+    if(e.type === "auxclick" && e.button !== 1) return;
+    var a = e.target && e.target.closest ? e.target.closest("a[href]") : null; if(!a) return;
+    var k = seg(a.getAttribute("href")); if(k && byKey[k]){ record(k); if(e.type === "auxclick" || e.metaKey || e.ctrlKey) setTimeout(render, 0); }
+  }
+  document.addEventListener("click", onOpen, true);
+  document.addEventListener("auxclick", onOpen, true);
+  shelf.querySelector("[data-rp-clear]").addEventListener("click", function(){ save([]); render(); });
+  window.addEventListener("pageshow", render);
+  window.addEventListener("storage", function(e){ if(e.key === KEY) render(); });
+  document.addEventListener("visibilitychange", function(){ if(!document.hidden) render(); });
+  render();
+  /* captions: full text on hover once they are clipped to two lines; footer count stays true */
+  Array.prototype.forEach.call(document.querySelectorAll("main .what"), function(w){ w.title = w.textContent; });
+  var ft = document.querySelector("footer"), n = document.querySelectorAll("main a.g").length;
+  if(ft) ft.textContent = n + " games · seven arcades · tap any cover to play";
 })();
 </script>
 </body>
