@@ -92,6 +92,8 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    position: relative;
+    cursor: pointer;
   }
 
   .brand-title {
@@ -123,6 +125,47 @@
   .stars-badge.pop {
     transform: scale(1.22);
   }
+
+  .stars-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lock-ring {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 58px;
+    height: 58px;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1;
+    overflow: visible;
+    transition: opacity 0.15s ease;
+  }
+
+  .lock-ring.holding {
+    opacity: 1;
+  }
+
+  .lock-ring-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.95);
+    stroke-width: 3.5;
+  }
+
+  .lock-ring-fg {
+    fill: none;
+    stroke: #2FA8FF;
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    stroke-dasharray: 113.1;
+    stroke-dashoffset: 113.1;
+  }
+
 
   .controls {
     display: flex;
@@ -156,6 +199,20 @@
     background: #FFFFFF;
     color: var(--ink);
     box-shadow: 0 3px 10px rgba(44, 42, 59, 0.12);
+  }
+
+  /* Grown-up controls stay hidden until a long-press on the title/stars */
+  .app:not(.parent-open) .mode-switch,
+  .app:not(.parent-open) #voice-btn {
+    display: none;
+  }
+
+  .app.parent-open .mode-switch {
+    display: inline-flex;
+  }
+
+  .app.parent-open #voice-btn {
+    display: inline-flex;
   }
 
   .icon-btn {
@@ -537,11 +594,17 @@
 
 <div class="app">
   <header class="topbar">
-    <div class="brand">
+    <div class="brand" id="brand" title="Hold for grown-up settings" aria-label="Hold for grown-up settings" aria-expanded="false">
       <h1 class="brand-title">Color Pop Simon</h1>
-      <div class="stars-badge" id="stars-badge" aria-live="polite">
-        <span aria-hidden="true">⭐</span>
-        <span id="star-count">0</span>
+      <div class="stars-wrap">
+        <svg class="lock-ring" id="lock-ring" viewBox="0 0 44 44" aria-hidden="true">
+          <circle class="lock-ring-bg" cx="22" cy="22" r="18"></circle>
+          <circle class="lock-ring-fg" id="lock-ring-fg" cx="22" cy="22" r="18"></circle>
+        </svg>
+        <div class="stars-badge" id="stars-badge" aria-live="polite">
+          <span aria-hidden="true">⭐</span>
+          <span id="star-count">0</span>
+        </div>
       </div>
     </div>
 
@@ -758,6 +821,13 @@
   document.querySelectorAll('.pad').forEach(el => {
     pads[el.dataset.color] = el;
   });
+  const appEl = document.querySelector('.app');
+  const brandEl = document.getElementById('brand');
+  const lockRing = document.getElementById('lock-ring');
+  const lockRingFg = document.getElementById('lock-ring-fg');
+  const RING_CIRC = 2 * Math.PI * 18;
+  lockRingFg.style.strokeDasharray = String(RING_CIRC);
+  lockRingFg.style.strokeDashoffset = String(RING_CIRC);
 
   // --- Web Audio API Marimba / Xylophone Engine ---
   let audioCtx = null;
@@ -852,18 +922,62 @@
   }
 
   // --- Web Speech API Cheerful Voice ---
-  function speak(text) {
+  let speakTimer = null;
+  let speakToken = 0;
+
+  function friendNoun(colorKey) {
+    return COLORS[colorKey].friend.toLowerCase();
+  }
+
+  function theFriend(colorKey) {
+    return 'the ' + friendNoun(colorKey);
+  }
+
+  function colorAndFriend(colorKey) {
+    const name = COLORS[colorKey].name.toLowerCase();
+    const noun = friendNoun(colorKey).replace(name + ' ', '');
+    return name + ', the ' + noun;
+  }
+
+  function pickPraise() {
+    const praises = [
+      'Great job, Emmy!',
+      'Yay, Emmy!',
+      'Woohoo, Emmy!',
+      'Super, Emmy!',
+      'Nice job, Emmy!'
+    ];
+    return praises[Math.floor(Math.random() * praises.length)];
+  }
+
+  function speak(text, immediate) {
     if (!state.voiceEnabled || !('speechSynthesis' in window)) return;
     try {
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.rate = 0.94;
-      u.pitch = 1.25;
-      u.volume = 1.0;
-      const voices = window.speechSynthesis.getVoices();
-      const friendly = voices.find(v => /en/i.test(v.lang) && /(Samantha|Karen|Tessa|Moira|Google US English)/i.test(v.name));
-      if (friendly) u.voice = friendly;
-      window.speechSynthesis.speak(u);
+      const synth = window.speechSynthesis;
+      if (synth.paused) synth.resume();
+      if (speakTimer) {
+        clearTimeout(speakTimer);
+        speakTimer = null;
+      }
+      const token = ++speakToken;
+      const fire = () => {
+        if (token !== speakToken || !state.voiceEnabled) return;
+        if (synth.paused) synth.resume();
+        const u = new SpeechSynthesisUtterance(text);
+        u.rate = 0.94;
+        u.pitch = 1.25;
+        u.volume = 1.0;
+        const voices = synth.getVoices();
+        const friendly = voices.find(v => /en/i.test(v.lang) && /(Samantha|Karen|Tessa|Moira|Google US English)/i.test(v.name));
+        if (friendly) u.voice = friendly;
+        synth.speak(u);
+      };
+      if (immediate) {
+        fire();
+      } else {
+        synth.cancel();
+        speakTimer = setTimeout(fire, 80);
+      }
     } catch (_) {}
   }
 
@@ -1036,7 +1150,7 @@
     setPrompt('Yay! Rainbow Party!');
     playRainbowFanfare();
     spawnRainbowShower();
-    speak('Yay! Five stars! Rainbow party!');
+    speak('Yay, Emmy! Five stars! Rainbow party!');
 
     later(() => {
       spawnRainbowShower();
@@ -1060,11 +1174,10 @@
     const next = choices[Math.floor(Math.random() * choices.length)];
     state.targetColor = next;
 
-    const info = COLORS[next];
-    setPrompt(`Touch ${info.name}!`, next);
+    setPrompt(`Touch ${theFriend(next)}!`, next);
     pads[next].classList.add('target-hint');
     flashPad(next, 680);
-    speak(`Touch ${info.name}!`);
+    speak(`Touch ${theFriend(next)}!`);
   }
 
   // --- Mode 2: Simon Pattern ---
@@ -1094,7 +1207,7 @@
         flashPad(colorKey, 600);
         setPrompt(COLORS[colorKey].name + '!', colorKey);
         if (state.sequence.length <= 3) {
-          speak(COLORS[colorKey].name);
+          speak(COLORS[colorKey].friend + '!');
         }
       }, 500 + idx * 880);
     });
@@ -1102,8 +1215,8 @@
     const totalMs = 500 + state.sequence.length * 880 + 250;
     later(() => {
       state.locked = false;
-      setPrompt('Your turn!');
-      speak('Your turn!');
+      setPrompt('Your turn, Emmy!');
+      speak('Your turn, Emmy!');
     }, totalMs);
   }
 
@@ -1121,32 +1234,32 @@
     later(() => pad.classList.remove('pressed'), 160);
 
     if (state.mode === 'touch') {
+      spawnBurst(cx, cy, COLORS[colorKey].hex, colorKey === state.targetColor ? 34 : 24);
+      playBubblyPop();
+      playMarimba(COLORS[colorKey].freq, 0.45, 0.30);
+
       if (colorKey === state.targetColor) {
         state.locked = true;
         pad.classList.remove('target-hint');
         pad.classList.add('lit', 'joy');
-        playBubblyPop();
         playSuccessChime();
-        spawnBurst(cx, cy, COLORS[colorKey].hex, 34);
 
-        const cheers = ['Yay!', 'Great job!', 'Woohoo!', 'Super!'];
-        const cheer = cheers[Math.floor(Math.random() * cheers.length)];
+        const cheer = pickPraise();
         setPrompt(`${cheer} ${COLORS[colorKey].name}!`, colorKey);
-        speak(`${cheer} That's ${COLORS[colorKey].name}!`);
+        speak(`${cheer} That's ${colorAndFriend(colorKey)}!`);
 
         addStar(() => startTouchRound());
       } else {
-        // Gentle, encouraging toddler guidance — no harsh buzzers!
-        playSoftBoing();
-        pad.classList.remove('gentle-wiggle');
-        void pad.offsetWidth;
-        pad.classList.add('gentle-wiggle');
-        spawnBurst(cx, cy, COLORS[colorKey].hex, 10);
-
-        const targetName = COLORS[state.targetColor].name;
-        setPrompt(`That's ${COLORS[colorKey].name}! Find ${targetName}!`, state.targetColor);
-        speak(`That's ${COLORS[colorKey].name}. Let's touch ${targetName}!`);
-        later(() => flashPad(state.targetColor, 550), 320);
+        // Free pop-and-name: never boing or call a miss "wrong"
+        pad.classList.add('lit', 'joy');
+        later(() => pad.classList.remove('lit', 'joy'), 360);
+        setPrompt(`${COLORS[colorKey].friend}!`, colorKey);
+        speak(`That's ${theFriend(colorKey)}!`);
+        later(() => {
+          if (state.mode === 'touch' && state.targetColor && !state.locked) {
+            setPrompt(`Touch ${theFriend(state.targetColor)}!`, state.targetColor);
+          }
+        }, 900);
       }
     } else {
       // Simon Pattern mode
@@ -1161,17 +1274,21 @@
         if (state.playerIndex >= state.sequence.length) {
           state.locked = true;
           playSuccessChime();
-          setPrompt('Awesome! Next pattern!');
-          speak('Awesome!');
+          const cheer = pickPraise();
+          setPrompt(cheer);
+          speak(cheer);
           addStar(() => nextSimonStep());
         }
       } else {
         // Gentle replay in Simon mode
         state.locked = true;
         playSoftBoing();
+        pad.classList.remove('gentle-wiggle');
+        void pad.offsetWidth;
         pad.classList.add('gentle-wiggle');
+        later(() => pad.classList.remove('gentle-wiggle'), 450);
         setPrompt("Let's watch again!", expected);
-        speak("Oopsie! Let's watch again!");
+        speak("Oopsie, Emmy! Let's watch again!");
         state.playerIndex = 0;
         later(() => playSimonSequence(), 1100);
       }
@@ -1183,7 +1300,7 @@
     ensureAudio();
     if (state.mode === 'touch' && state.targetColor) {
       flashPad(state.targetColor, 650);
-      speak(`Touch ${COLORS[state.targetColor].name}!`);
+      speak(`Touch ${theFriend(state.targetColor)}!`);
     } else if (state.mode === 'simon' && state.sequence.length > 0) {
       playSimonSequence();
     }
@@ -1194,12 +1311,13 @@
     e.preventDefault();
     ensureAudio();
     playSuccessChime();
+    speak("Let's play, Emmy!", true);
     state.started = true;
     startOverlay.classList.add('hidden');
     later(() => {
       if (state.mode === 'touch') startTouchRound();
       else startNewSimonGame();
-    }, 350);
+    }, 1400);
   });
 
   COLOR_KEYS.forEach(colorKey => {
@@ -1242,9 +1360,99 @@
     state.voiceEnabled = !state.voiceEnabled;
     voiceBtn.textContent = state.voiceEnabled ? '🗣️' : '🔇';
     if (!state.voiceEnabled && 'speechSynthesis' in window) {
+      if (speakTimer) {
+        clearTimeout(speakTimer);
+        speakTimer = null;
+      }
+      speakToken += 1;
       window.speechSynthesis.cancel();
     }
   });
+
+  // --- Grown-up settings: 2s long-press on title / star badge ---
+  const HOLD_MS = 2000;
+  const PARENT_IDLE_MS = 10000;
+  let holdRaf = null;
+  let holdStart = 0;
+  let parentIdleTimer = null;
+
+  function setRingProgress(p) {
+    const clamped = Math.max(0, Math.min(1, p));
+    lockRingFg.style.strokeDashoffset = String(RING_CIRC * (1 - clamped));
+  }
+
+  function clearHold() {
+    if (holdRaf) {
+      cancelAnimationFrame(holdRaf);
+      holdRaf = null;
+    }
+    holdStart = 0;
+    lockRing.classList.remove('holding');
+    setRingProgress(0);
+  }
+
+  function scheduleParentHide() {
+    if (parentIdleTimer) clearTimeout(parentIdleTimer);
+    parentIdleTimer = setTimeout(hideParentSettings, PARENT_IDLE_MS);
+  }
+
+  function showParentSettings() {
+    appEl.classList.add('parent-open');
+    brandEl.setAttribute('aria-expanded', 'true');
+    scheduleParentHide();
+  }
+
+  function hideParentSettings() {
+    if (parentIdleTimer) {
+      clearTimeout(parentIdleTimer);
+      parentIdleTimer = null;
+    }
+    appEl.classList.remove('parent-open');
+    brandEl.setAttribute('aria-expanded', 'false');
+    clearHold();
+  }
+
+  function onBrandPointerDown(e) {
+    if (e.button != null && e.button !== 0) return;
+    e.preventDefault();
+    if (appEl.classList.contains('parent-open')) {
+      scheduleParentHide();
+      return;
+    }
+    clearHold();
+    holdStart = performance.now();
+    lockRing.classList.add('holding');
+    setRingProgress(0);
+    const tick = (now) => {
+      const p = (now - holdStart) / HOLD_MS;
+      setRingProgress(p);
+      if (p >= 1) {
+        holdRaf = null;
+        lockRing.classList.remove('holding');
+        setRingProgress(0);
+        showParentSettings();
+        return;
+      }
+      holdRaf = requestAnimationFrame(tick);
+    };
+    holdRaf = requestAnimationFrame(tick);
+  }
+
+  function onBrandPointerEnd() {
+    if (holdStart && !appEl.classList.contains('parent-open')) {
+      clearHold();
+    }
+  }
+
+  brandEl.addEventListener('pointerdown', onBrandPointerDown);
+  brandEl.addEventListener('pointerup', onBrandPointerEnd);
+  brandEl.addEventListener('pointercancel', onBrandPointerEnd);
+  brandEl.addEventListener('pointerleave', onBrandPointerEnd);
+  brandEl.addEventListener('contextmenu', (e) => e.preventDefault());
+
+  modeTouchBtn.addEventListener('pointerdown', () => scheduleParentHide());
+  modeSimonBtn.addEventListener('pointerdown', () => scheduleParentHide());
+  voiceBtn.addEventListener('pointerdown', () => scheduleParentHide());
 
   // MacBook Keyboard Shortcuts
   window.addEventListener('keydown', (e) => {
@@ -1267,6 +1475,5 @@
   });
 })();
 </script>
-<script src="/recent.js" async></script>
 </body>
 </html>
