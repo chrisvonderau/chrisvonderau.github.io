@@ -7062,6 +7062,7 @@ html.sbPulseR #vpad-badge { right: auto !important; left: calc(10px + env(safe-a
     (sbCancelEnd(),
       sbClearCallout(),
       (v.scene = "title"),
+      (v.titleLock = performance.now() + 700), // [menuguard]
       (v.sim = null),
       (v.paused = !1),
       q("hud").classList.add("hidden"),
@@ -7096,9 +7097,20 @@ html.sbPulseR #vpad-badge { right: auto !important; left: calc(10px + env(safe-a
       ut === "A" && (q("tagline").textContent = "Defend the last station. Fling asteroids. Hold the line."));
     Co_title(); // [coop]
   }
+  // [menuguard] the RESTART RUN? confirm ignores presses for its first second
+  var sbYesLockT = 0;
+  function sbYesLocked() { return performance.now() < (v.yesLock || 0); }
+  function sbYesLockOn() {
+    v.yesLock = performance.now() + 1000;
+    q("bYes").classList.add("wait");
+    clearTimeout(sbYesLockT);
+    sbYesLockT = setTimeout(() => q("bYes").classList.remove("wait"), 1000);
+  }
   function ye(e) {
     for (let o of document.querySelectorAll(".screen")) o.classList.add("hidden");
     (e && q(e).classList.remove("hidden"), (v.screen = e));
+    v.screenAt = performance.now(); // [menuguard]
+    e === "sConfirm" && sbYesLockOn(); // [menuguard]
     ns(); // [fullscreen] fullscreen button visibility / title corner
     e === "sTitle" && sbFs.tip(); // [fullscreen] one-time "Add to Home Screen" tip on iPhone
   }
@@ -7277,7 +7289,7 @@ html.sbPulseR #vpad-badge { right: auto !important; left: calc(10px + env(safe-a
       if (e.code === "Space") {
         (e.preventDefault(),
           v.scene === "play" && St(e.__vpad ? "pad" : "keys"),
-          v.scene === "play" && !v.paused ? (It = !0) : v.screen === "sTitle" && q("bPlay").click());
+          v.scene === "play" && !v.paused ? (It = !0) : v.screen === "sTitle" && performance.now() > (v.titleLock || 0) && q("bPlay").click()); // [menuguard] Space held or mashed through a quit does not start a new run
         return;
       }
       if (e.code === "KeyP" || e.code === "Escape") {
@@ -7306,7 +7318,7 @@ html.sbPulseR #vpad-badge { right: auto !important; left: calc(10px + env(safe-a
         Ba();
         return;
       }
-      e.code === "Enter" && v.screen === "sConfirm" && q("bYes").click();
+      e.code === "Enter" && v.screen === "sConfirm" && !sbYesLocked() && q("bYes").click();
     }
   });
   addEventListener("keyup", (e) => {
@@ -8729,7 +8741,7 @@ html.sbPulseR #vpad-badge { right: auto !important; left: calc(10px + env(safe-a
   Me("bRestart", () => ye("sConfirm"));
   Me("bQuit", () => Pn());
   Me("bNo", () => ye("sPause"));
-  Me("bYes", () => Gt(v.mode));
+  Me("bYes", () => sbYesLocked() || Gt(v.mode)); // [menuguard] RESTART needs a deliberate press: nothing for 1 s after the question shows
   Me("bAgain", () => sbOverLocked() || Gt(v.mode)); // [noreset]
   Me("bOverTitle", () => sbOverLocked() || Pn()); // [noreset]
   q("bPause").addEventListener("pointerdown", (e) => {
@@ -8838,6 +8850,10 @@ html.sbPulseR #vpad-badge { right: auto !important; left: calc(10px + env(safe-a
   // consumed[slot][control]: a button used to press a menu item stays blocked from its game mapping until released
   // (so A on RESUME does not also fire the game's A action next frame). uiFirst: first item of the open menu, to spot a new menu.
   var consumed = [{}, {}, {}, {}], uiFirst = null;
+  // [menuguard] a menu that opens while a pad is busy (steering, firing) ignores that pad until it lets go of the
+  // stick, D-pad, A and B for 0.2 s, and never acts in its first 0.35 s. A held stick and a mashed A used to walk a
+  // pause menu that opened mid-run (blur, a bumped Start/View) down to RESTART and then YES, so the run started over.
+  var uiArm = [true, true, true, true], uiCalm = [0, 0, 0, 0], uiOpenAt = 0, uiFromPlay = false; // uiFromPlay: a pad was in gameplay since the last menu
 
   function pads() {
     var raw = [];
@@ -8988,10 +9004,18 @@ html.sbPulseR #vpad-badge { right: auto !important; left: calc(10px + env(safe-a
       if (inUi) {
         var its = uiItems();
         if (its[0] !== uiFirst) { // a menu just opened (or changed): highlight its primary button so the first A presses it
+          if (uiFirst === null && uiFromPlay) { uiArm = [false, false, false, false]; uiCalm = [0, 0, 0, 0]; uiOpenAt = t; } // [menuguard] only a menu that interrupts play
           uiFirst = its[0] || null;
           var pr = null; try { pr = cfg.ui.primary ? cfg.ui.primary() : null; } catch (x) {}
           setFocus(pr && its.indexOf(pr) >= 0 ? pr : (its[0] || null));
         }
+        if (!uiArm[j]) { // [menuguard]
+          var quiet = !(s.Up || s.Down || s.Left || s.Right || s.LUp || s.LDown || s.LLeft || s.LRight || s.A || s.B);
+          uiCalm[j] = quiet ? uiCalm[j] + dt : 0;
+          if (uiCalm[j] >= 200 && t - uiOpenAt >= 350) uiArm[j] = true;
+          else { for (var dk in uiRepeat) if (dk.charAt(0) === String(j)) delete uiRepeat[dk]; if (s.A) consumed[j].A = true; if (s.B) consumed[j].B = true; }
+        }
+        if (uiArm[j]) {
         var dirs = [['Up', 'LUp', 0, -1], ['Down', 'LDown', 0, 1], ['Left', 'LLeft', -1, 0], ['Right', 'LRight', 1, 0]];
         for (var d = 0; d < 4; d++) {
           var c = dirs[d], on = s[c[0]] || s[c[1]], key = j + c[0];
@@ -9001,6 +9025,7 @@ html.sbPulseR #vpad-badge { right: auto !important; left: calc(10px + env(safe-a
         if (press('A') && cfg.ui.grab && cfg.ui.grab(j)) consumed[j].A = true; else // [coop] a pad that joins as player 2 does not also press the menu
         if (press('A')) { consumed[j].A = true; var items = uiItems(); if (!uiFocus || items.indexOf(uiFocus) < 0) setFocus(items[0] || null); else clickEl(uiFocus); }
         if (press('B') && cfg.ui.back) { consumed[j].B = true; runOnce(cfg.ui.back, s); }
+        } // [menuguard]
       }
       for (var ctl in map) {
         if (inUi && /^(Up|Down|Left|Right|LUp|LDown|LLeft|LRight|A|B)$/.test(ctl) && !(cfg.ui && cfg.ui.passthrough)) continue;
@@ -9021,6 +9046,7 @@ html.sbPulseR #vpad-badge { right: auto !important; left: calc(10px + env(safe-a
     if (!uiChecked && cfg.ui) inUi = false;
     if (!inUi && uiFocus) { uiFocus.classList.remove('vpad-focus'); uiFocus = null; }
     if (!inUi) uiFirst = null;
+    if (inUi) uiFromPlay = false; else if (any) { uiFromPlay = true; uiArm = [true, true, true, true]; } // [menuguard]
     // key diff: release first, then press
     for (var h in held) if (!want[h]) { sendKey('keyup', held[h]); delete held[h]; }
     for (var w in want) if (!held[w]) { held[w] = want[w]; sendKey('keydown', want[w]); }
